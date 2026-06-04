@@ -9,18 +9,19 @@ ADMIN_SECRET = os.getenv("ADMIN_SECRET", "admin123")
 
 st.markdown("""
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');            
+
 .page-title {
-    font-family: 'ChampionGothic', sans-serif;
-    font-size: 4rem;
-    letter-spacing: 0.08em;
+    font-family:'ChampionGothic',sans-serif; font-weight:900;
+    font-size: 5rem;
+    letter-spacing: 0.1em;
     color: #F0F0F0;
-    margin-bottom: 2rem;
-    text-align: center;
+    margin-bottom: 0.15rem;
 }
 .field-label {
     font-family: 'Inter', sans-serif;
     font-size: 0.7rem;
-    color: #555;
+    color: #999;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     margin-bottom: 6px;
@@ -28,8 +29,8 @@ st.markdown("""
 }
 .match-box {
     background: rgba(10,10,10,0.65);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border: 1px solid #242424;
     border-radius: 8px;
     padding: 0.85rem 0.5rem;
@@ -91,10 +92,11 @@ div[data-testid="stButton"] button {
     border-radius: 8px !important;
     color: #F0F0F0 !important;
     font-family: 'Inter', sans-serif !important;
-    font-size: 1rem !important;
-    letter-spacing: 0.08em !important;
+    font-size: clamp(0.65rem, 2.5vw, 1rem) !important;
+    letter-spacing: 0.05em !important;
     padding: 0.6rem !important;
     width: 100% !important;
+    white-space: nowrap !important;
     transition: all 0.15s !important;
 }
 div[data-testid="stButton"] button:hover {
@@ -116,7 +118,7 @@ div[data-testid="stButton"] button:hover {
 
 st.markdown('<div class="page-title">ADMIN</div>', unsafe_allow_html=True)
 
-_, col, _ = st.columns([1, 2, 1])
+_, col, _ = st.columns([0.1, 3, 0.1])
 with col:
 
     # ── First incomplete match today ──────────────────────────────────────────
@@ -149,61 +151,27 @@ with col:
 
         stage_str = ("Group " + group) if stage == "group" and group else stage.replace("_", " ").title()
 
-        card = (
-            '<div class="fix-card">'
+        home_flag_div = '<div style="display:flex;align-items:center;justify-content:center;">' + flag_img(home_code, 26) + '</div>'
+        away_flag_div = '<div style="display:flex;align-items:center;justify-content:center;">' + flag_img(away_code, 26) + '</div>'
 
-            # ── Row 1: flag | code | kickoff | code | flag ────────────────
-            '<div style="display:grid;grid-template-columns:28px 1fr auto 1fr 28px;'
-            'align-items:center;gap:0.6rem;">'
-
-            + flag_img(home_code, 30) +
-
-            '<div>'
-            '<div style="font-family:\'ChampionGothic\',sans-serif;font-size:1.5rem;'
-            'letter-spacing:0.1em;color:#F0F0F0;line-height:1;">' + home_code + '</div>'
-            '</div>'
-
-            # kickoff time instead of score
-            '<div style="text-align:center;min-width:90px;">'
-            '<div style="font-family:\'Inter\',sans-serif;font-size:1.5rem;'
-            'font-weight:800;color:#fff;letter-spacing:0.15em;line-height:1;">' + ko + '</div>'
-            '<div style="font-size:0.6rem;color:#444;letter-spacing:0.14em;'
-            'text-transform:uppercase;margin-top:2px;"></div>'
-            '</div>'
-
-            '<div style="text-align:right;">'
-            '<div style="font-family:\'ChampionGothic\',sans-serif;font-size:1.5rem;'
-            'letter-spacing:0.1em;color:#F0F0F0;line-height:1;">' + away_code + '</div>'
-            '</div>'
-
-            + flag_img(away_code, 30) +
-
-            '</div>'
-
-            # ── Row 2: meta ───────────────────────────────────────────────
-            '<div style="display:grid;grid-template-columns:1fr auto 1fr;'
-            'align-items:center;margin-top:0.7rem;padding-top:0.6rem;'
-            'border-top:1px solid #1e1e1e;font-size:0.75rem;font-family:\'Inter\',sans-serif;">'
-
-            '<div style="display:flex;align-items:center;gap:0.5rem;">'
-            '<span style="color:#888;font-weight:600;">' + home_rank + '</span>'
-            + home_form +
-            '</div>'
-
-            '<div style="text-align:center;color:#555;">'
-            + 'Match ' + str(fx.get("match_id", "")) 
-            + (' &middot; ' + stage_str)
-            + (' &middot; ' + venue if venue else '')
-            + '</div>'
-
-            '<div style="display:flex;align-items:center;gap:0.5rem;justify-content:flex-end;">'
-            + away_form +
-            '<span style="color:#888;font-weight:600;">' + away_rank + '</span>'
-            '</div>'
-
-            '</div>'
-            '</div>'
-        )
+        card = f"""
+        <div class="fix-card">
+        <div style="display:grid;grid-template-columns:30px 1fr auto 1fr 30px;align-items:center;gap:0.6rem;width:100%;">
+            {home_flag_div}
+            <div><div style="font-family:'ChampionGothic',sans-serif;font-size:1.5rem;letter-spacing:0.1em;color:#F0F0F0;line-height:1;">{home_code}</div></div>
+            <div style="text-align:center;min-width:90px;">
+            <div style="font-family:'Inter',sans-serif;font-size:1.5rem;font-weight:800;color:#fff;letter-spacing:0.15em;line-height:1;">{ko}</div>
+            </div>
+            <div style="text-align:right;"><div style="font-family:'ChampionGothic',sans-serif;font-size:1.5rem;letter-spacing:0.1em;color:#F0F0F0;line-height:1;">{away_code}</div></div>
+            {away_flag_div}
+        </div>
+        <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;margin-top:0.7rem;padding-top:0.6rem;border-top:1px solid #3a3a3a;font-size:0.75rem;font-family:'Inter',sans-serif;">
+            <div style="display:flex;align-items:center;gap:0.5rem;"><span style="color:#888;font-weight:600;">{home_rank}</span>{home_form}</div>
+            <div style="text-align:center;color:#999;">Match {fx.get("match_id","")} &middot; {stage_str}{(' &middot; ' + venue) if venue else ''}</div>
+            <div style="display:flex;align-items:center;gap:0.5rem;justify-content:flex-end;">{away_form}<span style="color:#888;font-weight:600;">{away_rank}</span></div>
+        </div>
+        </div>
+        """
 
         st.markdown(card, unsafe_allow_html=True)
 
@@ -246,7 +214,7 @@ with col:
 
     # ── Run predictions ───────────────────────────────────────────────────────
     with c2:
-        if st.button("RUN PREDICTIONS MANUALLY", use_container_width=True, key="predict"):
+        if st.button("RUN PREDICTIONS", use_container_width=True, key="predict"):
             if secret != ADMIN_SECRET:
                 st.session_state["admin_status"] = "err:Invalid admin secret"
                 st.rerun()

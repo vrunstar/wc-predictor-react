@@ -9,14 +9,14 @@ supabase = get_client()
 st.markdown("""
 <style>
 .page-title {
-    font-family: 'ChampionGothic', 'Inter', sans-serif;
-    font-size: 4rem;
-    letter-spacing: 0.08em;
+    font-family:'ChampionGothic',sans-serif; font-weight:900;
+    font-size: 5rem;
+    letter-spacing: 0.1em;
     color: #F0F0F0;
     margin-bottom: 0.15rem;
 }
 .page-sub {
-    font-size: 0.9rem; color: #555;
+    font-size: 0.9rem; color: #999;
     letter-spacing: 0.12em; text-transform: uppercase;
     margin-bottom: 2rem;
 }
@@ -120,64 +120,33 @@ for day, preds in by_date.items():
         match_id  = fx.get("match_id", "")
         stage_str = ("Group " + group) if stage == "group" and group else stage.replace("_", " ").title()
 
-        card = (
-            '<div class="res-card">'
+        home_flag_div = '<div style="display:flex;align-items:center;justify-content:center;">' + flag_img(home_code, 26) + '</div>'
+        away_flag_div = '<div style="display:flex;align-items:center;justify-content:center;">' + flag_img(away_code, 26) + '</div>'
 
-            # ── Row 1: flag | code | scores | code | flag ─────────────────
-            '<div style="display:grid;grid-template-columns:28px 1fr auto 1fr 28px;'
-            'align-items:center;gap:0.6rem;">'
+        card = f"""
+        <div class="res-card" style="position:relative;transition:border-color 0.15s;cursor:pointer;">
+        <div style="display:grid;grid-template-columns:30px 1fr auto 1fr 30px;align-items:center;gap:0.6rem;width:100%;">
+            {home_flag_div}
+            <div><div style="font-family:'ChampionGothic',sans-serif;font-size:1.5rem;letter-spacing:0.1em;color:#F0F0F0;line-height:1;">{home_code}</div></div>
+            <div style="text-align:center;min-width:110px;">
+            <div style="display:flex;align-items:baseline;justify-content:center;gap:1rem;">
+                <div style="font-family:'ChampionGothic',sans-serif;font-size:1.5rem;color:#fff;letter-spacing:0.15em;line-height:1;">{actual_h} – {actual_a}</div>
+                <div style="font-family:'Inter',sans-serif;font-weight:800;font-size:1.2rem;color:#666;">( {pred_h}–{pred_a} )</div>
+            </div>
+            </div>
+            <div style="text-align:right;"><div style="font-family:'ChampionGothic',sans-serif;font-size:1.5rem;letter-spacing:0.1em;color:#F0F0F0;line-height:1;">{away_code}</div></div>
+            {away_flag_div}
+        </div>
+        <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;margin-top:0.7rem;padding-top:0.6rem;border-top:1px solid #1e1e1e;font-size:0.9rem;font-family:'Inter',sans-serif;">
+            <div style="display:flex;align-items:center;gap:0.5rem;"><span style="color:#888;font-weight:600;">{home_rank}</span>{home_form}</div>
+            <div style="text-align:center;color:#999;">Match {match_id}{(' &middot; ' + venue) if venue else ''}</div>
+            <div style="display:flex;align-items:center;gap:0.5rem;justify-content:flex-end;">{away_form}<span style="color:#888;font-weight:600;">{away_rank}</span></div>
+        </div>
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1rem;color:rgba(255,255,255,0.08);pointer-events:none;">↗</div>
+        </div>
+        """
 
-            + flag_img(home_code, 30) +
-
-            '<div>'
-            '<div style="font-family:\'ChampionGothic\',sans-serif;font-size:1.5rem;'
-            'letter-spacing:0.1em;color:#F0F0F0;line-height:1;">' + home_code + '</div>'
-            '</div>'
-
-            # Score center: actual big + predicted small inline
-            '<div style="text-align:center;min-width:110px;">'
-            '<div style="display:flex;align-items:baseline;justify-content:center;gap:1rem;">'
-            '<div style="font-family:\'ChampionGothic\',sans-serif;font-size:1.5rem;'
-            'color:#fff;letter-spacing:0.15em;line-height:1;">'
-            + str(actual_h) + ' – ' + str(actual_a) +
-            '</div>'
-            '<div style="font-family:\'Inter\',sans-serif;font-weight:800;font-size:1.2rem;color:#666;">'
-            '( ' + str(pred_h) + '–' + str(pred_a) + ' )'
-            '</div>'
-            '</div>'
-            '</div>'
-
-            '<div style="text-align:right;">'
-            '<div style="font-family:\'ChampionGothic\',sans-serif;font-size:1.5rem;'
-            'letter-spacing:0.1em;color:#F0F0F0;line-height:1;">' + away_code + '</div>'
-            '</div>'
-
-            + flag_img(away_code, 30) +
-
-            '</div>'
-
-            # ── Row 2: meta ───────────────────────────────────────────────
-            '<div style="display:grid;grid-template-columns:1fr auto 1fr;'
-            'align-items:center;margin-top:0.7rem;padding-top:0.6rem;'
-            'border-top:1px solid #1e1e1e;font-size:0.75rem;font-family:\'Inter\',sans-serif;">'
-
-            '<div style="display:flex;align-items:center;gap:0.5rem;">'
-            '<span style="color:#888;font-weight:600;">' + home_rank + '</span>'
-            + home_form +
-            '</div>'
-
-            '<div style="text-align:center;color:#555;">'
-            'Match ' + str(match_id)
-            + (' &middot; ' + venue if venue else '')
-            + '</div>'
-
-            '<div style="display:flex;align-items:center;gap:0.5rem;justify-content:flex-end;">'
-            + away_form +
-            '<span style="color:#888;font-weight:600;">' + away_rank + '</span>'
-            '</div>'
-
-            '</div>'
-            '</div>'
-        )
-
-        st.markdown(card, unsafe_allow_html=True)
+        mid = fx.get("match_id")
+        clickable_card = f'<a href="?page=MatchDetail&match_id={mid}" target="_self" style="text-decoration:none;display:block;">{card}</a>'
+        st.markdown(clickable_card, unsafe_allow_html=True)
+        st.markdown("<div style='margin-bottom:0.75rem;'></div>", unsafe_allow_html=True)

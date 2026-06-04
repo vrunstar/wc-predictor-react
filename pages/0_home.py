@@ -9,7 +9,7 @@ supabase = get_client()
 st.markdown("""
 <style>
 .section-title {
-    font-family: 'Gilker', sans-serif;
+    font-family: 'ChampionGothic', sans-serif;
     font-size: 1.8rem;
     letter-spacing: 0.08em;
     color: #F0F0F0;
@@ -29,7 +29,7 @@ st.markdown("""
     gap: 0.5rem;
 }
 .hc-code {
-    font-family: 'Gilker', sans-serif;
+    font-family: 'ChampionGothic', sans-serif;
     font-size: 1.2rem;
     letter-spacing: 0.08em;
     color: #F0F0F0;
@@ -57,16 +57,30 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ── Hero ──────────────────────────────────────────────────────────────────────
-try:
-    with open("static/bg.png", "rb") as f:
-        _bg = base64.b64encode(f.read()).decode()
-    bg_url = "url('data:image/png;base64," + _bg + "')"
-except Exception:
-    bg_url = "none"
+bg_url = "none"
 
 tournament_start = date(2026, 6, 11)
 days_left = (tournament_start - date.today()).days
 countdown = str(days_left) + " days to go" if days_left > 0 else "Tournament underway"
+
+# ── Data ──────────────────────────────────────────────────────────────────────
+fixtures  = fixtures_today(supabase)
+matches   = [fx for fx in fixtures if not fx.get("results")]
+all_preds = pred_all(supabase)
+completed = [p for p in all_preds if p.get("fixture", {}).get("results")]
+recent = completed[:4]
+
+total_preds = len(completed)
+correct_preds = sum(
+    1 for p in completed
+    if p.get("predicted_outcome") == (
+        (p.get("fixture", {}).get("results") or [{}])[0]
+        if isinstance(p.get("fixture", {}).get("results"), list)
+        else p.get("fixture", {}).get("results") or {}
+    ).get("outcome")
+)
+accuracy = round((correct_preds / total_preds * 100)) if total_preds else 0
+
 
 st.markdown("""
 <style>
@@ -74,23 +88,33 @@ st.markdown("""
     position: relative;
     width: 100%;
     min-height: 280px;
-    background-image: """ + bg_url + """;
-    background-size: cover;
-    background-position: center;
-    border-radius: 12px;
-    overflow: hidden;
+
+    background: linear-gradient(
+        135deg,
+        rgba(18,18,18,0.55),
+        rgba(10,10,10,0.55)
+    );
+
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.05);
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.04),
+        0 8px 24px rgba(0,0,0,0.25);
+
     display: flex;
     align-items: center;
+
     padding: 3rem;
     margin-bottom: 1rem;
     box-sizing: border-box;
+    overflow: hidden;
 }
 .hero::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: rgba(0,0,0,0.55);
-    border-radius: 12px;
+    display: none;
 }
 .hero-content { position: relative; z-index: 1; }
 .hero-tag {
@@ -108,7 +132,7 @@ st.markdown("""
     line-height: 0.95;
     color: #F0F0F0;
     letter-spacing: 0.04em;
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
 }
 .hero-sub {
     font-family: 'Inter', sans-serif;
@@ -120,35 +144,31 @@ st.markdown("""
 }
 .hero-pills { display: flex; gap: 0.5rem; flex-wrap: wrap; }
 .pill {
-    background: rgba(255,200,255,0.1);
-    border: 1px solid rgba(255, 255, 255,0.25);
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.2);
     color: #fff;
-    padding: 0.3rem 0.8rem;
+    padding: 0.55rem 1.2rem;
     border-radius: 20px;
-    font-size: 0.72rem;
-    font-weight: 500;
+    font-size: 0.9rem;
+    font-weight: 600;
     font-family: 'Inter', sans-serif;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.03em;
 }
 </style>
 <div class="hero">
   <div class="hero-content">
-    <div class="hero-title">WORLD CUP 2026<br> PREDICTOR</div>
-    <div class="hero-sub">Predictions for all 104 matches across USA, Canada &amp; Mexico.</div>
+    <div class="hero-title">2026 WORLD CUP<br> PREDICTOR</div>
     <div class="hero-pills">
-      <span class="pill">USA · Canada · Mexico</span>
-      <span class="pill">48 Teams · 12 Groups</span>
-      <span class="pill">""" + countdown + """</span>
+      <span class="pill">""" + str(total_preds) + """ Predicted</span>
+      <span class="pill">""" + str(correct_preds) + """ Correct</span>
+      <span class="pill">""" + str(total_preds - correct_preds) + """ Wrong</span>
+      <span class="pill">""" + str(accuracy) + """% Accuracy</span>
     </div>
   </div>
 </div>
 """, unsafe_allow_html=True)
 
-# ── Data ──────────────────────────────────────────────────────────────────────
-fixtures  = fixtures_today(supabase)
-matches   = [fx for fx in fixtures if not fx.get("results")]
-all_preds = pred_all(supabase)
-completed = [p for p in all_preds if p.get("fixture", {}).get("results")][:4]
+
 
 # ── Cards ─────────────────────────────────────────────────────────────────────
 def match_card(fx):
@@ -202,5 +222,5 @@ with col2:
     if not completed:
         st.markdown('<div class="no-content">No results yet</div>', unsafe_allow_html=True)
     else:
-        for p in completed:
+        for p in recent:
             st.markdown(result_card(p), unsafe_allow_html=True)

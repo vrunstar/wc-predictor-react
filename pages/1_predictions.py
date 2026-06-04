@@ -9,38 +9,38 @@ supabase = get_client()
 st.markdown("""
 <style>
 .page-title {
-    font-family: 'ChampionGothic', sans-serif;
-    font-size: 4rem;
-    letter-spacing: 0.08em;
+    font-family:'ChampionGothic',sans-serif; font-weight:900;
+    font-size: 5rem;
+    letter-spacing: 0.1em;
     color: #F0F0F0;
     margin-bottom: 0.15rem;
 }
 .page-sub {
     font-family: 'Inter', sans-serif;
     font-weight: 800;
-    font-size: 1.1rem; color: #555;
-    letter-spacing: 0.12em; text-transform: uppercase;
+    font-size: 1.25rem; color: #999;
+    letter-spacing: 0.12em; text-transform: none;
     margin-bottom: 2rem;
 }
 .pred-card {
     background: rgba(10,10,10,0.50);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border-radius: 10px;
     border: 1px solid #111;
     padding: 1.1rem 1.4rem;
     margin-bottom: 0.75rem;
 }
 .no-games {
-    background: rgba(20,20,20,0.8); border: 1px solid #222;
+    background: rgba(10,10,10,0.5); border: 1px solid #222;
     border-radius: 12px; padding: 3rem;
-    text-align: center; color: #444;
+    text-align: center; color: #444; font-size: 1.5rem; font-family: 'ChampionGothic', sans-serif;
 }
 </style>
 """, unsafe_allow_html=True)
 
 st.markdown(
-    '<div class="page-title">TODAY\'S PREDICTIONS</div>'
+    '<div class="page-title">PREDICTIONS</div>'
     '<div class="page-sub">' + date.today().strftime('%A, %B %d') + '</div>',
     unsafe_allow_html=True
 )
@@ -48,7 +48,7 @@ st.markdown(
 fixtures = fixtures_today(supabase)
 
 if not fixtures:
-    st.markdown('<div class="no-games"><div style="font-size:2rem;">📅</div><div>No matches today</div></div>', unsafe_allow_html=True)
+    st.markdown('<div class="no-games"><div>No matches today</div></div>', unsafe_allow_html=True)
     st.stop()
 
 @st.cache_resource
@@ -109,70 +109,33 @@ for fx in fixtures:
     # Row 1: flag | code | score | code | flag
     # Row 2: rank · form  |  time · city · conf  |  form · rank
 
-    card = (
-        '<div class="pred-card">'
+    home_flag_div = '<div style="display:flex;align-items:center;justify-content:center;">' + flag_img(home_code, 45) + '</div>'
+    away_flag_div = '<div style="display:flex;align-items:center;justify-content:center;">' + flag_img(away_code, 45) + '</div>'
 
-        # ── Row 1: teams + score ──────────────────────────────────────────
-        '<div style="display:grid;grid-template-columns:28px 1fr auto 1fr 28px;'
-        'align-items:center;gap:0.6rem;">'
+    card = f"""
+    <div class="pred-card" style="position:relative;transition:border-color 0.15s;cursor:pointer;">
+    <div style="display:grid;grid-template-columns:30px 1fr auto 1fr 30px;align-items:center;gap:0.6rem;width:100%;">
+        {home_flag_div}
+        <div>
+        <div style="font-family:'ChampionGothic',sans-serif;font-size:1.5rem;letter-spacing:0.1em;color:#F0F0F0;line-height:1;">{home_code}</div>
+        </div>
+        <div style="text-align:center;min-width:90px;">
+        <div style="font-family:'ChampionGothic',sans-serif;font-size:2rem;color:#fff;letter-spacing:0.15em;line-height:1;">{h_goals} – {a_goals}</div>
+        </div>
+        <div style="text-align:right;">
+        <div style="font-family:'ChampionGothic',sans-serif;font-size:1.5rem;letter-spacing:0.1em;color:#F0F0F0;line-height:1;">{away_code}</div>
+        </div>
+        {away_flag_div}
+    </div>
+    <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;margin-top:0.7rem;padding-top:0.6rem;border-top:1px solid #3a3a3a;font-size:0.9rem;font-family:'Inter',sans-serif;">
+        <div style="display:flex;align-items:center;gap:0.5rem;"><span style="color:#888;font-weight:600;">{home_rank}</span>{home_form}</div>
+        <div style="text-align:center;color:#999;">{ko}{(' &middot; ' + venue) if venue else ''} &middot; <span style="color:#888;font-weight:600;">{conf}% {outcome_label}</span></div>
+        <div style="display:flex;align-items:center;gap:0.5rem;justify-content:flex-end;">{away_form}<span style="color:#888;font-weight:600;">{away_rank}</span></div>
+    </div>
+    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1rem;color:rgba(255,255,255,0.08);pointer-events:none;">↗</div>
+    </div>
+    """
 
-        # home flag
-        + flag_img(home_code, 30) +
-
-        # home code + name
-        '<div>'
-        '<div style="font-family:\'ChampionGothic\',sans-serif;font-size:1.5rem;'
-        'letter-spacing:0.1em;color:#F0F0F0;line-height:1;">' + home_code + '</div>'
-        ''
-        '</div>'
-
-        # score
-        '<div style="text-align:center;min-width:90px;">'
-        '<div style="font-family:\'ChampionGothic\',sans-serif;font-size:2rem;'
-        'color:#fff;letter-spacing:0.15em;line-height:1;">'
-        + str(h_goals) + ' – ' + str(a_goals) +
-        '</div>'
-        ''
-        '</div>'
-
-        # away code + name
-        '<div style="text-align:right;">'
-        '<div style="font-family:\'ChampionGothic\',sans-serif;font-size:1.5rem;'
-        'letter-spacing:0.1em;color:#F0F0F0;line-height:1;">' + away_code + '</div>'
-        ''
-        '</div>'
-
-        # away flag
-        + flag_img(away_code, 30) +
-
-        '</div>'
-
-        # ── Row 2: meta ───────────────────────────────────────────────────
-        '<div style="display:grid;grid-template-columns:1fr auto 1fr;'
-        'align-items:center;margin-top:0.7rem;padding-top:0.6rem;'
-        'border-top:1px solid #1e1e1e;font-size:0.75rem; font-family:\'Inter\',sans-serif">'
-
-        # Left: rank · form
-        '<div style="display:flex;align-items:center;gap:0.5rem;">'
-        '<span style="color:#888;font-weight:600;">' + home_rank + '</span>'
-        + home_form +
-        '</div>'
-
-        # Center: time · city · confidence
-        '<div style="text-align:center;color:#555;">'
-        + ko
-        + (' &middot; ' + venue if venue else '')
-        + ' &middot; <span style="color:#888;font-weight:600;">' + str(conf) + '% ' + outcome_label + '</span>'
-        '</div>'
-
-        # Right: form · rank
-        '<div style="display:flex;align-items:center;gap:0.5rem;justify-content:flex-end;">'
-        + away_form +
-        '<span style="color:#888;font-weight:600;">' + away_rank + '</span>'
-        '</div>'
-
-        '</div>'
-        '</div>'
-    )
-
-    st.markdown(card, unsafe_allow_html=True)
+    clickable_card = f'<a href="?page=MatchDetail&match_id={mid}" target="_self" style="text-decoration:none;display:block;">{card}</a>'
+    st.markdown(clickable_card, unsafe_allow_html=True)
+    st.markdown("<div style='margin-bottom:0.75rem;'></div>", unsafe_allow_html=True)

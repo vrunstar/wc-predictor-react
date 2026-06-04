@@ -2,7 +2,7 @@ import streamlit as st
 from datetime import date, datetime
 from collections import defaultdict
 from db import get_client, fixtures_upcoming, get_team_rank, get_team_form, team_by_id
-from utils import format_kickoff, flag_img, render_detail_card
+from utils import format_kickoff, flag_img
 import json, base64, re
 
 supabase = get_client()
@@ -16,25 +16,27 @@ except Exception:
 
 st.markdown("""
 <style>
+
 .page-title {
-    font-family: 'ChampionGothic', sans-serif;
-    font-size: 4rem;
-    letter-spacing: 0.08em;
+    font-family:'ChampionGothic',sans-serif; font-weight:900;
+    font-size: 5rem;
+    letter-spacing: 0.1em;
     color: #F0F0F0;
     margin-bottom: 0.15rem;
 }
 .date-header {
     font-family: 'Inter', sans-serif;
-    font-size: 1.1rem;
+    font-size: 1.1rem; text-transform: none;
     font-weight: 800;
     letter-spacing: 0.08em;
     color: #aaa;
     margin: 1.5rem 0 0.75rem 0;
 }
+
 .fix-card {
     background: rgba(10,10,10,0.50);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border-radius: 10px;
     border: 1px solid #242424;
     padding: 1.1rem 1.4rem;
@@ -48,7 +50,7 @@ div[data-testid="stButton"] button {
     background: rgba(10,10,10,0.65) !important;
     border: 1px solid #2a2a2a !important;
     border-radius: 6px !important;
-    color: #555 !important;
+    color: #999 !important;
     font-size: 1rem !important;
     font-weight: 400 !important;
     aspect-ratio: 1 !important;
@@ -76,7 +78,7 @@ div[data-testid="stButton"] button:hover {
 div[data-testid="stButton"] button[kind="secondary"] {
     background: transparent !important;
     border: 1px solid #2a2a2a !important;
-    color: #555 !important;
+    color: #999 !important;
     font-family: 'Inter', sans-serif !important;
     font-size: 0.7rem !important;
     letter-spacing: 0.1em !important;
@@ -147,33 +149,38 @@ for day, matches in by_date.items():
         away_form = render_form(get_team_form(supabase, away_id) if away_id else "")
         stage_str = ("Group " + group) if stage == "group" and group else stage.replace("_", " ").title()
 
-        card = (
-            '<div class="fix-card">'
-            '<div style="display:grid;grid-template-columns:28px 1fr auto 1fr 28px;align-items:center;gap:0.6rem;">'
-            + flag_img(home_code, 30) +
-            '<div><div style="font-family:\'ChampionGothic\',sans-serif;font-size:1.5rem;letter-spacing:0.1em;color:#F0F0F0;line-height:1;">' + home_code + '</div></div>'
-            '<div style="text-align:center;min-width:90px;">'
-            '<div style="font-family:\'Inter\',sans-serif;font-size:1.5rem;font-weight:800;color:#fff;letter-spacing:0.15em;line-height:1;">' + ko + '</div>'
-            '</div>'
-            '<div style="text-align:right;"><div style="font-family:\'ChampionGothic\',sans-serif;font-size:1.5rem;letter-spacing:0.1em;color:#F0F0F0;line-height:1;">' + away_code + '</div></div>'
-            + flag_img(away_code, 30) +
-            '</div>'
-            '<div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;margin-top:0.7rem;padding-top:0.6rem;border-top:1px solid #1e1e1e;font-size:0.75rem;font-family:\'Inter\',sans-serif;">'
-            '<div style="display:flex;align-items:center;gap:0.5rem;"><span style="color:#888;font-weight:600;">' + home_rank + '</span>' + home_form + '</div>'
-            '<div style="text-align:center;color:#555;">Match ' + str(fx.get("match_id","")) + (' &middot; ' + stage_str) + (' &middot; ' + venue if venue else '') + '</div>'
-            '<div style="display:flex;align-items:center;gap:0.5rem;justify-content:flex-end;">' + away_form + '<span style="color:#888;font-weight:600;">' + away_rank + '</span></div>'
-            '</div>'
-            '</div>'
-        )
+        home_flag = '<div style="display:flex;align-items:center;justify-content:center;">' + flag_img(home_code, 45) + '</div>'
+        away_flag = '<div style="display:flex;align-items:center;justify-content:center;">' + flag_img(away_code, 45) + '</div>'
+        home_name = '<div><div style="font-family:\'ChampionGothic\',sans-serif;font-size:1.5rem;letter-spacing:0.1em;color:#F0F0F0;line-height:1;">' + home_code + '</div></div>'
+        away_name = '<div style="text-align:right;"><div style="font-family:\'ChampionGothic\',sans-serif;font-size:1.5rem;letter-spacing:0.1em;color:#F0F0F0;line-height:1;">' + away_code + '</div></div>'
+        ko_div = '<div style="text-align:center;min-width:60px;max-width:90px;"><div style="font-family:\'Inter\',sans-serif;font-size:clamp(1rem,4vw,1.5rem);font-weight:800;color:#fff;letter-spacing:0.1em;line-height:1;white-space:nowrap;">' + ko + '</div></div>'
 
+        card = f"""
+            <div class="fix-card">
+            <div style="display:grid;grid-template-columns:30px 1fr auto 1fr 30px;align-items:center;gap:0.6rem;width:100%;">
+                {home_flag}
+                {home_name}
+                {ko_div}
+                {away_name}
+                {away_flag}
+            </div>
+            <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;margin-top:0.7rem;padding-top:0.6rem;border-top:1px solid #3a3a3a;font-size:0.9rem;font-family:'Inter',sans-serif;">
+                <div style="display:flex;align-items:center;gap:0.5rem;"><span style="color:#888;font-weight:600;">{home_rank}</span>{home_form}</div>
+                <div style="text-align:center;color:#999;">Match {fx.get("match_id","")} &middot; {stage_str}{' &middot; ' + venue if venue else ''}</div>
+                <div style="display:flex;align-items:center;gap:0.5rem;justify-content:flex-end;">{away_form}<span style="color:#888;font-weight:600;">{away_rank}</span></div>
+            </div>
+            </div>
+            """
         mid = fx["match_id"]
-        col_card, col_btn = st.columns([11, 1])
-        with col_card:
-            st.markdown(card, unsafe_allow_html=True)
-        with col_btn:
-            st.markdown("<div style='height:28px;'></div>", unsafe_allow_html=True)
-            if st.button("↗", key="d_" + str(fx["match_id"]), use_container_width=True):
-                st.session_state["detail_match_id"] = fx["match_id"]
-                st.session_state["page"] = "MatchDetail"
-                st.rerun()
+        clickable_card = (
+            f'<a href="?page=MatchDetail&match_id={mid}" target="_self" style="text-decoration:none;display:block;position:relative;">'
+            + card.replace(
+                '<div class="fix-card">',
+                '<div class="fix-card" style="position:relative;transition:border-color 0.15s;cursor:pointer;">',
+                1
+            )
+            + '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1rem;color:rgba(255,255,255,0.08);pointer-events:none;">↗</div>'
+            + '</a>'
+        )
+        st.markdown(clickable_card, unsafe_allow_html=True)
         st.markdown("<div style='margin-bottom:0.75rem;'></div>", unsafe_allow_html=True)

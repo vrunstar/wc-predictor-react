@@ -22,7 +22,9 @@ def get_client() -> Client:
     return create_client(url, key)
 
 def get_ist() -> date:
-    return datetime.now(pytz.timezone("Asia/Kolkata")).date()
+    from datetime import datetime, timezone, timedelta
+    ist = timezone(timedelta(hours=5, minutes=30))
+    return datetime.now(ist).date()
 
 # ---------------------------------------------------------------------
 # TEAMS
@@ -66,12 +68,15 @@ def fixtures_by_stage(supabase: Client, stage: str) -> list[dict]:
     return res.data
 
 def fixtures_upcoming(supabase: Client) -> list[dict]:
-    today = str(get_ist())
+    from datetime import datetime, timezone, timedelta
+    ist = timezone(timedelta(hours=5, minutes=30))
+    today_str = datetime.now(ist).strftime("%Y-%m-%d")
     res = (supabase.table("fixtures")
            .select("*, home:teams!home_id(*), away:teams!away_id(*)")
-           .gte("matchday_ist", today)
+           .gte("matchday_ist", today_str)
            .neq("status", "completed")
-           .order("kickoff_ist")
+           .order("matchday_ist", desc=False)
+           .order("kickoff_ist", desc=False)
            .execute())
     return res.data
 
@@ -211,8 +216,6 @@ def update_after_res(supabase: Client, match_id: int, home_goals: int, away_goal
         "lost":    home_standing["lost"]   + (1 if outcome == "A" else 0),
         "gf":      home_standing["gf"]     + home_goals,
         "ga":      home_standing["ga"]     + away_goals,
-        "gd":      home_standing.get("gd", 0) + (home_goals - away_goals),
-        "points":  home_standing["points"] + (3 if outcome == "H" else 1 if outcome == "D" else 0),
     }
     away_updates = {
         "played":  away_standing["played"] + 1,
@@ -221,8 +224,6 @@ def update_after_res(supabase: Client, match_id: int, home_goals: int, away_goal
         "lost":    away_standing["lost"]   + (1 if outcome == "H" else 0),
         "gf":      away_standing["gf"]     + away_goals,
         "ga":      away_standing["ga"]     + home_goals,
-        "gd":      away_standing.get("gd", 0) + (away_goals - home_goals),
-        "points":  away_standing["points"] + (3 if outcome == "A" else 1 if outcome == "D" else 0),
     }
 
     supabase.table("standings").update(home_updates).eq("team_id", home["team_id"]).execute()

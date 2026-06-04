@@ -8,9 +8,9 @@ supabase = get_client()
 st.markdown("""
 <style>
 .page-title {
-    font-family: 'ChampionGothic', 'Inter', sans-serif;
-    font-size: 4rem;
-    letter-spacing: 0.08em;
+    font-family:'ChampionGothic',sans-serif; font-weight:900;
+    font-size: 5rem;
+    letter-spacing: 0.1em;
     color: #F0F0F0;
     margin-bottom: 0.15rem;
 }
@@ -21,8 +21,8 @@ st.markdown("""
 }
 .group-card {
     background: rgba(10,10,10,0.55);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border-radius: 10px;
     border: 1px solid #242424;
     padding: 1rem 1.2rem;
@@ -34,7 +34,7 @@ st.markdown("""
     letter-spacing: 0.1em;
     color: #F0F0F0;
     margin-bottom: 0.75rem;
-    border-bottom: 1px solid #1e1e1e;
+    border-bottom: 1px solid #3a3a3a;
     padding-bottom: 0.5rem;
 }
 .stand-header {
@@ -61,6 +61,25 @@ st.markdown("""
     display: flex;
     align-items: center;
     gap: 0.5rem;
+}
+
+/* ── Mobile: stack groups full width ── */
+@media (max-width: 767px) {
+    [data-testid="stColumns"] {
+        flex-direction: column !important;
+    }
+    [data-testid="stColumn"] {
+        width: 100% !important;
+        flex: 1 1 100% !important;
+        min-width: 100% !important;
+    }
+    .stand-header, .stand-row {
+        grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1fr;
+        font-size: 0.6rem;
+    }
+    .group-card {
+        padding: 0.75rem 0.85rem;
+    }
 }
 </style>
 """, unsafe_allow_html=True)

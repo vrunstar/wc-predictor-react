@@ -18,15 +18,20 @@ def get_base64_font(path: str) -> str:
     except Exception:
         return ""
 
-font_b64 = get_base64_font("static/fonts/ChampionGothic-Heavyweight.woff2")
+champgothic = get_base64_font("static/fonts/ChampionGothic-Heavyweight.woff2")
+tusker_4700 = get_base64_font("static/fonts/TuskerGrotesk-4700Bold.woff2")
+tusker_6500 = get_base64_font("static/fonts/TuskerGrotesk-6500Medium.woff2")
+tusker_7700 = get_base64_font("static/fonts/TuskerGrotesk-7700Bold.woff2")
+zuume_black = get_base64_font("static/fonts/zuume-black.woff2")
+
 font_face_css = (
     "@font-face {"
     "font-family: 'ChampionGothic';"
-    "src: url('data:font/woff2;base64," + font_b64 + "') format('woff2');"
+    "src: url('data:font/woff2;base64," + champgothic + "') format('woff2');"
     "font-weight: 900;"
     "font-style: normal;"
     "}"
-) if font_b64 else ""
+) if champgothic else ""
 
 
 def get_base64_image(path: str) -> str:
@@ -37,16 +42,40 @@ def get_base64_image(path: str) -> str:
         return ""
 
 bg_b64 = get_base64_image("static/bg.png")
-logo_b64 = get_base64_image("static/logo2.png")
+logo_b64 = get_base64_image("static/logo.png")
 bg_css = f"url('data:image/png;base64,{bg_b64}')" if bg_b64 else "none"
 
 # ── Global CSS ────────────────────────────────────────────────────────────────
 # Inject font separately before main CSS
-if font_b64:
+if champgothic:
     st.markdown(
         "<style>@font-face{font-family:'ChampionGothic';"
-        "src:url('data:font/woff2;base64," + font_b64 + "') format('woff2');"
+        "src:url('data:font/woff2;base64," + champgothic + "') format('woff2');"
         "font-weight:900;font-style:normal;}</style>",
+        unsafe_allow_html=True
+    )
+if tusker_4700:
+    st.markdown(
+        "<style>@font-face{font-family:'TuskerGrotesk';font-weight:700;"
+        "src:url('data:font/woff2;base64," + tusker_4700 + "') format('woff2');}</style>",
+        unsafe_allow_html=True
+    )
+if tusker_6500:
+    st.markdown(
+        "<style>@font-face{font-family:'TuskerGrotesk';font-weight:500;"
+        "src:url('data:font/woff2;base64," + tusker_6500 + "') format('woff2');}</style>",
+        unsafe_allow_html=True
+    )
+if tusker_7700:
+    st.markdown(
+        "<style>@font-face{font-family:'TuskerGrotesk';font-weight:900;"
+        "src:url('data:font/woff2;base64," + tusker_7700 + "') format('woff2');}</style>",
+        unsafe_allow_html=True
+    )
+if zuume_black:
+    st.markdown(
+        "<style>@font-face{font-family:'Zuume';font-weight:900;"
+        "src:url('data:font/woff2;base64," + zuume_black + "') format('woff2');}</style>",
         unsafe_allow_html=True
     )
 
@@ -61,7 +90,7 @@ st.markdown(f"""
     --dark:   #0A0A0A;
     --card:   #141414;
     --border: #222222;
-    --muted:  #666666;
+    --muted:  #d6d6d6;
     --text:   #F0F0F0;
     --nav-h:  60px;
 }}
@@ -87,7 +116,7 @@ html, body {{
     content: '';
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.72);
+    background: rgba(0,0,0,0.35 );
     z-index: 0;
     pointer-events: none;
 }}
@@ -99,11 +128,27 @@ html, body {{
 
 /* ── Hide Streamlit chrome ── */
 #MainMenu, footer, header,
-[data-testid="stDecoration"],
-[data-testid="stSidebar"],
-[data-testid="collapsedControl"] {{
+[data-testid="stDecoration"] {{
     display: none !important;
     visibility: hidden !important;
+}}
+
+@media (max-width: 767px) {{
+    [data-testid="stSidebar"] {{
+        display: block !important;
+        visibility: visible !important;
+        background: rgba(10,10,10,0.95) !important;
+    }}
+    [data-testid="collapsedControl"] {{
+        display: block !important;
+        visibility: visible !important;
+    }}
+    .wc-navbar {{
+        padding: 0 1rem;
+    }}
+    .wc-nav-links {{
+        display: none !important;
+    }}
 }}
 
 /* ── Push content below navbar ── */
@@ -116,16 +161,23 @@ html, body {{
     margin: 0 auto;
 }}
 
-/* ── Sticky navbar ── */
-.wc-navbar {{
+/* ── Nav root wrapper (handles fixed positioning now) ── */
+.wc-nav-root {{
     position: fixed;
     top: 0; left: 0; right: 0;
-    height: var(--nav-h);
     z-index: 9999;
+}}
+.mob-check-input {{
+    display: none !important;
+}}
+
+/* ── Sticky navbar ── */
+.wc-navbar {{
+    height: var(--nav-h);
     backdrop-filter: blur(20px) saturate(1.6);
     -webkit-backdrop-filter: blur(20px) saturate(1.6);
     background: rgba(10,10,10,0.65);
-    border-bottom: 1px solid rgba(0, 0, 0 ,0.50);
+    border-bottom: 1px solid rgba(0,0,0,0.50);
     display: flex;
     align-items: center;
     padding: 0 2rem;
@@ -133,17 +185,17 @@ html, body {{
 }}
 
 .wc-logo {{
-    font-family: 'ChampionGothic', sans-serif;
-    font-size: 1.3rem;
-    color: #fff;
-    letter-spacing: 0.1em;
-    white-space: nowrap;
-    text-decoration: none;
-    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    height: 60px;
+    overflow: hidden;
 }}
 
-.wc-logo span {{
-    color: #fff;
+.wc-logo img {{
+    height: 42px !important;
+    width: auto !important;
+    max-width: none !important;
+    display: block;
 }}
 
 .wc-nav-links {{
@@ -171,6 +223,51 @@ html, body {{
     background: rgba(0,200,83,0.08);
     border-color: rgba(0,200,83,0.2);
     font-weight: 600;
+}}
+
+/* ── Hamburger button ── */
+.mob-toggle {{
+    display: none;
+    font-size: 1.4rem;
+    color: #aaa;
+    cursor: pointer;
+    margin-left: auto;
+    padding: 0 0.5rem;
+    user-select: none;
+    line-height: 1;
+}}
+.mob-toggle .close-icon {{ display: none; }}
+.mob-toggle .ham-icon   {{ display: inline; }}
+.mob-check-input:checked ~ .wc-navbar .mob-toggle .ham-icon   {{ display: none; }}
+.mob-check-input:checked ~ .wc-navbar .mob-toggle .close-icon {{ display: inline; }}
+
+/* ── Mobile dropdown ── */
+.mobile-nav {{
+    display: none;
+    flex-direction: column;
+    background: rgba(10,10,10,0.97);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid #1e1e1e;
+    padding: 0.5rem 0;
+}}
+.mob-check-input:checked ~ .mobile-nav {{
+    display: flex !important;
+}}
+.mobile-nav .wc-nav-link {{
+    padding: 0.75rem 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 0.95rem;
+}}
+.mobile-nav .wc-nav-link:last-child {{ border-bottom: none; }}
+
+/* ── Breakpoints ── */
+@media (max-width: 767px) {{
+    .mob-toggle {{ display: block !important; }}
+    .wc-nav-links {{ display: none !important; }}
+    .wc-navbar {{ padding: 0 1rem; }}
+}}
+@media (min-width: 768px) {{
+    .mobile-nav {{ display: none !important; }}
 }}
 
 /* ── Buttons ── */
@@ -253,25 +350,48 @@ for label, _ in NAV_ITEMS:
     links_html += f'<a class="wc-nav-link {active_cls}" href="?page={label}" target="_self">{label}</a>\n'
 
 navbar_html = (
+    '<div class="wc-nav-root">'
+    '<input type="checkbox" id="mob-check" class="mob-check-input">'
     '<div class="wc-navbar">'
-    f'<a class="wc-logo" href="?page=Home" target="_self">'
-    f'<img src="data:image/png;base64,{logo_b64}" style="height:36px;width:auto;display:block;" alt="World Cup Predictor" />'
-    f'</a>'
+    '<div class="wc-logo"><img src="data:image/png;base64,' + logo_b64 + ' alt="logo"></div>'
     '<div class="wc-nav-links">' + links_html + '</div>'
+    '<label class="mob-toggle" for="mob-check">'
+    '<span class="ham-icon">&#9776;</span>'
+    '<span class="close-icon">&#10005;</span>'
+    '</label>'
+    '</div>'
+    '<div class="mobile-nav">' + links_html + '</div>'
     '</div>'
 )
 
+
 st.markdown(navbar_html, unsafe_allow_html=True)
+
 
 # ── Handle query param routing ────────────────────────────────────────────────
 params = st.query_params
 if "page" in params:
     requested = params["page"]
-    valid_pages = [label for label, _ in NAV_ITEMS]
+    valid_pages = [label for label, _ in NAV_ITEMS] + ["MatchDetail"]
     if requested in valid_pages and requested != st.session_state["page"]:
+        if "match_id" in params:
+            st.session_state["detail_match_id"] = int(params["match_id"])
         st.session_state["page"] = requested
         st.query_params.clear()
         st.rerun()
+
+'''with st.sidebar:
+    st.markdown("<div style='padding:1rem 0;'>", unsafe_allow_html=True)
+    for label, _ in NAV_ITEMS:
+        active = current == label
+        color = "#FFD700" if active else "#888"
+        if st.button(label, key="mob_" + label, use_container_width=True):
+            st.session_state["page"] = label
+            st.rerun()
+    st.markdown("</div>", unsafe_allow_html=True)'''
+
+with st.sidebar:
+    st.write("test")
 
 # ── Load current page ─────────────────────────────────────────────────────────
 all_pages = dict(NAV_ITEMS) | HIDDEN_PAGES

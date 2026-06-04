@@ -8,18 +8,18 @@ supabase = get_client()
 st.markdown("""
 <style>
 .page-title {
-    font-family: 'ChampionGothic', 'Inter', sans-serif;
-    font-size: 4rem;
-    letter-spacing: 0.08em;
+    font-family:'ChampionGothic',sans-serif; font-weight:900;
+    font-size: 5rem;
+    letter-spacing: 0.1em;
     color: #F0F0F0;
     margin-bottom: 0.15rem;
 }
 .page-sub {
-    font-size: 0.9rem; color: #555;
+    font-size: 0.9rem; color: #999;
     letter-spacing: 0.12em; text-transform: uppercase;
     margin-bottom: 2rem;
 }
-.bracket-outer { overflow-x: auto; width: 100%; }
+.bracket-outer { overflow-x: auto; width: 100%; display: flex; justify-content: center; }
 .bracket-wrap {
     display: grid;
     grid-template-columns: repeat(9, 140px);
@@ -27,6 +27,7 @@ st.markdown("""
     min-width: 1100px;
     height: 88vh;
     align-items: stretch;
+    margin: 0 auto;
 }
 .bracket-col {
     display: flex;
@@ -61,7 +62,7 @@ st.markdown("""
     gap: 0.3rem;
     padding-bottom: 0.2rem;
     margin-bottom: 0.2rem;
-    border-bottom: 1px solid #1e1e1e;
+    border-bottom: 1px solid #3a3a3a;
 }
 .bk-team-bot {
     display: flex;
@@ -103,10 +104,11 @@ st.markdown("""
 .third-label {
     font-family: 'ChampionGothic', sans-serif;
     font-size: 0.65rem;
-    color: #555;
+    color: #999;
     letter-spacing: 0.12em;
     margin-top: 1rem;
 }
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -242,4 +244,9 @@ bracket = (
     + '</div></div>'
 )
 
-st.markdown(bracket, unsafe_allow_html=True)
+st.markdown(
+    '<div style="margin-left:calc(-50vw + 50%);margin-right:calc(-50vw + 50%);width:100vw;">'
+    + bracket +
+    '</div>',
+    unsafe_allow_html=True
+)
