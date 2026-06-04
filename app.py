@@ -54,30 +54,6 @@ if champgothic:
         "font-weight:900;font-style:normal;}</style>",
         unsafe_allow_html=True
     )
-if tusker_4700:
-    st.markdown(
-        "<style>@font-face{font-family:'TuskerGrotesk';font-weight:700;"
-        "src:url('data:font/woff2;base64," + tusker_4700 + "') format('woff2');}</style>",
-        unsafe_allow_html=True
-    )
-if tusker_6500:
-    st.markdown(
-        "<style>@font-face{font-family:'TuskerGrotesk';font-weight:500;"
-        "src:url('data:font/woff2;base64," + tusker_6500 + "') format('woff2');}</style>",
-        unsafe_allow_html=True
-    )
-if tusker_7700:
-    st.markdown(
-        "<style>@font-face{font-family:'TuskerGrotesk';font-weight:900;"
-        "src:url('data:font/woff2;base64," + tusker_7700 + "') format('woff2');}</style>",
-        unsafe_allow_html=True
-    )
-if zuume_black:
-    st.markdown(
-        "<style>@font-face{font-family:'Zuume';font-weight:900;"
-        "src:url('data:font/woff2;base64," + zuume_black + "') format('woff2');}</style>",
-        unsafe_allow_html=True
-    )
 
 st.markdown(f"""
 <style>
@@ -379,16 +355,6 @@ if "page" in params:
         st.session_state["page"] = requested
         st.query_params.clear()
         st.rerun()
-
-'''with st.sidebar:
-    st.markdown("<div style='padding:1rem 0;'>", unsafe_allow_html=True)
-    for label, _ in NAV_ITEMS:
-        active = current == label
-        color = "#FFD700" if active else "#888"
-        if st.button(label, key="mob_" + label, use_container_width=True):
-            st.session_state["page"] = label
-            st.rerun()
-    st.markdown("</div>", unsafe_allow_html=True)'''
 
 with st.sidebar:
     st.write("test")
