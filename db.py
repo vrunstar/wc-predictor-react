@@ -24,7 +24,7 @@ def teams_all(_supabase: Client) -> list[dict]:
     return res.data
 
 @st.cache_data(ttl=3600)
-def teams_by_id(_supabase: Client, team_id: int) -> dict:
+def team_by_id(_supabase: Client, team_id: int) -> dict:
     res = _supabase.table("teams").select("*").eq("team_id", team_id).single().execute()
     return res.data
 
