@@ -1,77 +1,68 @@
-import os
-from datetime import datetime, date
+import streamlit as st
+from datetime import datetime, timezone, timedelta, date
 import pytz
 from supabase import create_client, Client
-from dotenv import load_dotenv
-from pathlib import Path
 
-# Try multiple locations to find .env
-for _env_path in [
-    Path(__file__).parent / ".env",
-    Path.cwd() / ".env",
-]:
-    if _env_path.exists():
-        load_dotenv(dotenv_path=_env_path, override=True)
-        break
 
+@st.cache_resource
 def get_client() -> Client:
-    url = os.getenv("SUPABASE_URL")
-    key = os.getenv("SUPABASE_SERVICE_KEY")
-    if not url or not key:
-        raise Exception("Missing SUPABASE_URL or SUPABASE_SERVICE_KEY in environment")
-    return create_client(url, key)
+    return create_client(
+        st.secrets["SUPABASE_URL"],
+        st.secrets["SUPABASE_SERVICE_KEY"]
+    )
 
 def get_ist() -> date:
-    from datetime import datetime, timezone, timedelta
     ist = timezone(timedelta(hours=5, minutes=30))
     return datetime.now(ist).date()
 
 # ---------------------------------------------------------------------
 # TEAMS
 # ---------------------------------------------------------------------
-
-def teams_all(supabase: Client) -> list[dict]:
-    res = supabase.table("teams").select("*").execute()
+@st.cache_data(ttl=3600)
+def teams_all(_supabase: Client) -> list[dict]:
+    res = _supabase.table("teams").select("*").execute()
     return res.data
 
-def team_by_id(supabase: Client, team_id: int) -> dict:
-    res = supabase.table("teams").select("*").eq("team_id", team_id).single().execute()
+@st.cache_data(ttl=3600)
+def teams_by_id(_supabase: Client, team_id: int) -> dict:
+    res = _supabase.table("teams").select("*").eq("team_id", team_id).single().execute()
     return res.data
 
 # ---------------------------------------------------------------------
 # FIXTURES
 # ---------------------------------------------------------------------
-
-def fixtures_today(supabase: Client) -> list[dict]:
+@st.cache_data(ttl=300)
+def fixtures_today(_supabase: Client) -> list[dict]:
     today = str(get_ist())
-    res = (supabase.table("fixtures")
+    res = (_supabase.table("fixtures")
            .select("*, home:teams!home_id(*), away:teams!away_id(*), results(*)")
            .eq("matchday_ist", today)
            .order("kickoff_ist")
            .execute())
     return res.data
 
-def fixtures_group(supabase: Client) -> list[dict]:
-    res = (supabase.table("fixtures")
+@st.cache_data(ttl=300)
+def fixtures_group(_supabase: Client) -> list[dict]:
+    res = (_supabase.table("fixtures")
            .select("*, home:teams!home_id(*), away:teams!away_id(*)")
            .eq("stage", "group")
            .order("kickoff_ist")
            .execute())
     return res.data
 
-def fixtures_by_stage(supabase: Client, stage: str) -> list[dict]:
-    res = (supabase.table("fixtures")
+@st.cache_data(ttl=300)
+def fixtures_by_stage(_supabase: Client, stage: str) -> list[dict]:
+    res = (_supabase.table("fixtures")
            .select("*, home:teams!home_id(*), away:teams!away_id(*), results(*)")
            .eq("stage", stage)
            .order("kickoff_ist")
            .execute())
     return res.data
 
-def fixtures_upcoming(supabase: Client) -> list[dict]:
-    from datetime import datetime, timezone, timedelta
-    ist = timezone(timedelta(hours=5, minutes=30))
-    today_str = datetime.now(ist).strftime("%Y-%m-%d")
-    res = (supabase.table("fixtures")
+@st.cache_data(ttl=300)
+def fixtures_upcoming(_supabase: Client) -> list[dict]:
+    today_str = str(get_ist())
+    res = (_supabase.table("fixtures")
            .select("*, home:teams!home_id(*), away:teams!away_id(*)")
            .gte("matchday_ist", today_str)
            .neq("status", "completed")
@@ -80,6 +71,7 @@ def fixtures_upcoming(supabase: Client) -> list[dict]:
            .execute())
     return res.data
 
+@st.cache_data(ttl=300)
 def fixtures_by_id(supabase: Client, match_id: int) -> dict:
     res = (supabase.table("fixtures")
            .select("*, home:teams!home_id(*), away:teams!away_id(*)")
@@ -92,24 +84,27 @@ def fixtures_by_id(supabase: Client, match_id: int) -> dict:
 # PREDICTIONS
 # ---------------------------------------------------------------------
 
-def pred_by_match(supabase: Client, match_id: int) -> dict | None:
-    res = (supabase.table("prediction")
+@st.cache_data(ttl=300)
+def pred_match(_supabase: Client, match_id: int) -> dict | None:
+    res = (_supabase.table("prediction")
            .select("*")
            .eq("match_id", match_id)
            .execute())
     return res.data[0] if res.data else None
 
-def pred_today(supabase: Client) -> list[dict]:
+@st.cache_data(ttl=300)
+def pred_today(_supabase: Client) -> list[dict]:
     today = str(get_ist())
-    res = (supabase.table("prediction")
+    res = (_supabase.table("prediction")
            .select("*, fixture:fixtures!match_id(*, home:teams!home_id(*), away:teams!away_id(*))")
            .eq("fixture.matchday_ist", today)
            .order("generated_at", desc=True)
            .execute())
     return [r for r in res.data if r.get("fixture")]
 
-def pred_all(supabase: Client) -> list[dict]:
-    res = (supabase.table("prediction")
+@st.cache_data(ttl=300)
+def pred_all(_supabase: Client) -> list[dict]:
+    res = (_supabase.table("prediction")
            .select("*, fixture:fixtures!match_id(*, home:teams!home_id(*), away:teams!away_id(*), results(*))")
            .order("generated_at", desc=True)
            .execute())
@@ -119,21 +114,24 @@ def pred_updated(supabase: Client, pred: dict) -> list[dict]:
     res = (supabase.table("prediction")
            .upsert(pred, on_conflict="match_id")
            .execute())
+    st.cache_data.clear()
     return res.data
 
 # ---------------------------------------------------------------------
 # RESULTS
 # ---------------------------------------------------------------------
 
-def res_by_match(supabase: Client, match_id: int) -> dict | None:
-    res = (supabase.table("results")
+@st.cache_data(ttl=300)
+def res_by_match(_supabase: Client, match_id: int) -> dict | None:
+    res = (_supabase.table("results")
            .select("*")
            .eq("match_id", match_id)
            .execute())
     return res.data[0] if res.data else None
 
-def res_all(supabase: Client) -> list[dict]:
-    res = (supabase.table("results")
+@st.cache_data(ttl=300)
+def res_all(_supabase: Client) -> list[dict]:
+    res = (_supabase.table("results")
            .select("*, fixture:fixtures!match_id(*, home:teams!home_id(*), away:teams!away_id(*))")
            .order("updated_at", desc=True)
            .execute())
@@ -143,22 +141,25 @@ def res_upsert(supabase: Client, result: dict) -> dict:
     res = (supabase.table("results")
            .upsert(result, on_conflict="match_id")
            .execute())
+    st.cache_data.clear()
     return res.data
 
 # ---------------------------------------------------------------------
 # STANDINGS
 # ---------------------------------------------------------------------
 
-def standings_by_group(supabase: Client, group_name: str) -> list[dict]:
-    res = (supabase.table("standings")
+@st.cache_data(ttl=300)
+def standings_by_group(_supabase: Client, group_name: str) -> list[dict]:
+    res = (_supabase.table("standings")
            .select("*, team:teams!team_id(name, team_code, fifa_rank)")
            .eq("group_name", group_name)
            .order("points, gd", desc=True)
            .execute())
     return res.data
 
-def standings_all(supabase: Client) -> list[dict]:
-    res = (supabase.table("standings")
+@st.cache_data(ttl=300)
+def standings_all(_supabase: Client) -> list[dict]:
+    res = (_supabase.table("standings")
            .select("*, team:teams!team_id(name, team_code, fifa_rank)")
            .order("group_name, points, gd", desc=True)
            .execute())
@@ -169,6 +170,7 @@ def standings_update(supabase: Client, team_id: int, updates: dict) -> dict:
            .update(updates)
            .eq("team_id", team_id)
            .execute())
+    st.cache_data.clear()
     return res.data
 
 # ---------------------------------------------------------------------
@@ -203,11 +205,11 @@ def update_after_res(supabase: Client, match_id: int, home_goals: int, away_goal
     supabase.table("teams").update({"elo_rating": new_home_elo}).eq("team_id", home["team_id"]).execute()
     supabase.table("teams").update({"elo_rating": new_away_elo}).eq("team_id", away["team_id"]).execute()
 
-    def get_standing(team_id):
+    def standing(team_id):
         return supabase.table("standings").select("*").eq("team_id", team_id).single().execute().data
 
-    home_standing = get_standing(home["team_id"])
-    away_standing = get_standing(away["team_id"])
+    home_standing = standing(home["team_id"])
+    away_standing = standing(away["team_id"])
 
     home_updates = {
         "played":  home_standing["played"] + 1,
@@ -238,6 +240,8 @@ def update_after_res(supabase: Client, match_id: int, home_goals: int, away_goal
 
     supabase.table("fixtures").update({"status": "completed"}).eq("match_id", match_id).execute()
 
+    st.cache_data.clear()
+    
     print(f"✓ Match {match_id} — {home['name']} {home_goals}-{away_goals} {away['name']}")
     print(f"  ELO: {home['name']} {home_elo}→{new_home_elo}, {away['name']} {away_elo}→{new_away_elo}")
 
@@ -259,9 +263,9 @@ def logout(supabase: Client) -> None:
 # FORM
 # ---------------------------------------------------------------------
 
-def get_team_form(supabase: Client, team_id: int, last_n: int = 5) -> str:
-    """Returns form string like 'WWDLW' from last N completed matches."""
-    fx_res = (supabase.table("fixtures")
+@st.cache_data(ttl=300)
+def get_team_form(_supabase: Client, team_id: int, last_n: int = 5) -> str:
+    fx_res = (_supabase.table("fixtures")
               .select("match_id, home_id, away_id")
               .or_(f"home_id.eq.{team_id},away_id.eq.{team_id}")
               .eq("status", "completed")
@@ -274,17 +278,17 @@ def get_team_form(supabase: Client, team_id: int, last_n: int = 5) -> str:
 
     match_ids = [fx["match_id"] for fx in fx_res.data]
 
-    results_res = (supabase.table("results")
+    r_res = (_supabase.table("results")
                    .select("match_id, outcome")
                    .in_("match_id", match_ids)
                    .execute())
 
-    results_map = {r["match_id"]: r["outcome"] for r in results_res.data}
+    r_map = {r["match_id"]: r["outcome"] for r in r_res.data}
 
     form = ""
     for fx in fx_res.data:
         mid     = fx["match_id"]
-        outcome = results_map.get(mid)
+        outcome = r_map.get(mid)
         if not outcome:
             continue
         is_home = fx["home_id"] == team_id
@@ -300,32 +304,12 @@ def get_team_form(supabase: Client, team_id: int, last_n: int = 5) -> str:
 # RANK LOOKUP
 # ---------------------------------------------------------------------
 
-def get_team_rank(supabase: Client, team_id: int) -> str:
-    """Returns rank string like 'A1' from standings table."""
-    try:
-        res = (supabase.table("standings")
-               .select("group_name, position")
-               .eq("team_id", team_id)
-               .single()
-               .execute())
-        if res.data:
-            group = res.data.get("group_name", "")
-            pos   = res.data.get("position", "")
-            if group and pos:
-                return str(group) + str(pos)
-    except Exception:
-        pass
-    return "—"
-
-# ---------------------------------------------------------------------
-# RANK LOOKUP (calculated, no position column)
-# ---------------------------------------------------------------------
-
-def get_team_rank(supabase: Client, team_id: int) -> str:
+@st.cache_data(ttl=300)
+def get_team_rank(_supabase: Client, team_id: int) -> str:
     """Calculates rank like 'A1' by sorting group standings."""
     try:
         # Get this team's group
-        team_row = (supabase.table("standings")
+        team_row = (_supabase.table("standings")
                     .select("group_name")
                     .eq("team_id", team_id)
                     .single()
@@ -335,7 +319,7 @@ def get_team_rank(supabase: Client, team_id: int) -> str:
 
         group = team_row.data["group_name"]
 
-        group_rows = (supabase.table("standings")
+        group_rows = (_supabase.table("standings")
                       .select("team_id, points, gd, gf")
                       .eq("group_name", group)
                       .order("points", desc=True)
@@ -354,9 +338,10 @@ def get_team_rank(supabase: Client, team_id: int) -> str:
 # STADIUMS
 # ---------------------------------------------------------------------
 
-def stadium_by_city(supabase: Client, city: str) -> dict:
+@st.cache_data(ttl=3600)
+def stadium_by_city(_supabase: Client, city: str) -> dict:
     try:
-        res = (supabase.table("stadiums")
+        res = (_supabase.table("stadiums")
                .select("*")
                .eq("city", city)
                .single()
@@ -369,9 +354,10 @@ def stadium_by_city(supabase: Client, city: str) -> dict:
 # PLAYERS
 # ---------------------------------------------------------------------
 
-def players_by_team(supabase: Client, team_id: int) -> list[dict]:
+@st.cache_data(ttl=3600)
+def players_by_team(_supabase: Client, team_id: int) -> list[dict]:
     try:
-        res = (supabase.table("players")
+        res = (_supabase.table("players")
                .select("*")
                .eq("team_id", team_id)
                .order("number")
