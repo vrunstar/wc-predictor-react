@@ -85,7 +85,7 @@ def fixtures_by_id(supabase: Client, match_id: int) -> dict:
 # ---------------------------------------------------------------------
 
 @st.cache_data(ttl=300)
-def pred_match(_supabase: Client, match_id: int) -> dict | None:
+def pred_by_match(_supabase: Client, match_id: int) -> dict | None:
     res = (_supabase.table("prediction")
            .select("*")
            .eq("match_id", match_id)
