@@ -72,8 +72,8 @@ def fixtures_upcoming(_supabase: Client) -> list[dict]:
     return res.data
 
 @st.cache_data(ttl=300)
-def fixtures_by_id(supabase: Client, match_id: int) -> dict:
-    res = (supabase.table("fixtures")
+def fixtures_by_id(_supabase: Client, match_id: int) -> dict:
+    res = (_supabase.table("fixtures")
            .select("*, home:teams!home_id(*), away:teams!away_id(*)")
            .eq("match_id", match_id)
            .single()
