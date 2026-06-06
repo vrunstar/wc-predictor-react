@@ -3,8 +3,6 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# C extensions
-*.so
 
 # Distribution / packaging
 build/
@@ -59,14 +57,6 @@ Thumbs.db
 # Caches
 .cache/
 __pypackages__/
-
-# Data and model artifacts (adjust if you want to track these)
-data/*.csv
-data/*.db
-results.csv
-model/*.pkl
-model/*.h5
-model/*.ckpt
 
 # Static uploads or generated assets
 static/uploads/

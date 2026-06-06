@@ -1,11 +1,15 @@
 import streamlit as st
 import base64
 from pathlib import Path
-from db import get_client
+from core.db import get_client
+from pathlib import Path
+from core.utils import b64
+
+_static = Path(__file__).parent / "static"
 
 st.set_page_config(
-    page_title="FIFA WC 2026 Predictor",
-    page_icon="⚽",
+    page_title="WC Predictor",
+    page_icon=str(_static / "icon.png"),
     layout="wide",
     initial_sidebar_state="collapsed",
 )
@@ -19,10 +23,6 @@ def get_base64_font(path: str) -> str:
         return ""
 
 champgothic = get_base64_font("static/fonts/ChampionGothic-Heavyweight.woff2")
-tusker_4700 = get_base64_font("static/fonts/TuskerGrotesk-4700Bold.woff2")
-tusker_6500 = get_base64_font("static/fonts/TuskerGrotesk-6500Medium.woff2")
-tusker_7700 = get_base64_font("static/fonts/TuskerGrotesk-7700Bold.woff2")
-zuume_black = get_base64_font("static/fonts/zuume-black.woff2")
 
 font_face_css = (
     "@font-face {"
@@ -33,17 +33,11 @@ font_face_css = (
     "}"
 ) if champgothic else ""
 
-
-def get_base64_image(path: str) -> str:
-    try:
-        with open(path, "rb") as f:
-            return base64.b64encode(f.read()).decode()
-    except Exception:
-        return ""
-
-bg_b64 = get_base64_image("static/bg.png")
-logo_b64 = get_base64_image("static/logo.png")
+_static = Path(__file__).parent / "static"
+bg_b64 = b64(str(_static / "bg.png"))
+logo_b64 = b64(str(_static / "logo.png"))
 bg_css = f"url('data:image/png;base64,{bg_b64}')" if bg_b64 else "none"
+
 
 # ── Global CSS ────────────────────────────────────────────────────────────────
 # Inject font separately before main CSS
@@ -102,9 +96,10 @@ html, body {{
     z-index: 1;
 }}
 
-/* ── Hide Streamlit chrome ── */
 #MainMenu, footer, header,
-[data-testid="stDecoration"] {{
+[data-testid="stDecoration"],
+[data-testid="stSidebar"],
+[data-testid="collapsedControl"] {{
     display: none !important;
     visibility: hidden !important;
 }}
@@ -290,7 +285,7 @@ hr {{ border-color: var(--border) !important; }}
 # ── Scheduler ─────────────────────────────────────────────────────────────────
 if "scheduler_started" not in st.session_state:
     try:
-        from scheduler import start as start_scheduler
+        from core.scheduler import start as start_scheduler
         start_scheduler()
         st.session_state["scheduler_started"] = True
     except Exception:
@@ -329,7 +324,7 @@ navbar_html = (
     '<div class="wc-nav-root">'
     '<input type="checkbox" id="mob-check" class="mob-check-input">'
     '<div class="wc-navbar">'
-    '<div class="wc-logo"><img src="data:image/png;base64,' + logo_b64 + ' alt="logo"></div>'
+    '<div class="wc-logo"><img src="data:image/png;base64,' + logo_b64 + '" alt="logo" height="40"></div>'
     '<div class="wc-nav-links">' + links_html + '</div>'
     '<label class="mob-toggle" for="mob-check">'
     '<span class="ham-icon">&#9776;</span>'
@@ -365,4 +360,3 @@ page_file = all_pages.get(current, "pages/0_home.py")
 
 with open(page_file, "r", encoding="utf-8") as f:
     exec(compile(f.read(), page_file, "exec"), {"__name__": "__main__"})
-

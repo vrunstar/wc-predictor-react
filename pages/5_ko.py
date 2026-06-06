@@ -1,8 +1,7 @@
 import streamlit as st
-from db import get_client, fixtures_by_stage, standings_all
-from utils import flag_img, img_b64
+from core.db import fixtures_by_stage, standings_all
+from core.utils import flag_img, img_b64
 
-supabase = get_client()
 
 
 st.markdown("""
@@ -19,15 +18,31 @@ st.markdown("""
     letter-spacing: 0.12em; text-transform: uppercase;
     margin-bottom: 2rem;
 }
-.bracket-outer { overflow-x: auto; width: 100%; display: flex; justify-content: center; }
+.bracket-outer {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 1200px) {
+    .bracket-outer {
+        justify-content: flex-start;
+    }
+}
+
 .bracket-wrap {
     display: grid;
-    grid-template-columns: repeat(9, 140px);
-    gap: 8px;
-    min-width: 1100px;
-    height: 88vh;
-    align-items: stretch;
+    grid-template-columns: repeat(9, 160px);
+
+    column-gap: 17.5px;   /* KEY FIX */
+    row-gap: 0px;
+
+    width: max-content;
     margin: 0 auto;
+
+    align-items: center;
 }
 .bracket-col {
     display: flex;
@@ -41,7 +56,7 @@ st.markdown("""
     border-radius: 6px;
     border: 1px solid #2a2a2a;
     padding: 0.4rem 0.55rem;
-    width: 140px;
+    width: 150px;
     box-sizing: border-box;
     flex-shrink: 0;
 }
@@ -52,7 +67,7 @@ st.markdown("""
     border-radius: 6px;
     border: 1px solid #FFD700;
     padding: 0.4rem 0.55rem;
-    width: 140px;
+    width: 150px;
     box-sizing: border-box;
     flex-shrink: 0;
 }
@@ -71,7 +86,7 @@ st.markdown("""
 }
 .bk-code {
     font-family: 'ChampionGothic', sans-serif;
-    font-size: 0.75rem;
+    font-size: 1rem;
     letter-spacing: 0.06em;
     color: #F0F0F0;
     white-space: nowrap;
@@ -81,7 +96,7 @@ st.markdown("""
 }
 .bk-score {
     font-family: 'ChampionGothic', sans-serif;
-    font-size: 0.75rem;
+    font-size: 1rem;
     color: #00C853;
     margin-left: auto;
 }
@@ -108,6 +123,11 @@ st.markdown("""
     letter-spacing: 0.12em;
     margin-top: 1rem;
 }
+            
+[data-testid="stAppViewContainer"] {
+    max-width: 100vw;
+    padding: 0;
+}
 
 </style>
 """, unsafe_allow_html=True)
@@ -120,7 +140,7 @@ st.markdown(
 # ── Build slot → team_code lookup from standings ──────────────────────────────
 from collections import defaultdict
 
-all_standings = standings_all(supabase)
+all_standings = standings_all()
 by_group = defaultdict(list)
 for row in all_standings:
     by_group[row["group_name"]].append(row)
@@ -150,9 +170,9 @@ def resolve_label(label: str) -> tuple:
     return label, ""
 
 def team_html(display, flag_code, score, is_placeholder):
-    flag = flag_img(flag_code, 13) if flag_code else ""
+    flag = flag_img(flag_code, 25) if flag_code else ""
     if is_placeholder:
-        span = '<span style="font-family:Inter,sans-serif;font-size:0.7rem;color:#666;letter-spacing:0.02em;">' + display + '</span>'
+        span = '<span style="font-family:Inter,sans-serif;font-size:1rem;color:#666;letter-spacing:0.02em;">' + display + '</span>'
     else:
         span = '<span class="bk-code">' + display + '</span>'
     sc = '<span class="bk-score">' + score + '</span>' if score else ""
@@ -199,7 +219,7 @@ def build_col(matches):
     return html
 
 def get_stage(stage):
-    return fixtures_by_stage(supabase, stage)
+    return fixtures_by_stage(stage)
 
 r32 = get_stage("R32")
 r16 = get_stage("R16")
@@ -244,9 +264,4 @@ bracket = (
     + '</div></div>'
 )
 
-st.markdown(
-    '<div style="margin-left:calc(-50vw + 50%);margin-right:calc(-50vw + 50%);width:100vw;">'
-    + bracket +
-    '</div>',
-    unsafe_allow_html=True
-)
+st.markdown(bracket, unsafe_allow_html=True)

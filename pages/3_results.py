@@ -1,10 +1,12 @@
 import streamlit as st
 from datetime import date
 from collections import defaultdict
-from db import get_client, pred_all, get_team_rank, get_team_form
-from utils import format_kickoff, flag_img
+from core.db import pred_map, rank_map, form_map
+from core.utils import format_kickoff, flag_img, render_form
 
-supabase = get_client()
+predictions = pred_map()
+forms = form_map()
+ranks = rank_map()
 
 st.markdown("""
 <style>
@@ -38,9 +40,11 @@ st.markdown("""
     margin-bottom: 0.75rem;
 }
 .no-results {
+    font-family:'ChampionGothic',sans-serif; font-weight:900;
     background: rgba(20,20,20,0.8); border: 1px solid #222;
     border-radius: 12px; padding: 3rem;
     text-align: center; color: #444;
+    font-size: 2rem;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -50,17 +54,17 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-all_preds = pred_all(supabase)
+all_preds = pred_map()
 completed = [p for p in all_preds if p.get("fixture", {}) and p.get("fixture", {}).get("results")]
 
 if not completed:
-    st.markdown('<div class="no-results"><div style="font-size:2rem;">📊</div><div>No results yet</div></div>', unsafe_allow_html=True)
+    st.markdown('<div class="no-results"><div>No results yet</div></div>', unsafe_allow_html=True)
     st.stop()
 
 def render_form(form: str) -> str:
     if not form:
         return "<span style='color:#444;'>—</span>"
-    color_map = {"W": "#00C853", "D": "#FFC107", "L": "#EF5350"}
+    color_map = {"W": "#00C853", "D": "#BCBCBC", "L": "#EF5350"}
     out = ""
     for ch in form.upper():
         c = color_map.get(ch, "#666")
@@ -98,10 +102,10 @@ for day, preds in by_date.items():
         kickoff   = fx.get("kickoff_ist", "")
 
         ko        = format_kickoff(kickoff)
-        home_rank = get_team_rank(supabase, home_id) if home_id else "—"
-        away_rank = get_team_rank(supabase, away_id) if away_id else "—"
-        home_form = render_form(get_team_form(supabase, home_id) if home_id else "")
-        away_form = render_form(get_team_form(supabase, away_id) if away_id else "")
+        home_rank = ranks.get(home_id, "—")
+        away_rank = ranks.get(away_id, "—")
+        home_form = render_form(forms.get(home_id, ""))
+        away_form = render_form(forms.get(away_id, ""))
 
         # Actual score
         actual_h   = result.get("home_goals", "?")

@@ -1,13 +1,21 @@
 import streamlit as st
-from db import get_client, fixtures_by_id, pred_by_match, get_team_form, get_team_rank, players_by_team, stadium_by_city
-from utils import flag_img, format_kickoff
+from core.utils import flag_img, format_kickoff
 import pandas as pd
 import base64, re
 from functools import lru_cache
 from pathlib import Path
+from core.db import (
+    fixtures_by_id,
+    pred_map,
+    form_map,
+    rank_map,
+    players_by_team,
+    stadium_by_city
+)
 
-
-supabase = get_client()
+predictions = pred_map()
+forms = form_map()
+ranks = rank_map()
 
 mid = st.session_state.get("detail_match_id")
 if not mid:
@@ -15,7 +23,7 @@ if not mid:
     st.stop()
 
 # ── Data ──────────────────────────────────────────────────────────────────────
-fx           = fixtures_by_id(supabase, mid)
+fx           = fixtures_by_id(mid)
 home         = fx.get("home") or {}
 away         = fx.get("away") or {}
 home_code    = home.get("team_code", "???")
@@ -30,15 +38,15 @@ venue        = fx.get("venue", fx.get("city", ""))
 kickoff      = fx.get("kickoff_ist", "")
 ko           = format_kickoff(kickoff)
 stage_str    = ("Group " + group) if stage == "group" and group else stage.replace("_", " ").title()
-home_rank    = get_team_rank(supabase, home_id) if home_id else "—"
-away_rank    = get_team_rank(supabase, away_id) if away_id else "—"
-pred         = pred_by_match(supabase, mid)
+home_rank    = ranks.get(home_id, "—")
+away_rank    = ranks.get(away_id, "—")
+pred         = predictions.get(mid)
 result       = (fx.get("results") or [None])[0] if isinstance(fx.get("results"), list) else fx.get("results")
-home_form    = get_team_form(supabase, home_id) if home_id else ""
-away_form    = get_team_form(supabase, away_id) if away_id else ""
-home_players = players_by_team(supabase, home_id) if home_id else []
-away_players = players_by_team(supabase, away_id) if away_id else []
-stadium      = stadium_by_city(supabase, venue) if venue else {}
+home_form    = forms.get(home_id, "")
+away_form    = forms.get(away_id, "")
+home_players = players_by_team(home_id) if home_id else []
+away_players = players_by_team(away_id) if away_id else []
+stadium      = stadium_by_city(venue) if venue else {}
 
 # ── H2H ───────────────────────────────────────────────────────────────────────
 try:
@@ -48,12 +56,11 @@ try:
     r1 = dict(zip(["W","D","L"], map(int, raw1.split("-")))) if raw1 != "-" else {"W":0,"D":0,"L":0}
     r2 = dict(zip(["W","D","L"], map(int, raw2.split("-")))) if raw2 != "-" else {"W":0,"D":0,"L":0}
     h2h = {"home_w": r1["W"] + r2["L"], "draws": r1["D"] + r2["D"], "away_w": r1["L"] + r2["W"]}
-except Exception:
+except Exception as e:
+    st.exception(e)
     h2h = None
 
 # ── Image helpers ─────────────────────────────────────────────────────────────
-
-
 def _load_b64(path: str) -> str:
     try:
         with open(Path(path), "rb") as f:
@@ -79,19 +86,6 @@ def player_img_tag(photo_key: str, num: str) -> str:
 def stadium_bg(photo_key: str) -> str:
     b64 = _load_b64(str(Path("static") / "stadium" / photo_key)) if photo_key else ""
     return 'url("data:image/png;base64,' + b64 + '")' if b64 else "none"
-
-    if b64:
-        return (
-            "<img src='data:image/png;base64," + b64 + "' "
-            "style='width:40px;height:40px;border-radius:50%;object-fit:cover;"
-            "border:1px solid #2a2a2a;flex-shrink:0;'>"
-        )
-    return (
-        "<div style='width:40px;height:40px;border-radius:50%;background:#141414;"
-        "border:1px solid #2a2a2a;flex-shrink:0;display:flex;align-items:center;"
-        "justify-content:center;font-family:ChampionGothic,sans-serif;"
-        "font-size:0.8rem;color:#444;'>" + str(num) + "</div>"
-    )
 
 # ── HTML helpers ──────────────────────────────────────────────────────────────
 def form_html(form: str, align: str = "left") -> str:
@@ -126,7 +120,6 @@ st.markdown("""
 }
 .stButton button {
     font-family: 'Inter', sans-serif !important;
-    ...
 }
 * {
     text-transform: none;
@@ -224,11 +217,11 @@ venue_html = (
     "background-size:cover;background-position:center;'></div>"
     "<div style='position:absolute;inset:0;background:linear-gradient(to right,"
     "rgba(0,0,0,0.95 ) 35%,rgba(0,0,0,0.05) 90%);'></div>"
-    "<div style='position:relative;z-index:1;padding:2rem 3rem;display:flex;flex-direction:column;justify-content:center;height:100%;'>"
+    "<div style='position:relative;z-index:1;padding:1.25rem 3rem;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;height:100%;'>"
     "<div style='font-family:ChampionGothic,sans-serif;font-size:2rem;"
     "color:#F0F0F0;letter-spacing:0.06em;line-height:1.2;'>" + stad_name + "</div>"
-    "<div style='font-family:Inter,sans-serif;font-size:1.5rem;color:#666;margin-top:2px;'>" + stad_city + "</div>"
-    "<div style='font-family:Inter,sans-serif;font-size:1rem;color:#444;margin-top1px;'>Capacity " + stad_cap + "</div>"
+    "<div style='font-family:Inter,sans-serif;font-size:1.5rem;color:#666;margin-top:2px;letter-spacing: 0.04em; '>" + stad_city + "</div>"
+    "<div style='font-family:Inter,sans-serif;font-size:1.25rem;color:#444;margin-top:1px;letter-spacing: 0.04em;'>Capacity " + stad_cap + "</div>"
     "</div></div>"
 )
 
@@ -241,7 +234,7 @@ if h2h:
         "<div style='display:grid;grid-template-columns:1fr auto auto auto 1fr;"
         "align-items:center;gap:1.5rem;padding:0.75rem 2rem;"
         "background:rgba(255,255,255,0.02);border:1px solid #3a3a3a;border-radius:8px;'>"
-        "<span style='font-family:ChampionGothic,sans-serif;font-size:2rem;color:#F0F0F0;'>" + home_code + "</span>"
+        "<span style='font-family:ChampionGothic,sans-serif;font-size:2rem;color:#F0F0F0;text-align:left;'>" + home_code + "</span>"
         "<div style='text-align:center;'>"
         "<div style='font-family:ChampionGothic,sans-serif;font-size:2rem;color:#F0f0f0;line-height:1;'>" + str(h2h["home_w"]) + "  -  " + "</div>"
         "</div>"
@@ -259,7 +252,7 @@ else:
         "<div style='background:rgba(10,10,10,0.65);backdrop-filter:blur(14px);"
         "-webkit-backdrop-filter:blur(14px);border:1px solid #242424;border-radius:8px;"
         "padding:1rem 1.4rem;text-align:center;font-family:Inter,sans-serif;"
-        "font-size:0.82rem;color:#444;'>No H2H data available</div>"
+        "font-size:1rem;color:#444;'>No H2H data available</div>"
     )
 
 # ── Key players ───────────────────────────────────────────────────────────────
@@ -282,7 +275,7 @@ def players_col(players, code):
                 + photo +
                 "<div>"
                 "<div style='font-family:Inter,sans-serif;font-size:1.25rem;"
-                "color:#e0e0e0;font-weight:600;letter-spacing:0.08em;'>" + name + "</div>"
+                "color:#e0e0e0;font-weight:600;letter-spacing:0.08em;letter-spacing: 0.04em;'>" + name + "</div>"
                 "<div style='font-family:Inter,sans-serif;font-size:0.9rem;font-weight:600;"
                 "color:#888;margin-top:1px;text-align:left;letter-spacing:0.08em;'>" + num + " · " + position + "</div>"
                 "</div></div>"

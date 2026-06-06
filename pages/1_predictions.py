@@ -1,10 +1,14 @@
 import streamlit as st
 from datetime import date
-from db import get_client, fixtures_today, pred_by_match, pred_updated, get_team_form, get_team_rank
-from predictor import load_model, predict_match
-from utils import format_kickoff, flag_img
-
-supabase = get_client()
+from core.predictor import load_model, predict_match
+from core.utils import format_kickoff, flag_img
+from core.db import (
+    fixtures_today,
+    pred_map,
+    pred_updated,
+    form_map,
+    rank_map
+)
 
 st.markdown("""
 <style>
@@ -45,7 +49,10 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-fixtures = fixtures_today(supabase)
+fixtures = fixtures_today()
+predictions = pred_map()
+forms = form_map()
+ranks = rank_map()
 
 if not fixtures:
     st.markdown('<div class="no-games"><div>No matches today</div></div>', unsafe_allow_html=True)
@@ -84,14 +91,15 @@ for fx in fixtures:
     venue     = fx.get("venue", fx.get("city", ""))
     kickoff   = fx.get("kickoff_ist", "")
     ko        = format_kickoff(kickoff)
-    home_rank = get_team_rank(supabase, home_id) if home_id else "—"
-    away_rank = get_team_rank(supabase, away_id) if away_id else "—"
+    home_rank = ranks.get(home_id, "—")
+    away_rank = ranks.get(away_id, "—")
 
-    pred = pred_by_match(supabase, mid)
+    pred = predictions.get(mid)
+
     if not pred:
         try:
             pred = predict_match(model, features, fx)
-            pred_updated(supabase, pred)
+            pred_updated(pred)
         except Exception:
             pred = {}
 
@@ -101,13 +109,11 @@ for fx in fixtures:
     outcome       = pred.get("predicted_outcome", "?")
     outcome_label = {"H": home_code, "A": away_code, "D": "Draw"}.get(outcome, "—")
 
-    home_form = render_form(get_team_form(supabase, home_id) if home_id else "")
-    away_form = render_form(get_team_form(supabase, away_id) if away_id else "")
+    home_form = render_form(forms.get(home_id, ""))
+    away_form = render_form(forms.get(away_id, ""))
 
     stage_str = ("Group " + group) if stage == "group" and group else stage.replace("_", " ").title()
 
-    # Row 1: flag | code | score | code | flag
-    # Row 2: rank · form  |  time · city · conf  |  form · rank
 
     home_flag_div = '<div style="display:flex;align-items:center;justify-content:center;">' + flag_img(home_code, 45) + '</div>'
     away_flag_div = '<div style="display:flex;align-items:center;justify-content:center;">' + flag_img(away_code, 45) + '</div>'
@@ -138,4 +144,4 @@ for fx in fixtures:
 
     clickable_card = f'<a href="?page=MatchDetail&match_id={mid}" target="_self" style="text-decoration:none;display:block;">{card}</a>'
     st.markdown(clickable_card, unsafe_allow_html=True)
-    st.markdown("<div style='margin-bottom:0.75rem;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='margin-bottom:0.75rem;'></div>", unsafe_allow_html=True) 

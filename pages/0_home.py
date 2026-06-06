@@ -1,10 +1,8 @@
 import streamlit as st
 from datetime import date
 import base64
-from db import get_client, fixtures_today, pred_all
-from utils import format_kickoff, flag_img
-
-supabase = get_client()
+from core.db import get_client, fixtures_today, pred_all
+from core.utils import format_kickoff, flag_img
 
 st.markdown("""
 <style>
@@ -64,9 +62,9 @@ days_left = (tournament_start - date.today()).days
 countdown = str(days_left) + " days to go" if days_left > 0 else "Tournament underway"
 
 # ── Data ──────────────────────────────────────────────────────────────────────
-fixtures  = fixtures_today(supabase)
+fixtures  = fixtures_today()
 matches   = [fx for fx in fixtures if not fx.get("results")]
-all_preds = pred_all(supabase)
+all_preds = pred_all()
 completed = [p for p in all_preds if p.get("fixture", {}).get("results")]
 recent = completed[:4]
 

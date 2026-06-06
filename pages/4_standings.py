@@ -1,9 +1,7 @@
 import streamlit as st
 from collections import defaultdict
-from db import get_client, standings_all
-from utils import flag_img
-
-supabase = get_client()
+from core.db import standings_all
+from core.utils import flag_img
 
 st.markdown("""
 <style>
@@ -89,7 +87,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-all_rows = standings_all(supabase)
+all_rows = standings_all()
 
 if not all_rows:
     st.info("Standings not available yet.")
@@ -133,9 +131,9 @@ for i in range(0, len(groups_sorted), 3):
                     '<div class="' + qualify_cls + '">'
 
                     '<div class="team-cell">'
-                    + flag_img(code, 20) +
+                    + flag_img(code, 25) +
                     '<span style="font-family:\'ChampionGothic\',sans-serif;'
-                    'font-size:0.95rem;letter-spacing:0.08em;color:#F0F0F0;">' + code + '</span>'
+                    'font-size:1rem;letter-spacing:0.08em;color:#F0F0F0;">' + code + '</span>'
                     '</div>'
 
                     '<div style="font-family:\'Inter\',sans-serif;text-align:center;color:#888;">' + str(row.get("played", 0)) + '</div>'

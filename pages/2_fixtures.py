@@ -1,13 +1,14 @@
 import streamlit as st
 from datetime import date, datetime
 from collections import defaultdict
-from db import get_client, fixtures_upcoming, get_team_rank, get_team_form, team_by_id
-from utils import format_kickoff, flag_img
+from core.db import get_client, fixtures_upcoming, rank_map, form_map, team_by_id
+from core.utils import format_kickoff, flag_img
 import json, base64, re
 
-supabase = get_client()
+fixtures = fixtures_upcoming()
+ranks = rank_map()
+forms = form_map()
 
-# Load H2H data once
 try:
     with open("static/h2h.json") as f:
         H2H = json.load(f)
@@ -97,7 +98,7 @@ div[data-testid="stButton"] button[kind="secondary"]:hover {
 
 st.markdown('<div class="page-title">FIXTURES</div>', unsafe_allow_html=True)
 
-fixtures = fixtures_upcoming(supabase)
+fixtures = fixtures_upcoming()
 
 if not fixtures:
     st.markdown('<div class="no-fixtures"><div style="font-size:2rem;">📅</div><div>No upcoming fixtures</div></div>', unsafe_allow_html=True)
@@ -113,10 +114,6 @@ def render_form(form: str) -> str:
         out += "<span style='color:" + c + ";font-weight:700;font-size:0.72rem;margin:0 1px;'>" + ch + "</span>"
     return out
 
-# ── Detail dialog ─────────────────────────────────────────────────────────────
-@st.dialog("Match Details", width="large")
-def show_detail(fx):
-    render_detail_card(fx, supabase, mode="fixture")
 
 # ── Group by date and render ──────────────────────────────────────────────────
 by_date = defaultdict(list)
@@ -143,10 +140,10 @@ for day, matches in by_date.items():
         kickoff   = fx.get("kickoff_ist", "")
 
         ko        = format_kickoff(kickoff)
-        home_rank = get_team_rank(supabase, home_id) if home_id else "—"
-        away_rank = get_team_rank(supabase, away_id) if away_id else "—"
-        home_form = render_form(get_team_form(supabase, home_id) if home_id else "")
-        away_form = render_form(get_team_form(supabase, away_id) if away_id else "")
+        home_rank = ranks.get(home_id, "—")
+        away_rank = ranks.get(away_id, "—")
+        home_form = render_form(forms.get(home_id, ""))
+        away_form = render_form(forms.get(away_id, ""))
         stage_str = ("Group " + group) if stage == "group" and group else stage.replace("_", " ").title()
 
         home_flag = '<div style="display:flex;align-items:center;justify-content:center;">' + flag_img(home_code, 45) + '</div>'

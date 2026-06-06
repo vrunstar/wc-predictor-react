@@ -1,11 +1,12 @@
 import streamlit as st
-from db import get_client, fixtures_today, res_by_match, update_after_res, pred_updated, get_team_rank, get_team_form
-from predictor import load_model, predict_match
-from utils import flag_img, format_kickoff, render_form
+from core.db import fixtures_today, res_map, update_after_res, pred_updated, rank_map, form_map
+from core.predictor import load_model, predict_match
+from core.utils import flag_img, format_kickoff, render_form
 import os
 
-supabase = get_client()
-ADMIN_SECRET = os.getenv("ADMIN_SECRET", "admin123")
+ADMIN_SECRET = st.secrets["ADMIN"]
+forms = form_map()
+ranks = rank_map()
 
 st.markdown("""
 <style>
@@ -122,8 +123,8 @@ _, col, _ = st.columns([0.1, 3, 0.1])
 with col:
 
     # ── First incomplete match today ──────────────────────────────────────────
-    fixtures = fixtures_today(supabase)
-    incomplete = [fx for fx in fixtures if not res_by_match(supabase, fx["match_id"])]
+    fixtures = fixtures_today()
+    incomplete = [fx for fx in fixtures if not res_map(fx["match_id"])]
 
 
     if not incomplete:
@@ -143,11 +144,10 @@ with col:
         kickoff   = fx.get("kickoff_ist", "")
 
         ko        = format_kickoff(kickoff)
-        home_rank = get_team_rank(supabase, home_id) if home_id else "—"
-        away_rank = get_team_rank(supabase, away_id) if away_id else "—"
-
-        home_form = render_form(get_team_form(supabase, home_id) if home_id else "")
-        away_form = render_form(get_team_form(supabase, away_id) if away_id else "")
+        home_rank = ranks.get(home_id, "—")
+        away_rank = ranks.get(away_id, "—")
+        home_form = render_form(forms.get(home_id, ""))
+        away_form = render_form(forms.get(away_id, ""))
 
         stage_str = ("Group " + group) if stage == "group" and group else stage.replace("_", " ").title()
 
