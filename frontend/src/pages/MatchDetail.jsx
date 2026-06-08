@@ -18,6 +18,7 @@ export default function MatchDetail() {
   const [kitColors, setKitColors] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState('home');
 
   useEffect(() => {
     async function loadData() {
@@ -225,11 +226,34 @@ export default function MatchDetail() {
       {/* Main Glass Card */}
       <div className="bg-[#091424] border border-[#242424]/40 rounded-[12px] p-6 md:p-12">
         
-        {/* Teams row */}
-        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] items-center gap-6 md:gap-12 w-full">
+        {/* Teams row — MOBILE */}
+        <div className="flex md:hidden items-center justify-center gap-3 w-full">
+          <img
+            src={getFlagUrl(homeCode)}
+            alt={`${homeCode} Flag`}
+            className="w-[32px] h-auto object-contain border border-[#1e1e1e] shrink-0"
+            onError={(e) => { e.target.style.display = 'none'; }}
+          />
+          <span className="font-champion text-[1.6rem] tracking-wider text-[#F0F0F0] leading-none select-none">
+            {homeCode}
+          </span>
+          <div className="flex justify-center mx-1">{scoreHtml}</div>
+          <span className="font-champion text-[1.6rem] tracking-wider text-[#F0F0F0] leading-none select-none">
+            {awayCode}
+          </span>
+          <img
+            src={getFlagUrl(awayCode)}
+            alt={`${awayCode} Flag`}
+            className="w-[32px] h-auto object-contain border border-[#1e1e1e] shrink-0"
+            onError={(e) => { e.target.style.display = 'none'; }}
+          />
+        </div>
+
+        {/* Teams row — DESKTOP */}
+        <div className="hidden md:grid grid-cols-[1fr_auto_1fr] items-center gap-12 w-full">
           
           {/* Home Team */}
-          <div className="flex flex-col items-center md:items-start">
+          <div className="flex flex-col items-start">
             <div className="flex items-center gap-3">
               <img 
                 src={getFlagUrl(homeCode)} 
@@ -253,7 +277,7 @@ export default function MatchDetail() {
           <div className="flex justify-center">{scoreHtml}</div>
 
           {/* Away Team */}
-          <div className="flex flex-col items-center md:items-end">
+          <div className="flex flex-col items-end">
             <div className="flex items-center gap-3 justify-end">
               <span className="font-champion text-[2rem] tracking-wider text-[#F0F0F0] leading-none select-none">
                 {awayCode}
@@ -301,15 +325,27 @@ export default function MatchDetail() {
             </div>
             <div className="relative border border-[#2a2a2a] rounded-[8px] overflow-hidden h-[200px]">
               {stadPhotoKey ? (
-                <div 
-                  style={{ backgroundImage: `url(${getStadiumPhotoUrl(stadPhotoKey)})` }} 
-                  className="absolute inset-0 bg-cover bg-center"
-                />
+                <>
+                  {/* Desktop: photo offset to right so text on left is legible */}
+                  <div 
+                    style={{ backgroundImage: `url(${getStadiumPhotoUrl(stadPhotoKey)})` }} 
+                    className="absolute inset-0 bg-cover bg-center hidden md:block"
+                  />
+                  {/* Mobile: photo centred */}
+                  <div 
+                    style={{ backgroundImage: `url(${getStadiumPhotoUrl(stadPhotoKey)})` }} 
+                    className="absolute inset-0 bg-cover bg-center md:hidden"
+                  />
+                </>
               ) : (
                 <div className="absolute inset-0 bg-[#0B0B0B]" />
               )}
-              <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/80 to-black/5 md:via-black/70 md:from-black/95"></div>
-              <div className="relative z-10 px-8 md:px-12 flex flex-col justify-center h-full items-start">
+              {/* Desktop gradient — left-heavy so text is readable */}
+              <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/70 to-black/5 hidden md:block"></div>
+              {/* Mobile gradient — uniform dark overlay for centred text */}
+              <div className="absolute inset-0 bg-black/75 md:hidden"></div>
+              {/* Desktop text — left aligned */}
+              <div className="relative z-10 px-12 flex-col justify-center h-full items-start hidden md:flex">
                 <div className="font-champion text-[2rem] text-[#F0F0F0] tracking-wider leading-none">
                   {stadName}
                 </div>
@@ -317,6 +353,18 @@ export default function MatchDetail() {
                   {stadCity}
                 </div>
                 <div className="font-inter text-sm text-[#444] mt-0.5 tracking-[0.04em] font-semibold">
+                  Capacity {stadCapacity}
+                </div>
+              </div>
+              {/* Mobile text — centred */}
+              <div className="relative z-10 flex flex-col justify-center items-center h-full text-center px-6 md:hidden">
+                <div className="font-champion text-[1.6rem] text-[#F0F0F0] tracking-wider leading-none">
+                  {stadName}
+                </div>
+                <div className="font-inter text-sm text-[#666] mt-1.5 tracking-[0.04em] font-semibold">
+                  {stadCity}
+                </div>
+                <div className="font-inter text-xs text-[#444] mt-0.5 tracking-[0.04em] font-semibold">
                   Capacity {stadCapacity}
                 </div>
               </div>
@@ -330,21 +378,15 @@ export default function MatchDetail() {
             <div className="font-inter text-xs text-gray-400 font-bold tracking-[0.15em] uppercase mb-4 text-center">
               Head-To-Head Record
             </div>
-            <div className="grid grid-cols-[1fr_auto_auto_auto_1fr] items-center gap-6 px-8 py-3 bg-white/2 border border-[#3a3a3a] rounded-[8px]">
-              <span className="font-champion text-[2rem] text-[#F0F0F0] text-left">
-                {homeCode}
-              </span>
+            <div className="flex items-center justify-center gap-4 px-8 py-3 bg-white/2 border border-[#3a3a3a] rounded-[8px]">
               <span className="font-champion text-[2rem] text-[#F0f0f0] leading-none">
                 {h2h.home_w}
               </span>
-              <span className="font-champion text-xl text-gray-500 leading-none px-2">
+              <span className="font-champion text-xl text-gray-500 leading-none">
                 &middot; {h2h.draws} &middot;
               </span>
               <span className="font-champion text-[2rem] text-[#F0f0f0] leading-none">
                 {h2h.away_w}
-              </span>
-              <span className="font-champion text-[2rem] text-[#F0F0F0] text-right">
-                {awayCode}
               </span>
             </div>
           </div>
@@ -356,7 +398,28 @@ export default function MatchDetail() {
             <div className="font-inter text-xs text-gray-400 font-bold tracking-[0.15em] uppercase mb-6 text-center">
               Key Players
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            {/* Mobile: tabs */}
+            <div className="md:hidden">
+              <div className="flex mb-4 border border-[#3a3a3a] rounded-[8px] overflow-hidden">
+                <button
+                  onClick={() => setActiveTab('home')}
+                  className={`flex-1 py-2 font-champion text-[1rem] tracking-wider transition-colors duration-150 ${activeTab === 'home' ? 'bg-white/10 text-[#F0F0F0]' : 'text-[#555] hover:text-[#888]'}`}
+                >
+                  {homeCode}
+                </button>
+                <button
+                  onClick={() => setActiveTab('away')}
+                  className={`flex-1 py-2 font-champion text-[1rem] tracking-wider transition-colors duration-150 border-l border-[#3a3a3a] ${activeTab === 'away' ? 'bg-white/10 text-[#F0F0F0]' : 'text-[#555] hover:text-[#888]'}`}
+                >
+                  {awayCode}
+                </button>
+              </div>
+              {activeTab === 'home' ? renderPlayersCol(homePlayers, homeCode) : renderPlayersCol(awayPlayers, awayCode)}
+            </div>
+
+            {/* Desktop: two columns */}
+            <div className="hidden md:grid grid-cols-2 gap-6">
               <div>
                 <div className="text-[0.8rem] text-gray-500 font-bold tracking-wider mb-2 font-inter">
                   {homeCode} Players
@@ -364,7 +427,7 @@ export default function MatchDetail() {
                 {renderPlayersCol(homePlayers, homeCode)}
               </div>
               <div>
-                <div className="text-[0.8rem] text-gray-500 font-bold tracking-wider mb-2 font-inter text-right md:text-left">
+                <div className="text-[0.8rem] text-gray-500 font-bold tracking-wider mb-2 font-inter">
                   {awayCode} Players
                 </div>
                 {renderPlayersCol(awayPlayers, awayCode)}
