@@ -9,7 +9,7 @@ export default function Fixtures() {
   const [forms, setForms] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -46,7 +46,7 @@ export default function Fixtures() {
     return (
       <div className="text-center py-24 bg-[#091424] border border-[#242424]/40 rounded-[10px] p-6">
         <div className="text-red-500 text-lg mb-2">⚠️ {error}</div>
-        <button 
+        <button
           onClick={() => window.location.reload()}
           className="px-4 py-2 bg-white text-black font-semibold rounded hover:bg-neutral-200"
         >
@@ -86,10 +86,8 @@ export default function Fixtures() {
     } else {
       dateStr = fx.matchday_ist || 'TBD';
     }
-    
-    if (!groupedFixtures[dateStr]) {
-      groupedFixtures[dateStr] = [];
-    }
+
+    if (!groupedFixtures[dateStr]) groupedFixtures[dateStr] = [];
     groupedFixtures[dateStr].push(fx);
   });
 
@@ -100,7 +98,6 @@ export default function Fixtures() {
         FIXTURES
       </h1>
 
-      {/* Render grouped dates */}
       {Object.entries(groupedFixtures).map(([date, matches]) => (
         <div key={date} className="mb-8">
           {/* Date Header */}
@@ -108,7 +105,6 @@ export default function Fixtures() {
             {date}
           </h2>
 
-          {/* Matches grid / stack */}
           <div className="flex flex-col gap-3">
             {matches.map((fx) => {
               const home = fx.home || {};
@@ -120,73 +116,70 @@ export default function Fixtures() {
               const homeForm = forms[home.team_id] || '';
               const awayForm = forms[away.team_id] || '';
               const koTime = formatKickoff(fx.kickoff_ist);
-              
               const matchStage = stageLabel(fx.stage, fx.group_name);
-              const venue = fx.venue || fx.city || '';
 
               return (
-                <div 
+                <div
                   key={fx.match_id}
                   onClick={() => navigate(`/match/${fx.match_id}`)}
-                  className="block cursor-pointer select-none bg-[#091424] border border-[#242424]/40 hover:border-white/25 rounded-[10px] p-[0.85rem_1.4rem] relative transition-all duration-150 group"
+                  className="cursor-pointer select-none bg-[#091424] border border-[#242424]/40 hover:border-white/25 rounded-[10px] overflow-hidden transition-all duration-150 group"
                 >
-                  {/* Grid 1: Flags & Codes & Kickoff */}
-                  <div className="grid grid-cols-[30px_1fr_auto_1fr_30px] items-center gap-[0.6rem] w-full">
-                    {/* Home Flag */}
-                    <div className="flex items-center justify-center">
-                      <img 
-                        src={getFlagUrl(homeCode)} 
-                        alt={`${homeCode} Flag`} 
-                        className="w-[28px] h-auto object-contain border border-[#1e1e1e]"
+                  {/* Home Row */}
+                  <div className="flex items-center px-4 py-3 border-b border-[#1e2a3a]">
+                    {/* Left: Flag + Team */}
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      <img
+                        src={getFlagUrl(homeCode)}
+                        alt={`${homeCode} flag`}
+                        className="w-[26px] h-auto object-contain border border-[#1e1e1e] shrink-0"
                         onError={(e) => { e.target.style.display = 'none'; }}
                       />
+                      <span className="font-champion text-2xl tracking-wider text-[#F0F0F0] leading-none">
+                        {homeCode}
+                      </span>
+                      <span className="font-inter text-xs text-gray-500 font-semibold">
+                        {homeRank}
+                      </span>
+                      <span className="font-inter text-xs text-gray-600 truncate hidden sm:block">
+                        {renderFormSpans(homeForm)}
+                      </span>
                     </div>
-                    {/* Home Code */}
-                    <div className="font-champion text-2xl tracking-wider text-[#F0F0F0] leading-none">
-                      {homeCode}
-                    </div>
-                    {/* Center: Kickoff Time */}
-                    <div className="text-center min-w-[60px] max-w-[90px]">
-                      <span className="font-inter text-lg md:text-xl font-extrabold text-white tracking-widest leading-none whitespace-nowrap">
+
+                    {/* Right: Kickoff Time (shown only on home row, spans both via rowspan illusion) */}
+                    <div className="flex items-center justify-end pl-4 border-l border-[#2a3a4a] ml-4 min-w-[80px]">
+                      <span className="font-inter text-lg font-extrabold text-white tracking-widest whitespace-nowrap">
                         {koTime}
                       </span>
                     </div>
-                    {/* Away Code */}
-                    <div className="font-champion text-2xl tracking-wider text-[#F0F0F0] leading-none text-right">
-                      {awayCode}
-                    </div>
-                    {/* Away Flag */}
-                    <div className="flex items-center justify-center">
-                      <img 
-                        src={getFlagUrl(awayCode)} 
-                        alt={`${awayCode} Flag`} 
-                        className="w-[28px] h-auto object-contain border border-[#1e1e1e]"
+                  </div>
+
+                  {/* Away Row */}
+                  <div className="flex items-center px-4 py-3">
+                    {/* Left: Flag + Team */}
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      <img
+                        src={getFlagUrl(awayCode)}
+                        alt={`${awayCode} flag`}
+                        className="w-[26px] h-auto object-contain border border-[#1e1e1e] shrink-0"
                         onError={(e) => { e.target.style.display = 'none'; }}
                       />
+                      <span className="font-champion text-2xl tracking-wider text-[#F0F0F0] leading-none">
+                        {awayCode}
+                      </span>
+                      <span className="font-inter text-xs text-gray-500 font-semibold">
+                        {awayRank}
+                      </span>
+                      <span className="font-inter text-xs text-gray-600 truncate hidden sm:block">
+                        {renderFormSpans(awayForm)}
+                      </span>
                     </div>
-                  </div>
 
-                  {/* Grid 2: Stats & Metadata */}
-                  <div className="grid grid-cols-[1fr_auto_1fr] items-center mt-[0.7rem] pt-[0.6rem] border-t border-[#3a3a3a] text-[0.9rem] font-inter text-gray-400">
-                    {/* Home Stats */}
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-gray-500">{homeRank}</span>
-                      {renderFormSpans(homeForm)}
+                    {/* Right: Stage label */}
+                    <div className="flex items-center justify-end pl-4 border-l border-[#2a3a4a] ml-4 min-w-[80px]">
+                      <span className="font-inter text-xs text-[#666] tracking-wide text-right">
+                        {matchStage}
+                      </span>
                     </div>
-                    {/* Match Info */}
-                    <div className="text-center text-[#999] text-xs">
-                      Match {fx.match_id} &middot; {matchStage} {venue && `· ${venue}`}
-                    </div>
-                    {/* Away Stats */}
-                    <div className="flex items-center gap-2 justify-end">
-                      {renderFormSpans(awayForm)}
-                      <span className="font-semibold text-gray-500">{awayRank}</span>
-                    </div>
-                  </div>
-
-                  {/* Arrow overlay */}
-                  <div className="absolute inset-0 flex items-center justify-center text-lg text-white/5 group-hover:text-white/20 pointer-events-none transition-colors duration-150">
-                    ↗
                   </div>
                 </div>
               );
