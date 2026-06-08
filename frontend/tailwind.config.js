@@ -15,7 +15,6 @@ export default {
       },
       fontFamily: {
         champion: ["ChampionGothic", "sans-serif"],
-        hitmarker: ["Hitmarker", "sans-serif"],
         inter: ["Inter", "sans-serif"],
       },
     },
