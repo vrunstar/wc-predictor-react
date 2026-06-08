@@ -3,90 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { api } from '../utils/api';
 import { getFlagUrl } from '../utils/helpers';
 
-// ─── Constants ────────────────────────────────────────────────────────────────
-const CARD_W = 130;       // px — must match w-[130px]
-const CARD_H = 60;        // px — approximate rendered height of each bracket card
-const COL_GAP = 9;        // px — gap between card columns (not connector columns)
-const CONNECTOR_W = 28;   // px — width of the SVG connector column
-const STUB = 10;          // px — horizontal stub length from card edge into connector
-
-/**
- * SVG connector column between two stages.
- *
- * leftCount  – number of cards in the left column
- * rightCount – number of cards in the right column (half of left)
- * height     – total column height (82vh resolved to px via ref, but we use a
- *              percentage-based approach with SVG viewBox instead)
- *
- * Layout: cards in each column are distributed with justify-around inside an
- * 82vh container, so card centers sit at:
- *   center_i = (i + 0.5) / n  ×  totalHeight   (fractional units 0–1)
- */
-function BracketConnector({ leftCount, rightCount }) {
-  // We use a viewBox of 0 0 CONNECTOR_W 100 and treat Y as percentages
-  const totalH = 100;
-
-  const leftCenters = Array.from({ length: leftCount }, (_, i) =>
-    ((i + 0.5) / leftCount) * totalH
-  );
-  const rightCenters = Array.from({ length: rightCount }, (_, i) =>
-    ((i + 0.5) / rightCount) * totalH
-  );
-
-  const paths = [];
-
-  rightCenters.forEach((ry, ri) => {
-    // Each right card connects to two left cards
-    const ly1 = leftCenters[ri * 2];
-    const ly2 = leftCenters[ri * 2 + 1];
-
-    if (ly1 === undefined || ly2 === undefined) return;
-
-    const midY = (ly1 + ly2) / 2;
-    const x0 = 0;           // left edge (coming from left card stub)
-    const x1 = CONNECTOR_W; // right edge (going to right card stub)
-
-    // Left top stub → vertical → midpoint → horizontal to right
-    paths.push(
-      // Top left stub
-      `M ${x0} ${ly1} H ${CONNECTOR_W * 0.45}`,
-      // Bottom left stub
-      `M ${x0} ${ly2} H ${CONNECTOR_W * 0.45}`,
-      // Vertical joiner
-      `M ${CONNECTOR_W * 0.45} ${ly1} V ${ly2}`,
-      // Horizontal to right
-      `M ${CONNECTOR_W * 0.45} ${midY} H ${x1}`
-    );
-  });
-
-  return (
-    <div
-      className="shrink-0 self-stretch"
-      style={{ width: CONNECTOR_W }}
-    >
-      <svg
-        width="100%"
-        height="100%"
-        viewBox={`0 0 ${CONNECTOR_W} ${totalH}`}
-        preserveAspectRatio="none"
-        overflow="visible"
-      >
-        {paths.map((d, i) => (
-          <path
-            key={i}
-            d={d}
-            stroke="#2a3a4a"
-            strokeWidth="0.8"
-            fill="none"
-            vectorEffect="non-scaling-stroke"
-          />
-        ))}
-      </svg>
-    </div>
-  );
-}
-
-// ─── Main Component ───────────────────────────────────────────────────────────
 export default function Knockouts() {
   const [stages, setStages] = useState({
     r32: [], r16: [], qf: [], sf: [], final: null, third: null
@@ -234,9 +150,7 @@ export default function Knockouts() {
   };
 
   const renderBracketCard = (fx, isFinal = false) => {
-    if (!fx) return (
-      <div className="w-[130px] h-[60px] bg-[#0d0d0d]/40 border border-dashed border-[#2a2a2a] rounded-[6px]" />
-    );
+    if (!fx) return <div className="w-[130px] h-[60px] bg-[#0d0d0d]/40 border border-dashed border-[#2a2a2a] rounded-[6px]" />;
 
     const home = fx.home || {};
     const away = fx.away || {};
@@ -263,11 +177,10 @@ export default function Knockouts() {
     );
   };
 
-  /** A column of cards distributed evenly over 82vh */
   const renderColumn = (matches) => (
-    <div className="flex flex-col justify-around h-[82vh] shrink-0 w-[130px]">
+    <div className="flex flex-col justify-around h-[82vh] shrink-0">
       {matches.map((fx) => (
-        <div key={fx.match_id || (fx.home_label + fx.away_label)}>
+        <div key={fx.match_id || fx.home_label + fx.away_label}>
           {renderBracketCard(fx)}
         </div>
       ))}
@@ -283,6 +196,22 @@ export default function Knockouts() {
   const sf_l = stages.sf.slice(0, 1);
   const sf_r = stages.sf.slice(1);
 
+  const STAGES = [
+    { key: 'r32', label: 'Round of 32' },
+    { key: 'r16', label: 'Round of 16' },
+    { key: 'qf', label: 'Quarter Finals' },
+    { key: 'sf', label: 'Semi Finals' },
+    { key: 'final', label: 'Final' },
+  ];
+
+  const mobileMatches = {
+    r32: [...r32_l, ...r32_r],
+    r16: [...r16_l, ...r16_r],
+    qf: [...qf_l, ...qf_r],
+    sf: [...sf_l, ...sf_r],
+    final: [stages.final, stages.third].filter(Boolean),
+  }[activeStage] || [];
+
   return (
     <div className="w-full flex flex-col">
       {/* Title */}
@@ -290,21 +219,16 @@ export default function Knockouts() {
         KNOCKOUTS
       </h1>
 
-      {/* Bracket — horizontally scrollable */}
-      <div className="flex justify-start xl:justify-center overflow-x-auto select-none py-4 w-full">
-        <div className="flex items-stretch gap-0 w-max mx-auto">
+      {/* Mobile + Desktop bracket — scrollable horizontally */}
+      <div className="flex justify-start xl:justify-center overflow-x-auto select-none py-4 scrollbar w-full">
+        <div className="grid grid-cols-[repeat(9,130px)] gap-[9px] w-max mx-auto items-center">
 
-          {/* ── Left half: R32 → R16 → QF → SF ── */}
           {renderColumn(r32_l)}
-          <BracketConnector leftCount={r32_l.length} rightCount={r16_l.length} />
           {renderColumn(r16_l)}
-          <BracketConnector leftCount={r16_l.length} rightCount={qf_l.length} />
           {renderColumn(qf_l)}
-          <BracketConnector leftCount={qf_l.length} rightCount={sf_l.length} />
           {renderColumn(sf_l)}
-          <BracketConnector leftCount={sf_l.length} rightCount={1} />
 
-          {/* ── Center: Trophy + Final + 3rd ── */}
+          {/* Center: Trophy, Final, 3rd */}
           <div className="flex flex-col items-center justify-center h-[82vh] gap-6 w-[130px] shrink-0">
             <div className="flex-1 flex flex-col items-center justify-end pb-3 gap-2">
               <img
@@ -319,14 +243,9 @@ export default function Knockouts() {
             </div>
           </div>
 
-          {/* ── Right half: SF → QF → R16 → R32 (mirrored) ── */}
-          <BracketConnector leftCount={1} rightCount={sf_r.length} />
           {renderColumn(sf_r)}
-          <BracketConnector leftCount={sf_r.length} rightCount={qf_r.length} />
           {renderColumn(qf_r)}
-          <BracketConnector leftCount={qf_r.length} rightCount={r16_r.length} />
           {renderColumn(r16_r)}
-          <BracketConnector leftCount={r16_r.length} rightCount={r32_r.length} />
           {renderColumn(r32_r)}
 
         </div>
