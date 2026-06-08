@@ -181,20 +181,20 @@ export default function MatchDetail() {
                 <img 
                   src={photoUrl} 
                   alt={p.full_name}
-                  className="w-[36px] h-[36px] rounded-full object-cover border border-[#2a2a2a] shrink-0"
+                  className="w-[45px] h-[45px] rounded-full object-cover border border-[#2a2a2a] shrink-0"
                   onError={(e) => { e.target.style.display = 'none'; }}
                 />
               ) : (
-                <div className="w-[36px] h-[36px] rounded-full bg-[#141414] border border-[#2a2a2a] flex items-center justify-center shrink-0 font-champion text-[0.8rem] text-gray-500">
+                <div className="w-[45px] h-[45px] rounded-full bg-[#141414] border border-[#2a2a2a] flex items-center justify-center shrink-0 font-champion text-[0.8rem] text-gray-500">
                   {p.number}
                 </div>
               )}
               <div className="flex flex-col">
-                <div className="font-inter text-base font-semibold text-[#e0e0e0] tracking-[0.04em]">
+                <div className="font-inter text-sm font-semibold text-[#e0e0e0] tracking-[0.04em]">
                   {p.full_name}
                 </div>
-                <div className="font-inter text-[0.9rem] font-semibold text-gray-500 text-left tracking-[0.08em] mt-0.5">
-                  {p.number} &middot; {p.position}
+                <div className="font-inter text-[0.75rem] font-semibold text-gray-500 text-left tracking-[0.08em] mt-0.5">
+                  {p.number} - {p.position}
                 </div>
               </div>
             </div>
@@ -212,7 +212,7 @@ export default function MatchDetail() {
         <div className="font-champion text-3xl tracking-wider text-[#F0F0F0] leading-none flex items-baseline justify-center gap-4 text-center">
           MATCH {matchId}
           <span className="font-inter text-sm font-extrabold text-gray-400 tracking-widest uppercase">
-            {matchStage} &middot; {koTime} IST
+            {matchStage}
           </span>
         </div>
         <button 
@@ -361,11 +361,8 @@ export default function MatchDetail() {
                 <div className="font-champion text-[1.6rem] text-[#F0F0F0] tracking-wider leading-none">
                   {stadName}
                 </div>
-                <div className="font-inter text-sm text-[#666] mt-1.5 tracking-[0.04em] font-semibold">
-                  {stadCity}
-                </div>
-                <div className="font-inter text-xs text-[#444] mt-0.5 tracking-[0.04em] font-semibold">
-                  Capacity {stadCapacity}
+                <div className="font-inter text-xs text-[#666] mt-1.5 tracking-[0.04em] font-semibold">
+                  {stadCity} &middot; Cap - {stadCapacity}
                 </div>
               </div>
             </div>
@@ -382,8 +379,8 @@ export default function MatchDetail() {
               <span className="font-champion text-[2rem] text-[#F0f0f0] leading-none">
                 {h2h.home_w}
               </span>
-              <span className="font-champion text-xl text-gray-500 leading-none">
-                &middot; {h2h.draws} &middot;
+              <span className="font-champion text-[2rem] text-gray-500 leading-none">
+                - {h2h.draws} -
               </span>
               <span className="font-champion text-[2rem] text-[#F0f0f0] leading-none">
                 {h2h.away_w}
