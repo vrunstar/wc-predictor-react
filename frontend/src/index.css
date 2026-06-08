@@ -12,16 +12,21 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'HitmarkerCondensed';
+  src: url('/fonts/HitmarkerCondensed-Bold.woff2') format('woff2');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 @media (max-width: 767px) {
   body {
     background-image: url('/bg-mobile.png');
     background-attachment: scroll;
   }
   .font-champion {
-    font-family: 'YourTitleFont';
-    src: url('/fonts/HitmarkerCondensed-Bold.woff2') format('woff2');
-    font-weight: 900;
-    font-display: swap;
+    font-family: 'HitmarkerCondensed', sans-serif;
     font-size: 0.65em;
   }
 }
