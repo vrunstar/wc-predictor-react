@@ -96,7 +96,7 @@ export default function Fixtures() {
   return (
     <div>
       {/* Page Title */}
-      <h1 className="font-hitmarker text-[5rem] tracking-wider text-[#F0F0F0] leading-none mb-6 text-center">
+      <h1 className="font-champion text-[5rem] tracking-wider text-[#F0F0F0] leading-none mb-6 text-center">
         FIXTURES
       </h1>
 
