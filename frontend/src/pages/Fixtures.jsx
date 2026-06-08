@@ -59,7 +59,6 @@ export default function Fixtures() {
   if (fixtures.length === 0) {
     return (
       <div className="text-center py-24 bg-[#091424] border border-[#242424]/40 rounded-[10px] p-12">
-        <div className="text-5xl mb-4">📅</div>
         <div className="text-xl font-bold font-champion tracking-wider text-gray-400">NO UPCOMING FIXTURES</div>
       </div>
     );
@@ -97,7 +96,7 @@ export default function Fixtures() {
   return (
     <div>
       {/* Page Title */}
-      <h1 className="font-champion text-[5rem] tracking-wider text-[#F0F0F0] leading-none mb-6 text-center">
+      <h1 className="font-hitmarker text-[5rem] tracking-wider text-[#F0F0F0] leading-none mb-6 text-center">
         FIXTURES
       </h1>
 
@@ -105,7 +104,7 @@ export default function Fixtures() {
       {Object.entries(groupedFixtures).map(([date, matches]) => (
         <div key={date} className="mb-8">
           {/* Date Header */}
-          <h2 className="font-inter text-[1.1rem] font-extrabold tracking-widest text-[#aaa] uppercase mb-3 text-center">
+          <h2 className="font-inter text-[1.1rem] font-extrabold tracking-widest text-[#aaa] mb-3 text-center">
             {date}
           </h2>
 
