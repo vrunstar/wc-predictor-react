@@ -60,3 +60,12 @@ __pypackages__/
 
 # Static uploads or generated assets
 static/uploads/
+
+# Project Reorganization Ignores
+backend/.env
+node_modules/
+frontend/dist/
+venv/
+__pycache__/
+*.pyc
+
