@@ -12,12 +12,18 @@
   font-display: swap;
 }
 
-@font-face {
-  font-family: 'Hitmarker';
-  src: url('/fonts/HitmarkerCondensed-Bold.woff2') format('woff2');
-  font-weight: 900;
-  font-style: normal;
-  font-display: swap;
+@media (max-width: 767px) {
+  body {
+    background-image: url('/bg-mobile.png');
+    background-attachment: scroll;
+  }
+  .font-champion {
+    font-family: 'YourTitleFont';
+    src: url('/fonts/HitmarkerCondensed-Bold.woff2') format('woff2');
+    font-weight: 900;
+    font-display: swap;
+    font-size: 0.65em;
+  }
 }
 
 :root {
@@ -44,13 +50,6 @@ body {
   background-attachment: fixed;
   background-repeat: no-repeat;
   position: relative;
-}
-
-@media (max-width: 767px) {
-  body {
-    background-image: url('/bg-mobile.png');
-    background-attachment: scroll;
-  }
 }
 
 body::before {
