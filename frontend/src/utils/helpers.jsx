@@ -3,20 +3,12 @@ import React from 'react';
 export function formatKickoff(kickoffIst) {
   if (!kickoffIst) return 'TBD';
   try {
-    const d = new Date(kickoffIst);
-    if (isNaN(d.getTime())) {
-      // Try parsing manually if string is like '2026-06-11T18:00:00'
-      const parts = kickoffIst.split('T');
-      if (parts.length > 1) {
-        return parts[1].substring(0, 5);
-      }
-      return kickoffIst.substring(0, 5);
-    }
-    const hours = String(d.getHours()).padStart(2, '0');
-    const minutes = String(d.getMinutes()).padStart(2, '0');
-    return `${hours}:${minutes}`;
+    // kickoff_ist is stored as IST — extract HH:MM directly from string
+    const timePart = String(kickoffIst).split('T')[1];
+    if (timePart) return timePart.substring(0, 5);
+    return 'TBD';
   } catch (e) {
-    return String(kickoffIst).substring(0, 5) || 'TBD';
+    return 'TBD';
   }
 }
 
