@@ -94,14 +94,10 @@ export default function Home() {
           alt=""
           style={{
             position: 'absolute',
-            width: `${(1 - scrollProgress) * 50 + scrollProgress * 80}vw`,
-            top: '50%',
-            left: '50%',
-            transform: `translate(
-              calc(-50% + ${scrollProgress * ((-50 * window.innerWidth / 100) + 8)}px),
-              calc(-50% + ${scrollProgress * ((-50 * window.innerHeight / 100) + 10)}px)
-            )`,
-            opacity: 1,
+            width: `${(1 - scrollProgress) * 70 + scrollProgress * 15}vw`,
+            top: `${(1 - scrollProgress) * 50 + scrollProgress * 0}%`,
+            left: `${(1 - scrollProgress) * 50 + scrollProgress * 0}%`,
+            transform: `translate(${(1 - scrollProgress) * -50}%, ${(1 - scrollProgress) * -50}%)`,
             transition: 'none',
             objectFit: 'contain',
           }}
