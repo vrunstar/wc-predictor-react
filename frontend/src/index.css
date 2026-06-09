@@ -28,16 +28,7 @@
   font-display: swap;
 }
 
-@media (max-width: 767px) {
-  body {
-    background-image: url('/bg-mobile.png');
-    background-attachment: scroll;
-  }
-  .font-champion {
-    font-family: 'HitmarkerCondensed', sans-serif;
-    font-size: 0.85em;
-  }
-}
+
 
 :root {
   --dark: #0A0A0A;
@@ -63,6 +54,16 @@ body {
   background-attachment: fixed;
   background-repeat: no-repeat;
   background-color: #0A0A0A;
+}
+
+@media (max-width: 767px) {
+  body {
+    background-image: url('/bg-mobile.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+  }
 }
 
 body::before {
