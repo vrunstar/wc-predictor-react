@@ -17,7 +17,7 @@ export default function Navbar() {
       <nav
         className="fixed top-0 left-0 right-0 h-[60px] z-[9999] hidden md:flex items-center justify-between px-[160px]"
         style={{
-          backgroundImage: 'url(/navbar.png)',
+          backgroundColor: '#0a0a0a',
           backgroundSize: 'cover',
           backgroundPosition: 'top center',
         }}
@@ -65,7 +65,7 @@ export default function Navbar() {
       <div
         className="fixed top-0 left-0 right-0 h-[52px] z-[9999] flex md:hidden items-center justify-between px-4"
         style={{
-          backgroundImage: 'url(/navbar.png)',
+          backgroundColor: '#0a0a0a',
           backgroundSize: 'cover',
           backgroundPosition: 'top center',
         }}
