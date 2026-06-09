@@ -86,7 +86,7 @@ export default function Fixtures() {
 
       {Object.entries(groupedFixtures).map(([date, matches]) => (
         <div key={date} className="mb-8">
-          <h2 className="font-inter text-[0.8rem] font-extrabold tracking-widest text-[#aaa] mb-3 text-center">
+          <h2 className="font-inter text-[0.8rem] font-medium tracking-widest text-[#aaa] mb-3 text-center">
             {date}
           </h2>
 
