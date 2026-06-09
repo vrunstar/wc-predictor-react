@@ -111,11 +111,11 @@ export default function Fixtures() {
                   className="block cursor-pointer select-none bg-[#091424] border border-[#242424]/40 hover:border-white/25 rounded-[10px] p-[0.85rem_1.4rem] relative transition-all duration-150 group"
                 >
                   {/* Score Row */}
-                  <div className="grid grid-cols-[30px_1fr_auto_1fr_30px] items-center gap-[0.6rem] w-full">
+                  <div className="grid grid-cols-[24px_1fr_auto_1fr_24px] items-center gap-[0.6rem] w-full">
                     <div className="flex items-center justify-center">
-                      <img src={getFlagUrl(homeCode)} alt={homeCode} className="w-[20px] md:w-[28px] h-auto object-contain border border-[#1e1e1e]" onError={(e) => { e.target.style.display = 'none'; }} />
+                      <img src={getFlagUrl(homeCode)} alt={homeCode} className="w-[22px] md:w-[28px] h-auto object-contain border border-[#1e1e1e]" onError={(e) => { e.target.style.display = 'none'; }} />
                     </div>
-                    <div className="font-hm_text md:font-champion text-[1.1rem] md:text-2xl tracking-wider text-[#F0F0F0] leading-none">
+                    <div className="font-hm_text md:font-champion text-[1.375rem] md:text-2xl tracking-wider text-[#F0F0F0] leading-none">
                       {homeCode}
                     </div>
                     <div className="text-center min-w-[60px] max-w-[90px]">
@@ -123,11 +123,11 @@ export default function Fixtures() {
                         {koTime}
                       </span>
                     </div>
-                    <div className="font-hm_text md:font-champion text-[1.1rem] md:text-2xl tracking-wider text-[#F0F0F0] leading-none text-right">
+                    <div className="font-hm_text md:font-champion text-[1.375rem] md:text-2xl tracking-wider text-[#F0F0F0] leading-none text-right">
                       {awayCode}
                     </div>
                     <div className="flex items-center justify-center">
-                      <img src={getFlagUrl(awayCode)} alt={awayCode} className="w-[20px] md:w-[28px] h-auto object-contain border border-[#1e1e1e]" onError={(e) => { e.target.style.display = 'none'; }} />
+                      <img src={getFlagUrl(awayCode)} alt={awayCode} className="w-[22px] md:w-[28px] h-auto object-contain border border-[#1e1e1e]" onError={(e) => { e.target.style.display = 'none'; }} />
                     </div>
                   </div>
 
