@@ -110,15 +110,14 @@ export default function Home() {
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: "url('/bg-landing.png')",
+            backgroundImage: "url('/bg.png')",
             opacity: 1 - scrollProgress,
           }}
         />
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: "url('/bg.png')",
-            
+            backgroundImage: "url('/bg-landing.png')",
             opacity: scrollProgress,
           }}
         />
@@ -126,7 +125,7 @@ export default function Home() {
       </div>
 
       {/* Hero Section */}
-      <div className="relative w-full min-h-[280px] bg-gradient-to-br from-[#121212] to-[#0d0d0d] rounded-[14px] border border-white/3 shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_8px_24px_rgba(0,0,0,0.25)] flex items-center p-8 md:p-12 overflow-hidden">
+      <div className="relative w-full min-h-[280px] bg-black/20 backdrop-blur-sm rounded-[14px] border border-white/10 flex items-center p-8 md:p-12 overflow-hidden">
         <div className="relative z-10 flex flex-col justify-center">
           <div className="text-[#00C853] text-[0.7rem] font-semibold tracking-[0.2em] uppercase mb-2 font-inter">
             {countdownText}
