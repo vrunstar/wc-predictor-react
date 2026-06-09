@@ -9,6 +9,7 @@ export default function Home() {
   const [metrics, setMetrics] = useState({ total: 0, correct: 0, wrong: 0, accuracy: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState('predictions');
 
   const navigate = useNavigate();
 
@@ -49,45 +50,130 @@ export default function Home() {
     loadData();
   }, []);
 
+  const MatchRow = ({ fx, centerText }) => {
+    const home = fx.home || {};
+    const away = fx.away || {};
+    const homeCode = home.team_code || 'TBD';
+    const awayCode = away.team_code || 'TBD';
+    return (
+      <div
+        onClick={() => navigate(`/match/${fx.match_id}`)}
+        className="cursor-pointer bg-[#091424] border border-[#242424]/40 hover:border-white/25 rounded-[10px] p-[0.85rem_1rem] grid grid-cols-[28px_1fr_auto_1fr_28px] items-center gap-2 transition-all duration-150"
+      >
+        <img src={getFlagUrl(homeCode)} alt={homeCode} className="w-[26px] h-auto object-contain border border-[#1e1e1e]" onError={(e) => { e.target.style.display = 'none'; }} />
+        <span className="font-champion text-[1.2rem] tracking-[0.08em] text-[#F0F0F0]">{homeCode}</span>
+        <span className="font-inter font-black text-[1.4rem] text-white text-center tracking-[0.12em] leading-none min-w-[70px]">{centerText}</span>
+        <span className="font-champion text-[1.2rem] tracking-[0.08em] text-[#F0F0F0] text-right">{awayCode}</span>
+        <img src={getFlagUrl(awayCode)} alt={awayCode} className="w-[26px] h-auto object-contain border border-[#1e1e1e] justify-self-end" onError={(e) => { e.target.style.display = 'none'; }} />
+      </div>
+    );
+  };
+
   return (
     <div className="flex flex-col">
 
-      {/* ── SCREEN 1: Landing ── */}
-      <div className="h-screen flex items-center justify-center px-4 md:px-0 -mt-[60px]">
-        <h1 className="font-hm_text text-[3.2rem] md:text-[8rem] text-[#F0F0F0] leading-[0.9] uppercase select-none text-center">
+      {/* ── DESKTOP: Screen 1 hero ── */}
+      <div className="hidden md:flex h-screen items-center justify-center -mt-[60px]">
+        <h1 className="font-hm_text text-[8rem] text-[#F0F0F0] leading-[0.9] uppercase select-none text-center">
           2026<br />WORLD CUP<br />PREDICTOR
         </h1>
       </div>
 
-      {/* ── SCREEN 2: Metrics + Columns ── */}
-      <div className="flex flex-col gap-8 pb-24 md:pb-16 px-4 md:px-0">
+      {/* ── MOBILE: Hero + metrics + tabs all on one screen ── */}
+      <div className="flex md:hidden flex-col gap-5 pt-[62px] pb-[80px] px-4 min-h-screen">
+
+        {/* Welcome text */}
+        <h1 className="font-hm_text text-[2.8rem] text-[#F0F0F0] leading-[0.9] uppercase select-none">
+          2026<br />WORLD CUP<br />PREDICTOR
+        </h1>
 
         {/* Metrics */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-4 gap-2">
           {[
             { value: metrics.correct, label: 'Correct' },
             { value: metrics.wrong,   label: 'Wrong'   },
             { value: metrics.total,   label: 'Total'   },
             { value: `${metrics.accuracy}%`, label: 'Accuracy' },
           ].map(({ value, label }) => (
-            <div
-              key={label}
-              className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-5 flex flex-col items-start gap-1"
-            >
-              <span className="font-hm_text text-[2.2rem] text-[#F0F0F0] leading-none">{value}</span>
+            <div key={label} className="bg-[#091424] border border-[#242424]/40 rounded-[8px] p-3 flex flex-col items-start gap-0.5">
+              <span className="font-champion text-[1.4rem] text-[#F0F0F0] leading-none">{value}</span>
+              <span className="font-inter text-[9px] text-[#555] uppercase tracking-widest font-semibold">{label}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Tabs */}
+        <div className="flex border border-[#242424]/40 rounded-[8px] overflow-hidden">
+          <button
+            onClick={() => setActiveTab('predictions')}
+            className={`flex-1 py-2 text-xs uppercase tracking-widest font-semibold font-inter transition-colors ${activeTab === 'predictions' ? 'bg-white text-black' : 'bg-transparent text-[#555]'}`}
+          >
+            Today
+          </button>
+          <button
+            onClick={() => setActiveTab('results')}
+            className={`flex-1 py-2 text-xs uppercase tracking-widest font-semibold font-inter transition-colors ${activeTab === 'results' ? 'bg-white text-black' : 'bg-transparent text-[#555]'}`}
+          >
+            Results
+          </button>
+        </div>
+
+        {/* Tab content */}
+        {loading ? (
+          <div className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-6 text-center text-gray-500 font-inter text-[0.85rem]">Loading...</div>
+        ) : activeTab === 'predictions' ? (
+          todayMatches.length === 0 ? (
+            <div className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-6 text-center text-gray-500 font-inter text-[0.85rem]">No matches today</div>
+          ) : (
+            <div className="flex flex-col gap-2">
+              {todayMatches.map((fx) => {
+                const pred = fx.prediction || {};
+                const centerText = pred.pred_home_goals != null
+                  ? `${pred.pred_home_goals} – ${pred.pred_away_goals}`
+                  : formatKickoff(fx.kickoff_ist);
+                return <MatchRow key={fx.match_id} fx={fx} centerText={centerText} />;
+              })}
+            </div>
+          )
+        ) : (
+          completedPredictions.length === 0 ? (
+            <div className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-6 text-center text-gray-500 font-inter text-[0.85rem]">No results yet</div>
+          ) : (
+            <div className="flex flex-col gap-2">
+              {completedPredictions.map((pred) => {
+                const fx = pred.fixture || {};
+                const res = (fx.results || [])[0] || {};
+                const scoreText = `${res.home_goals ?? '?'} – ${res.away_goals ?? '?'}`;
+                return <MatchRow key={pred.match_id} fx={fx} centerText={scoreText} />;
+              })}
+            </div>
+          )
+        )}
+      </div>
+
+      {/* ── DESKTOP: Screen 2 metrics + columns ── */}
+      <div className="hidden md:flex flex-col gap-8 pb-16">
+
+        {/* Metrics */}
+        <div className="grid grid-cols-4 gap-4">
+          {[
+            { value: metrics.correct, label: 'Correct' },
+            { value: metrics.wrong,   label: 'Wrong'   },
+            { value: metrics.total,   label: 'Total'   },
+            { value: `${metrics.accuracy}%`, label: 'Accuracy' },
+          ].map(({ value, label }) => (
+            <div key={label} className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-5 flex flex-col items-start gap-1">
+              <span className="font-champion text-[2.2rem] text-[#F0F0F0] leading-none">{value}</span>
               <span className="font-inter text-xs text-[#555] uppercase tracking-widest font-semibold">{label}</span>
             </div>
           ))}
         </div>
 
         {/* Two Columns */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-2 gap-8">
 
-          {/* Today's Predictions */}
           <div>
-            <h2 className="font-hm_text text-[1.8rem] tracking-wide text-[#F0F0F0] mb-4 uppercase">
-              TODAY'S MATCHES
-            </h2>
+            <h2 className="font-hm_text text-[1.8rem] tracking-wide text-[#F0F0F0] mb-4 uppercase">TODAY'S MATCHES</h2>
             {loading ? (
               <div className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-6 text-center text-gray-500 font-inter text-[0.85rem]">Loading...</div>
             ) : todayMatches.length === 0 ? (
@@ -95,37 +181,18 @@ export default function Home() {
             ) : (
               <div className="flex flex-col gap-2">
                 {todayMatches.map((fx) => {
-                  const home = fx.home || {};
-                  const away = fx.away || {};
-                  const homeCode = home.team_code || 'TBD';
-                  const awayCode = away.team_code || 'TBD';
                   const pred = fx.prediction || {};
                   const centerText = pred.pred_home_goals != null
                     ? `${pred.pred_home_goals} – ${pred.pred_away_goals}`
                     : formatKickoff(fx.kickoff_ist);
-                  return (
-                    <div
-                      key={fx.match_id}
-                      onClick={() => navigate(`/match/${fx.match_id}`)}
-                      className="cursor-pointer bg-[#091424] border border-[#242424]/40 hover:border-white/25 rounded-[10px] p-[0.85rem_1rem] grid grid-cols-[28px_1fr_auto_1fr_28px] items-center gap-2 transition-all duration-150"
-                    >
-                      <img src={getFlagUrl(homeCode)} alt={homeCode} className="w-[26px] h-auto object-contain border border-[#1e1e1e]" onError={(e) => { e.target.style.display = 'none'; }} />
-                      <span className="font-champion text-[1.2rem] tracking-[0.08em] text-[#F0F0F0]">{homeCode}</span>
-                      <span className="font-inter font-black text-[1.4rem] text-white text-center tracking-[0.12em] leading-none min-w-[70px]">{centerText}</span>
-                      <span className="font-champion text-[1.2rem] tracking-[0.08em] text-[#F0F0F0] text-right">{awayCode}</span>
-                      <img src={getFlagUrl(awayCode)} alt={awayCode} className="w-[26px] h-auto object-contain border border-[#1e1e1e] justify-self-end" onError={(e) => { e.target.style.display = 'none'; }} />
-                    </div>
-                  );
+                  return <MatchRow key={fx.match_id} fx={fx} centerText={centerText} />;
                 })}
               </div>
             )}
           </div>
 
-          {/* Latest Results */}
           <div>
-            <h2 className="font-hm_text text-[1.8rem] tracking-wide text-[#F0F0F0] mb-4 uppercase">
-              LATEST RESULTS
-            </h2>
+            <h2 className="font-hm_text text-[1.8rem] tracking-wide text-[#F0F0F0] mb-4 uppercase">LATEST RESULTS</h2>
             {loading ? (
               <div className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-6 text-center text-gray-500 font-inter text-[0.85rem]">Loading...</div>
             ) : completedPredictions.length === 0 ? (
@@ -134,25 +201,9 @@ export default function Home() {
               <div className="flex flex-col gap-2">
                 {completedPredictions.map((pred) => {
                   const fx = pred.fixture || {};
-                  const home = fx.home || {};
-                  const away = fx.away || {};
-                  const homeCode = home.team_code || 'TBD';
-                  const awayCode = away.team_code || 'TBD';
                   const res = (fx.results || [])[0] || {};
                   const scoreText = `${res.home_goals ?? '?'} – ${res.away_goals ?? '?'}`;
-                  return (
-                    <div
-                      key={pred.match_id}
-                      onClick={() => navigate(`/match/${pred.match_id}`)}
-                      className="cursor-pointer bg-[#091424] border border-[#242424]/40 hover:border-white/25 rounded-[10px] p-[0.85rem_1rem] grid grid-cols-[28px_1fr_auto_1fr_28px] items-center gap-2 transition-all duration-150"
-                    >
-                      <img src={getFlagUrl(homeCode)} alt={homeCode} className="w-[26px] h-auto object-contain border border-[#1e1e1e]" onError={(e) => { e.target.style.display = 'none'; }} />
-                      <span className="font-champion text-[1.2rem] tracking-[0.08em] text-[#F0F0F0]">{homeCode}</span>
-                      <span className="font-inter font-black text-[1.4rem] text-white text-center tracking-[0.12em] leading-none min-w-[70px]">{scoreText}</span>
-                      <span className="font-champion text-[1.2rem] tracking-[0.08em] text-[#F0F0F0] text-right">{awayCode}</span>
-                      <img src={getFlagUrl(awayCode)} alt={awayCode} className="w-[26px] h-auto object-contain border border-[#1e1e1e] justify-self-end" onError={(e) => { e.target.style.display = 'none'; }} />
-                    </div>
-                  );
+                  return <MatchRow key={pred.match_id} fx={fx} centerText={scoreText} />;
                 })}
               </div>
             )}
@@ -160,6 +211,7 @@ export default function Home() {
 
         </div>
       </div>
+
     </div>
   );
 }
