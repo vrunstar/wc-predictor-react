@@ -53,7 +53,7 @@ export default function Home() {
     <div className="flex flex-col">
 
       {/* ── SCREEN 1: Landing ── */}
-      <div className="min-h-screen flex items-center justify-center px-4 md:px-0">
+      <div className="h-screen flex items-center justify-center px-4 md:px-0 -mt-[60px]">
         <h1 className="font-hm-text text-[3.2rem] md:text-[8rem] text-[#F0F0F0] leading-[0.9] uppercase select-none text-center">
           2026<br />WORLD CUP<br />PREDICTOR
         </h1>
