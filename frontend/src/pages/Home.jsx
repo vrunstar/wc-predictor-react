@@ -74,7 +74,7 @@ export default function Home() {
 
       {/* ── DESKTOP: Screen 1 hero ── */}
       <div className="hidden md:flex h-screen items-center justify-center -mt-[60px]">
-        <h1 className="font-hm_text text-[8rem] text-[#F0F0F0] leading-[0.9] uppercase select-none text-center">
+        <h1 className="font-hm_text text-[10rem] text-[#F0F0F0] leading-[0.9] uppercase select-none text-center">
           2026<br />WORLD CUP<br />PREDICTOR
         </h1>
       </div>
@@ -83,12 +83,12 @@ export default function Home() {
       <div className="flex md:hidden flex-col gap-5 pt-[62px] pb-[80px] px-4 min-h-screen">
 
         {/* Welcome text */}
-        <h1 className="font-hm_text text-[2.8rem] text-[#F0F0F0] leading-[0.9] uppercase select-none">
+        <h1 className="font-hm_text text-[3rem] text-[#F0F0F0] leading-[0.9] uppercase select-none">
           2026<br />WORLD CUP<br />PREDICTOR
         </h1>
 
         {/* Metrics */}
-        <div className="grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-2 gap-2">
           {[
             { value: metrics.correct, label: 'Correct' },
             { value: metrics.wrong,   label: 'Wrong'   },
@@ -97,22 +97,22 @@ export default function Home() {
           ].map(({ value, label }) => (
             <div key={label} className="bg-[#091424] border border-[#242424]/40 rounded-[8px] p-3 flex flex-col items-start gap-0.5">
               <span className="font-champion text-[1.4rem] text-[#F0F0F0] leading-none">{value}</span>
-              <span className="font-inter text-[9px] text-[#555] uppercase tracking-widest font-semibold">{label}</span>
+              <span className="font-inter text-[9px] text-[#555] tracking-widest font-semibold">{label}</span>
             </div>
           ))}
         </div>
 
         {/* Tabs */}
-        <div className="flex border border-[#242424]/40 rounded-[8px] overflow-hidden">
+        <div className="flex border border-[#ffffff]/40 rounded-[8px] overflow-hidden">
           <button
             onClick={() => setActiveTab('predictions')}
-            className={`flex-1 py-2 text-xs uppercase tracking-widest font-semibold font-inter transition-colors ${activeTab === 'predictions' ? 'bg-white text-black' : 'bg-transparent text-[#555]'}`}
+            className={`flex-1 py-2 text-xs tracking-widest font-semibold font-inter transition-colors ${activeTab === 'predictions' ? 'bg-white text-black' : 'bg-transparent text-[#c4c4c4]'}`}
           >
             Today
           </button>
           <button
             onClick={() => setActiveTab('results')}
-            className={`flex-1 py-2 text-xs uppercase tracking-widest font-semibold font-inter transition-colors ${activeTab === 'results' ? 'bg-white text-black' : 'bg-transparent text-[#555]'}`}
+            className={`flex-1 py-2 text-xs  tracking-widest font-semibold font-inter transition-colors ${activeTab === 'results' ? 'bg-white text-black' : 'bg-transparent text-[#c4c4c4]'}`}
           >
             Results
           </button>
