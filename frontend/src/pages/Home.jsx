@@ -88,19 +88,13 @@ export default function Home() {
           }}
         />
 
-        {/* Dark overlay */}
-        <div
-          className="absolute inset-0 bg-black"
-          style={{ opacity: 0.3 + scrollProgress * 0.35 }}
-        />
-
         {/* Explosion — starts centered full screen, moves to top-left */}
         <img
           src="/wc-logo-exp.png"
           alt=""
           style={{
             position: 'absolute',
-            width: `${(1 - scrollProgress) * 50 + scrollProgress * 15}vw`,
+            width: `${(1 - scrollProgress) * 50 + scrollProgress * 25}vw`,
             top: '50%',
             left: '50%',
             transform: `translate(
