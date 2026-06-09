@@ -53,7 +53,7 @@ export default function Fixtures() {
 
   if (fixtures.length === 0) {
     return (
-      <div className="text-center py-24 bg-[#091424] border border-[#242424]/40 rounded-[10px] p-12">
+      <div className="text-center bg-[#091424] border border-[#242424]/40 rounded-[10px] p-8">
         <div className="text-xl font-bold font-hm_text tracking-wider text-gray-400">NO UPCOMING FIXTURES</div>
       </div>
     );
@@ -86,7 +86,7 @@ export default function Fixtures() {
 
       {Object.entries(groupedFixtures).map(([date, matches]) => (
         <div key={date} className="mb-8">
-          <h2 className="font-inter text-[1.1rem] font-extrabold tracking-widest text-[#aaa] mb-3 text-center uppercase">
+          <h2 className="font-inter text-[0.8rem] font-extrabold tracking-widest text-[#aaa] mb-3 text-center">
             {date}
           </h2>
 
@@ -119,7 +119,7 @@ export default function Fixtures() {
                       {homeCode}
                     </div>
                     <div className="text-center min-w-[60px] max-w-[90px]">
-                      <span className="font-inter text-lg md:text-xl font-extrabold text-white tracking-widest leading-none whitespace-nowrap">
+                      <span className="font-inter text-lg md:text-xl font-semibold text-white tracking-widest leading-none whitespace-nowrap">
                         {koTime}
                       </span>
                     </div>
@@ -149,7 +149,7 @@ export default function Fixtures() {
                   {/* Meta row — mobile: city · time only */}
                   <div className="flex md:hidden justify-center mt-[0.5rem] pt-[0.5rem] border-t border-[#3a3a3a]">
                     <span className="font-inter text-[0.72rem] text-[#555] tracking-wider">
-                      {venue && `${venue} · `}{koTime}
+                      Match {fx.match_id} · {matchStage} {venue && `· ${venue}`}
                     </span>
                   </div>
 
