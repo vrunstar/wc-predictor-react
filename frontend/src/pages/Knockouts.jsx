@@ -9,7 +9,6 @@ export default function Knockouts() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeStage, setActiveStage] = useState('r32');
-  const [mobilePage, setMobilePage] = useState(0);
 
   const navigate = useNavigate();
 
@@ -174,11 +173,6 @@ export default function Knockouts() {
   };
 
   const allMobileMatches = mobileMatchMap[activeStage] || [];
-  const PAGE_SIZE = 4;
-  const totalPages = Math.ceil(allMobileMatches.length / PAGE_SIZE);
-  const pageMatches = allMobileMatches.slice(mobilePage * PAGE_SIZE, (mobilePage + 1) * PAGE_SIZE);
-
-  const handleStageChange = (key) => { setActiveStage(key); setMobilePage(0); };
 
   return (
     <div className="w-full flex flex-col">
@@ -193,7 +187,7 @@ export default function Knockouts() {
           {STAGES.map((s) => (
             <button
               key={s.key}
-              onClick={() => handleStageChange(s.key)}
+              onClick={() => setActiveStage(s.key)}
               className={`flex-1 py-2 text-xs uppercase tracking-widest font-semibold font-inter transition-colors ${activeStage === s.key ? 'bg-white text-black' : 'bg-transparent text-[#555]'}`}
             >
               {s.label}
@@ -201,31 +195,21 @@ export default function Knockouts() {
           ))}
         </div>
 
-        {/* Cards — max 4 per page */}
-        <div className="flex flex-col gap-3">
-          {pageMatches.map((fx) => renderMobileBracketCard(fx, activeStage === 'final' && fx === stages.final))}
+        {/* All matches stacked with connector paths */}
+        <div className="flex flex-col">
+          {allMobileMatches.map((fx, i) => (
+            <div key={fx?.match_id || i} className="flex flex-col">
+              {renderMobileBracketCard(fx, activeStage === 'final' && fx === stages.final)}
+              {i < allMobileMatches.length - 1 && (
+                <div className="flex justify-center">
+                  <svg width="2" height="16" className="shrink-0">
+                    <line x1="1" y1="0" x2="1" y2="16" stroke="#2a2a2a" strokeWidth="1.5" />
+                  </svg>
+                </div>
+              )}
+            </div>
+          ))}
         </div>
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex items-center justify-center gap-3">
-            <button
-              onClick={() => setMobilePage(p => Math.max(0, p - 1))}
-              disabled={mobilePage === 0}
-              className="px-4 py-1.5 text-xs font-semibold font-inter border border-[#333] rounded-[6px] text-[#aaa] disabled:opacity-30"
-            >
-              ←
-            </button>
-            <span className="font-inter text-xs text-[#555]">{mobilePage + 1} / {totalPages}</span>
-            <button
-              onClick={() => setMobilePage(p => Math.min(totalPages - 1, p + 1))}
-              disabled={mobilePage === totalPages - 1}
-              className="px-4 py-1.5 text-xs font-semibold font-inter border border-[#333] rounded-[6px] text-[#aaa] disabled:opacity-30"
-            >
-              →
-            </button>
-          </div>
-        )}
       </div>
 
       {/* ── DESKTOP bracket ── */}
