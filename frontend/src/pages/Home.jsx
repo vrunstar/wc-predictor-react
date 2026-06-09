@@ -94,7 +94,7 @@ export default function Home() {
           alt=""
           style={{
             position: 'absolute',
-            width: `${(1 - scrollProgress) * 50 + scrollProgress * 40}vw`,
+            width: `${(1 - scrollProgress) * 50 + scrollProgress * 80}vw`,
             top: '50%',
             left: '50%',
             transform: `translate(
