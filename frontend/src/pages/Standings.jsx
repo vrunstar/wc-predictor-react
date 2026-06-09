@@ -103,18 +103,18 @@ export default function Standings() {
                   return (
                     <div
                       key={row.team_id}
-                      className="grid grid-cols-[1.5fr_0.6fr_0.6fr_0.6fr_0.6fr_0.6fr_0.6fr] items-center p-1 py-[0.4rem] rounded hover:bg-white/5 text-[0.82rem] font-inter text-gray-300 transition-colors duration-100"
+                      className="grid grid-cols-[1.5fr_0.6fr_0.6fr_0.6fr_0.6fr_0.6fr_0.6fr] items-center p-1 py-[0.25rem] rounded hover:bg-white/5 text-[0.82rem] font-inter text-gray-300 transition-colors duration-100"
                     >
                       <div className="flex items-center gap-2">
                         {/* Flag — hidden on mobile */}
                         <img
                           src={getFlagUrl(code)}
                           alt={code}
-                          className="hidden sm:block w-[20px] h-auto object-contain border border-[#1e1e1e]"
+                          className="hidden sm:block w-[22px] h-auto object-contain border border-[#1e1e1e]"
                           onError={(e) => { e.target.style.display = 'none'; }}
                         />
                         {/* Code — hm_text on mobile, champion on desktop */}
-                        <span className="font-hm_text sm:font-champion text-[0.85rem] tracking-wider text-[#F0F0F0]">
+                        <span className="font-hm_text text-[0.85rem] tracking-wider text-[#F0F0F0]">
                           {code}
                         </span>
                       </div>
