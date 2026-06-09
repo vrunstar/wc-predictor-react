@@ -34,7 +34,7 @@ export default function Navbar() {
               key={item.label}
               to={item.path}
               className={({ isActive }) =>
-                `text-xs tracking-widest font-semibold font-inter transition-colors duration-150 pb-[2px] ${
+                `text-xs uppercase tracking-widest font-semibold font-inter transition-colors duration-150 pb-[2px] ${
                   isActive
                     ? 'text-white border-b-2 border-white'
                     : 'text-[#aaa] hover:text-white border-b-2 border-transparent'
@@ -84,19 +84,20 @@ export default function Navbar() {
       </div>
 
       {/* ── MOBILE BOTTOM NAV ── */}
-      <nav className="fixed bottom-0 left-0 right-0 h-[60px] z-[9999] flex md:hidden items-center justify-around bg-[#0a0a0a] border-t border-white/8">
+      <nav className="fixed bottom-0 left-0 right-0 h-[60px] z-[9999] flex md:hidden items-center justify-around bg-[#0a0a0a]">
         {NAV_ITEMS.map((item) => (
           <NavLink
             key={item.label}
             to={item.path}
-            className={({ isActive }) =>
-              `flex flex-col items-center justify-center gap-[3px] flex-1 h-full transition-colors duration-150 ${
+                className={({ isActive }) =>
+              `relative flex flex-col items-center justify-center gap-[3px] flex-1 h-full transition-colors duration-150 ${
                 isActive ? 'text-white' : 'text-[#555] hover:text-[#aaa]'
               }`
             }
           >
             {({ isActive }) => (
               <>
+                {isActive && <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-white" />}
                 <img
                   src={item.icon}
                   alt={item.label}
@@ -105,7 +106,6 @@ export default function Navbar() {
                 <span className={`text-[9px] uppercase tracking-widest font-semibold font-inter ${isActive ? 'text-white' : 'text-[#555]'}`}>
                   {item.label === 'Knockouts' ? 'KO' : item.label}
                 </span>
-                {isActive && <div className="absolute bottom-0 w-8 h-[2px] bg-white rounded-full" />}
               </>
             )}
           </NavLink>
