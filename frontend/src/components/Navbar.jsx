@@ -34,7 +34,7 @@ export default function Navbar() {
               key={item.label}
               to={item.path}
               className={({ isActive }) =>
-                `text-xs uppercase tracking-widest font-semibold font-inter transition-colors duration-150 pb-[2px] ${
+                `text-xs tracking-widest font-semibold font-inter transition-colors duration-150 pb-[2px] ${
                   isActive
                     ? 'text-white border-b-2 border-white'
                     : 'text-[#aaa] hover:text-white border-b-2 border-transparent'
