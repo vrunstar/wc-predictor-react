@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../utils/api';
 import { formatKickoff, getFlagUrl } from '../utils/helpers';
@@ -9,21 +9,8 @@ export default function Home() {
   const [metrics, setMetrics] = useState({ total: 0, correct: 0, wrong: 0, accuracy: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [scrollProgress, setScrollProgress] = useState(0);
 
   const navigate = useNavigate();
-  const contentRef = useRef(null);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      const triggerHeight = window.innerHeight * 0.3;
-      const progress = Math.min(scrollY / triggerHeight, 1);
-      setScrollProgress(progress);
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   useEffect(() => {
     async function loadData() {
@@ -41,7 +28,7 @@ export default function Home() {
           const fx = pred.fixture || {};
           return (fx.results || []).length > 0;
         });
-        setCompletedPredictions(completed.slice(0, 4));
+        setCompletedPredictions(completed.slice(0, 5));
 
         const total = completed.length;
         let correct = 0;
@@ -62,102 +49,43 @@ export default function Home() {
     loadData();
   }, []);
 
-  const tournamentStart = new Date('2026-06-11T00:00:00');
-  const now = new Date();
-  const diffDays = Math.ceil((tournamentStart - now) / (1000 * 60 * 60 * 24));
-  const countdownText = diffDays > 0 ? `${diffDays} days to go` : 'Tournament underway';
-
   return (
     <div className="flex flex-col">
 
-      {/* ── SPLASH SECTION ── */}
-      <div
-        className="fixed inset-0 pointer-events-none"
-        style={{ zIndex: scrollProgress >= 1 ? -1 : 10 }}
-      >
-        {/* Plain blue at start, bg.png fades in on scroll */}
-        <div
-          className="absolute inset-0"
-          style={{ backgroundColor: '#1a237e' }}
-        />
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: "url('/bg.png')",
-            opacity: scrollProgress,
-          }}
-        />
-
-        {/* Explosion — starts centered full screen, moves to top-left */}
-        <img
-          src="/wc-logo-exp.png"
-          alt=""
-          style={{
-            position: 'absolute',
-            width: `${(1 - scrollProgress) * 70 + scrollProgress * 15}vw`,
-            top: `${(1 - scrollProgress) * 50 + scrollProgress * 0}%`,
-            left: `${(1 - scrollProgress) * 50 + scrollProgress * 0}%`,
-            transform: `translate(${(1 - scrollProgress) * -50}%, ${(1 - scrollProgress) * -50}%)`,
-            transition: 'none',
-            objectFit: 'contain',
-          }}
-        />
-
-        {/* Scroll hint */}
-        <div
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-          style={{ opacity: Math.max(0, 1 - scrollProgress * 4) }}
-        >
-          <span className="font-inter text-xs text-white/60 tracking-widest uppercase">Scroll</span>
-          <div className="w-[1px] h-8 bg-white/30 animate-pulse" />
-        </div>
+      {/* ── SCREEN 1: Landing ── */}
+      <div className="min-h-screen flex items-center px-4 md:px-0">
+        <h1 className="font-tusker text-[3.2rem] md:text-[8rem] text-[#F0F0F0] leading-[0.9] uppercase select-none">
+          2026<br />WORLD CUP<br />PREDICTOR
+        </h1>
       </div>
 
-      {/* ── SPACER — pushes content below the fold ── */}
-      <div className="h-screen" />
+      {/* ── SCREEN 2: Metrics + Columns ── */}
+      <div className="flex flex-col gap-8 pb-24 md:pb-16 px-4 md:px-0">
 
-      {/* ── MAIN CONTENT — slides up as you scroll ── */}
-      <div
-        ref={contentRef}
-        className="relative z-10 flex flex-col gap-6 bg-black/0 pb-16"
-        style={{
-          transform: `translateY(${(1 - scrollProgress) * 60}px)`,
-          opacity: scrollProgress,
-          transition: 'opacity 0.1s, transform 0.1s',
-        }}
-      >
-        {/* Hero Section */}
-        <div className="relative w-full min-h-[280px] bg-black/40 backdrop-blur-md rounded-[14px] border border-white/10 flex items-center p-8 md:p-12 overflow-hidden">
-          <div className="relative z-10 flex flex-col justify-center w-full">
-            <div className="text-[#00C853] text-[0.7rem] font-semibold tracking-[0.2em] uppercase mb-2 font-inter">
-              {countdownText}
+        {/* Metrics */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[
+            { value: metrics.correct, label: 'Correct' },
+            { value: metrics.wrong,   label: 'Wrong'   },
+            { value: metrics.total,   label: 'Total'   },
+            { value: `${metrics.accuracy}%`, label: 'Accuracy' },
+          ].map(({ value, label }) => (
+            <div
+              key={label}
+              className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-5 flex flex-col items-start gap-1"
+            >
+              <span className="font-champion text-[2.2rem] text-[#F0F0F0] leading-none">{value}</span>
+              <span className="font-inter text-xs text-[#555] uppercase tracking-widest font-semibold">{label}</span>
             </div>
-            <h1 className="font-champion text-[2.4rem] md:text-[5.5rem] tracking-wider text-[#F0F0F0] leading-[0.95] mb-6 select-none uppercase text-center w-full">
-              2026 WORLD CUP<br /> PREDICTOR
-            </h1>
-            <div className="flex flex-wrap gap-2">
-              {[
-                `${metrics.total} Predicted`,
-                `${metrics.correct} Correct`,
-                `${metrics.wrong} Wrong`,
-                `${metrics.accuracy}% Accuracy`,
-              ].map((label) => (
-                <span
-                  key={label}
-                  className="bg-white/5 border border-white/10 text-white px-[1.2rem] py-[0.55rem] rounded-[20px] text-sm font-semibold tracking-[0.03em] font-inter"
-                >
-                  {label}
-                </span>
-              ))}
-            </div>
-          </div>
+          ))}
         </div>
 
         {/* Two Columns */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4">
-          {/* Today's Matches */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+          {/* Today's Predictions */}
           <div>
-            <h2 className="font-champion text-[1.8rem] tracking-[0.08em] text-[#F0F0F0] mb-4 uppercase">
+            <h2 className="font-tusker text-[1.8rem] tracking-wide text-[#F0F0F0] mb-4 uppercase">
               TODAY'S MATCHES
             </h2>
             {loading ? (
@@ -171,6 +99,10 @@ export default function Home() {
                   const away = fx.away || {};
                   const homeCode = home.team_code || 'TBD';
                   const awayCode = away.team_code || 'TBD';
+                  const pred = fx.prediction || {};
+                  const centerText = pred.pred_home_goals != null
+                    ? `${pred.pred_home_goals} – ${pred.pred_away_goals}`
+                    : formatKickoff(fx.kickoff_ist);
                   return (
                     <div
                       key={fx.match_id}
@@ -179,7 +111,7 @@ export default function Home() {
                     >
                       <img src={getFlagUrl(homeCode)} alt={homeCode} className="w-[26px] h-auto object-contain border border-[#1e1e1e]" onError={(e) => { e.target.style.display = 'none'; }} />
                       <span className="font-champion text-[1.2rem] tracking-[0.08em] text-[#F0F0F0]">{homeCode}</span>
-                      <span className="font-inter font-black text-[1.4rem] text-white text-center tracking-[0.12em] leading-none min-w-[70px]">{formatKickoff(fx.kickoff_ist)}</span>
+                      <span className="font-inter font-black text-[1.4rem] text-white text-center tracking-[0.12em] leading-none min-w-[70px]">{centerText}</span>
                       <span className="font-champion text-[1.2rem] tracking-[0.08em] text-[#F0F0F0] text-right">{awayCode}</span>
                       <img src={getFlagUrl(awayCode)} alt={awayCode} className="w-[26px] h-auto object-contain border border-[#1e1e1e] justify-self-end" onError={(e) => { e.target.style.display = 'none'; }} />
                     </div>
@@ -191,7 +123,7 @@ export default function Home() {
 
           {/* Latest Results */}
           <div>
-            <h2 className="font-champion text-[1.8rem] tracking-[0.08em] text-[#F0F0F0] mb-4 uppercase">
+            <h2 className="font-tusker text-[1.8rem] tracking-wide text-[#F0F0F0] mb-4 uppercase">
               LATEST RESULTS
             </h2>
             {loading ? (
@@ -225,6 +157,7 @@ export default function Home() {
               </div>
             )}
           </div>
+
         </div>
       </div>
     </div>
