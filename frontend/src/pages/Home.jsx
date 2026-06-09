@@ -54,7 +54,7 @@ export default function Home() {
 
       {/* ── SCREEN 1: Landing ── */}
       <div className="h-screen flex items-center justify-center px-4 md:px-0 -mt-[60px]">
-        <h1 className="font-hm-text text-[3.2rem] md:text-[8rem] text-[#F0F0F0] leading-[0.9] uppercase select-none text-center">
+        <h1 className="font-hm_text text-[3.2rem] md:text-[8rem] text-[#F0F0F0] leading-[0.9] uppercase select-none text-center">
           2026<br />WORLD CUP<br />PREDICTOR
         </h1>
       </div>
@@ -74,7 +74,7 @@ export default function Home() {
               key={label}
               className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-5 flex flex-col items-start gap-1"
             >
-              <span className="font-hm-text text-[2.2rem] text-[#F0F0F0] leading-none">{value}</span>
+              <span className="font-hm_text text-[2.2rem] text-[#F0F0F0] leading-none">{value}</span>
               <span className="font-inter text-xs text-[#555] uppercase tracking-widest font-semibold">{label}</span>
             </div>
           ))}
@@ -85,7 +85,7 @@ export default function Home() {
 
           {/* Today's Predictions */}
           <div>
-            <h2 className="font-hm-text text-[1.8rem] tracking-wide text-[#F0F0F0] mb-4 uppercase">
+            <h2 className="font-hm_text text-[1.8rem] tracking-wide text-[#F0F0F0] mb-4 uppercase">
               TODAY'S MATCHES
             </h2>
             {loading ? (
@@ -123,7 +123,7 @@ export default function Home() {
 
           {/* Latest Results */}
           <div>
-            <h2 className="font-hm-text text-[1.8rem] tracking-wide text-[#F0F0F0] mb-4 uppercase">
+            <h2 className="font-hm_text text-[1.8rem] tracking-wide text-[#F0F0F0] mb-4 uppercase">
               LATEST RESULTS
             </h2>
             {loading ? (
