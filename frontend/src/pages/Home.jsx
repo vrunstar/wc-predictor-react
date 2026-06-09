@@ -83,7 +83,7 @@ export default function Home() {
       <div className="flex md:hidden flex-col gap-5 pt-[62px] pb-[80px] px-4 min-h-screen">
 
         {/* Welcome text */}
-        <h1 className="font-hm_text text-[4rem] text-[#F0F0F0] leading-[0.9] uppercase select-none p-6">
+        <h1 className="font-hm_text text-[4rem] text-[#F0F0F0] leading-[0.9] uppercase select-none pb-20">
           2026<br />WORLD<br />CUP<br />PREDICTOR
         </h1>
 
