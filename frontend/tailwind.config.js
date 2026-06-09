@@ -16,6 +16,7 @@ export default {
       fontFamily: {
         champion: ["ChampionGothic", "sans-serif"],
         inter: ["Inter", "sans-serif"],
+        hm_text : ["HitmarkerText" , "sans-serif"],
       },
     },
   },
