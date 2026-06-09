@@ -15,7 +15,18 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const navigate = useNavigate();
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const maxScroll = 400;
+      const progress = Math.min(scrollY / maxScroll, 1);
+      setScrollProgress(progress);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     async function loadData() {
@@ -94,6 +105,25 @@ export default function Home() {
 
   return (
     <div className="flex flex-col gap-6">
+      {/* Scroll morphing background */}
+      <div className="fixed inset-0 -z-10 pointer-events-none">
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: "url('/bg.png')",
+            opacity: 1 - scrollProgress,
+          }}
+        />
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: "url('/bg-landing.png')",
+            opacity: scrollProgress,
+          }}
+        />
+        <div className="absolute inset-0 bg-black/60" />
+      </div>
+
       {/* Hero Section */}
       <div className="relative w-full min-h-[280px] bg-gradient-to-br from-[#121212] to-[#0d0d0d] rounded-[14px] border border-white/3 shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_8px_24px_rgba(0,0,0,0.25)] flex items-center p-8 md:p-12 overflow-hidden">
         <div className="relative z-10 flex flex-col justify-center">
