@@ -70,37 +70,44 @@ export default function Home() {
   return (
     <div className="flex flex-col">
 
-      {/* ── SPLASH SECTION ── full screen landing image */}
+      {/* ── SPLASH SECTION ── */}
       <div
         className="fixed inset-0 pointer-events-none"
-        style={{ zIndex: scrollProgress >= 1 ? -1 : 1 }}
+        style={{ zIndex: scrollProgress >= 1 ? -1 : 10 }}
       >
-        {/* bg-landing fades out */}
+        {/* Blue bg always visible */}
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: "url('/bg-landing.png')",
-            opacity: 1 - scrollProgress,
-          }}
+          style={{ backgroundImage: "url('/bg.png')" }}
         />
-        {/* bg.png fades in as corners */}
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: "url('/bg.png')",
-            opacity: scrollProgress,
-          }}
-        />
-        {/* dark overlay gets stronger as you scroll */}
+
+        {/* Dark overlay */}
         <div
           className="absolute inset-0 bg-black"
           style={{ opacity: 0.3 + scrollProgress * 0.35 }}
         />
 
-        {/* Scroll hint — visible only at start */}
+        {/* Explosion — starts centered full screen, moves to top-left */}
+        <img
+          src="/wc-logo-exp.png"
+          alt=""
+          style={{
+            position: 'absolute',
+            width: `${(1 - scrollProgress) * 80 + scrollProgress * 20}vw`,
+            top: `${scrollProgress * 10}px`,
+            left: `${(1 - scrollProgress) * 10 + scrollProgress * 0}vw`,
+            transform: `translate(${(1 - scrollProgress) * -50 + scrollProgress * 0}%, ${(1 - scrollProgress) * -50 + scrollProgress * 0}%)`,
+            marginTop: scrollProgress < 1 ? `${(1 - scrollProgress) * 50}vh` : '0',
+            opacity: 1,
+            transition: 'none',
+            objectFit: 'contain',
+          }}
+        />
+
+        {/* Scroll hint */}
         <div
           className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-          style={{ opacity: 1 - scrollProgress * 3 }}
+          style={{ opacity: Math.max(0, 1 - scrollProgress * 4) }}
         >
           <span className="font-inter text-xs text-white/60 tracking-widest uppercase">Scroll</span>
           <div className="w-[1px] h-8 bg-white/30 animate-pulse" />
