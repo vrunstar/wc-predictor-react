@@ -34,10 +34,10 @@ export default function Navbar() {
               key={item.label}
               to={item.path}
               className={({ isActive }) =>
-                `text-xs uppercase tracking-widest font-semibold font-inter transition-colors duration-150 pb-[2px] ${
+                `relative text-xs tracking-widest font-semibold font-inter transition-colors duration-150 ${
                   isActive
-                    ? 'text-white border-b-2 border-white'
-                    : 'text-[#aaa] hover:text-white border-b-2 border-transparent'
+                    ? 'text-white after:absolute after:bottom-[-18px] after:left-0 after:right-0 after:h-[2px] after:bg-white'
+                    : 'text-[#aaa] hover:text-white'
                 }`
               }
             >
@@ -103,7 +103,7 @@ export default function Navbar() {
                   alt={item.label}
                   className={`w-[20px] h-[20px] object-contain ${isActive ? 'opacity-100' : 'opacity-40'}`}
                 />
-                <span className={`text-[9px] uppercase tracking-widest font-semibold font-inter ${isActive ? 'text-white' : 'text-[#555]'}`}>
+                <span className={`text-[5px] tracking-widest font-semibold font-inter ${isActive ? 'text-white' : 'text-[#555]'}`}>
                   {item.label === 'Knockouts' ? 'KO' : item.label}
                 </span>
               </>
