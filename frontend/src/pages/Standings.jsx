@@ -43,7 +43,6 @@ export default function Standings() {
   if (standings.length === 0) {
     return (
       <div className="text-center py-24 bg-[#091424] border border-[#242424]/40 rounded-[10px] p-12">
-        <div className="text-5xl mb-4">📊</div>
         <div className="text-xl font-bold font-hm_text tracking-wider text-gray-400">NO STANDINGS AVAILABLE</div>
       </div>
     );
@@ -114,7 +113,7 @@ export default function Standings() {
                           onError={(e) => { e.target.style.display = 'none'; }}
                         />
                         {/* Code — hm_text on mobile, champion on desktop */}
-                        <span className="font-hm_text text-[0.85rem] tracking-wider text-[#F0F0F0]">
+                        <span className="font-hm_text text-[1rem] tracking-wider text-[#F0F0F0]">
                           {code}
                         </span>
                       </div>
