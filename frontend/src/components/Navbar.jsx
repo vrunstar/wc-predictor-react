@@ -1,143 +1,116 @@
-import React, { useState, useEffect } from 'react';
-import { NavLink, Link, useLocation } from 'react-router-dom';
-import { Menu, X, Shield } from 'lucide-react';
+import React from 'react';
+import { NavLink, Link } from 'react-router-dom';
+import { Shield } from 'lucide-react';
 
 const NAV_ITEMS = [
-  { label: 'Predictions', path: '/predictions' },
-  { label: 'Fixtures', path: '/fixtures' },
-  { label: 'Results', path: '/results' },
-  { label: 'Standings', path: '/standings' },
-  { label: 'Knockouts', path: '/knockouts' }
+  { label: 'Predictions', path: '/predictions', icon: '/icons/predictions.svg' },
+  { label: 'Fixtures',    path: '/fixtures',    icon: '/icons/fixtures.svg'    },
+  { label: 'Results',     path: '/results',     icon: '/icons/results.svg'     },
+  { label: 'Standings',   path: '/standings',   icon: '/icons/standings.svg'   },
+  { label: 'Knockouts',   path: '/knockouts',   icon: '/icons/knockouts.svg'   },
 ];
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const location = useLocation();
-  const isHome = location.pathname === '/';
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const threshold = isHome ? window.innerHeight * 0.3 : 20;
-      setScrolled(window.scrollY > threshold);
-    };
-    handleScroll();
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [isHome]);
-
-  const toggleMenu = () => setIsOpen(!isOpen);
-
-  const activeClassName = "text-white bg-white/10 border-white/20 font-semibold";
-  const inactiveClassName = "text-[#aaa] border-transparent hover:text-white hover:bg-white/5";
-
   return (
-    <nav
-      className={`fixed top-0 left-0 right-0 h-[60px] z-[9999] transition-all duration-500 ${
-        isHome && !scrolled ? 'opacity-0 pointer-events-none' : 'opacity-100'
-      }`}
-      style={{
-        backgroundImage: 'url(/navbar.png)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'top center',
-      }}
-    >
-      <div className="h-full px-4 md:px-8 flex items-center justify-between">
-
-        {/* LEFT: Logo */}
+    <>
+      {/* ── DESKTOP NAV ── */}
+      <nav
+        className="fixed top-0 left-0 right-0 h-[60px] z-[9999] hidden md:flex items-center justify-between px-[160px]"
+        style={{
+          backgroundImage: 'url(/navbar.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'top center',
+        }}
+      >
+        {/* Logo */}
         <Link to="/" className="flex items-center h-full">
-          <img
-            src="/logo.png"
-            alt="Logo"
-            className="h-[36px] w-auto block object-contain"
-          />
+          <img src="/logo.png" alt="Logo" className="h-[36px] w-auto object-contain" />
         </Link>
 
-        {/* CENTER: Nav links */}
-        <div className="hidden md:flex items-center justify-center gap-1 absolute left-1/2 transform -translate-x-1/2">
+        {/* Right: links + divider + admin */}
+        <div className="flex items-center gap-6">
           {NAV_ITEMS.map((item) => (
             <NavLink
               key={item.label}
               to={item.path}
               className={({ isActive }) =>
-                `px-3.5 py-[6px] rounded-[6px] transition-all duration-150 border text-xs uppercase tracking-wider font-medium ${
-                  isActive ? activeClassName : inactiveClassName
+                `text-xs uppercase tracking-widest font-semibold font-inter transition-colors duration-150 pb-[2px] ${
+                  isActive
+                    ? 'text-white border-b-2 border-white'
+                    : 'text-[#aaa] hover:text-white border-b-2 border-transparent'
                 }`
               }
             >
               {item.label}
             </NavLink>
           ))}
-        </div>
 
-        {/* RIGHT: Admin */}
-        <div className="hidden md:flex items-center">
+          {/* Divider */}
+          <div className="w-px h-4 bg-white/20" />
+
+          {/* Admin */}
           <NavLink
             to="/admin"
-            className={({ isActive }) =>
-              `p-2 rounded-full border transition-all duration-150 ${
-                isActive
-                  ? 'text-white bg-white/10 border-white/20'
-                  : 'text-[#aaa] border-transparent hover:text-white hover:bg-white/5'
-              }`
-            }
             title="Admin Panel"
-          >
-            <Shield size={18} />
-          </NavLink>
-        </div>
-
-        {/* Mobile toggles */}
-        <div className="flex items-center gap-2 md:hidden">
-          <NavLink
-            to="/admin"
-            onClick={() => setIsOpen(false)}
             className={({ isActive }) =>
-              `p-2 rounded-full border transition-all duration-150 ${
-                isActive
-                  ? 'text-white bg-white/10 border-white/20'
-                  : 'text-[#aaa] border-transparent hover:text-white'
-              }`
+              `transition-colors duration-150 ${isActive ? 'text-white' : 'text-[#aaa] hover:text-white'}`
             }
           >
             <Shield size={18} />
           </NavLink>
-          <button
-            onClick={toggleMenu}
-            className="text-[#aaa] hover:text-white p-2 focus:outline-none"
-            aria-label="Toggle navigation menu"
-          >
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
         </div>
+      </nav>
+
+      {/* ── MOBILE TOP BAR ── */}
+      <div
+        className="fixed top-0 left-0 right-0 h-[52px] z-[9999] flex md:hidden items-center justify-between px-4"
+        style={{
+          backgroundImage: 'url(/navbar.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'top center',
+        }}
+      >
+        <Link to="/">
+          <img src="/logo.png" alt="Logo" className="h-[30px] w-auto object-contain" />
+        </Link>
+        <NavLink
+          to="/admin"
+          className={({ isActive }) =>
+            `transition-colors duration-150 ${isActive ? 'text-white' : 'text-[#aaa] hover:text-white'}`
+          }
+        >
+          <Shield size={18} />
+        </NavLink>
       </div>
 
-      {/* Mobile Dropdown */}
-      {isOpen && (
-        <div
-          className="absolute top-[60px] left-0 right-0 border-b border-white/4 flex flex-col py-2 md:hidden"
-          style={{
-            backgroundImage: 'url(/bg-mobile.png)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}
-        >
-          {NAV_ITEMS.map((item) => (
-            <NavLink
-              key={item.label}
-              to={item.path}
-              onClick={() => setIsOpen(false)}
-              className={({ isActive }) =>
-                `px-6 py-3 border-b border-white/5 text-[0.95rem] transition-all duration-150 uppercase tracking-wider text-xs font-semibold ${
-                  isActive ? 'text-white bg-white/10' : 'text-[#ccc] hover:bg-white/5'
-                }`
-              }
-            >
-              {item.label}
-            </NavLink>
-          ))}
-        </div>
-      )}
-    </nav>
+      {/* ── MOBILE BOTTOM NAV ── */}
+      <nav className="fixed bottom-0 left-0 right-0 h-[60px] z-[9999] flex md:hidden items-center justify-around bg-[#0a0a0a] border-t border-white/8">
+        {NAV_ITEMS.map((item) => (
+          <NavLink
+            key={item.label}
+            to={item.path}
+            className={({ isActive }) =>
+              `flex flex-col items-center justify-center gap-[3px] flex-1 h-full transition-colors duration-150 ${
+                isActive ? 'text-white' : 'text-[#555] hover:text-[#aaa]'
+              }`
+            }
+          >
+            {({ isActive }) => (
+              <>
+                <img
+                  src={item.icon}
+                  alt={item.label}
+                  className={`w-[20px] h-[20px] object-contain ${isActive ? 'opacity-100' : 'opacity-40'}`}
+                />
+                <span className={`text-[9px] uppercase tracking-widest font-semibold font-inter ${isActive ? 'text-white' : 'text-[#555]'}`}>
+                  {item.label === 'Knockouts' ? 'KO' : item.label}
+                </span>
+                {isActive && <div className="absolute bottom-0 w-8 h-[2px] bg-white rounded-full" />}
+              </>
+            )}
+          </NavLink>
+        ))}
+      </nav>
+    </>
   );
 }
