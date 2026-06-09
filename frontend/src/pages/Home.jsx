@@ -75,10 +75,17 @@ export default function Home() {
         className="fixed inset-0 pointer-events-none"
         style={{ zIndex: scrollProgress >= 1 ? -1 : 10 }}
       >
-        {/* Blue bg always visible */}
+        {/* Plain blue at start, bg.png fades in on scroll */}
+        <div
+          className="absolute inset-0"
+          style={{ backgroundColor: '#1a237e' }}
+        />
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: "url('/bg.png')" }}
+          style={{
+            backgroundImage: "url('/bg.png')",
+            opacity: scrollProgress,
+          }}
         />
 
         {/* Dark overlay */}
@@ -93,11 +100,13 @@ export default function Home() {
           alt=""
           style={{
             position: 'absolute',
-            width: `${(1 - scrollProgress) * 80 + scrollProgress * 20}vw`,
-            top: `${scrollProgress * 10}px`,
-            left: `${(1 - scrollProgress) * 10 + scrollProgress * 0}vw`,
-            transform: `translate(${(1 - scrollProgress) * -50 + scrollProgress * 0}%, ${(1 - scrollProgress) * -50 + scrollProgress * 0}%)`,
-            marginTop: scrollProgress < 1 ? `${(1 - scrollProgress) * 50}vh` : '0',
+            width: `${(1 - scrollProgress) * 50 + scrollProgress * 15}vw`,
+            top: '50%',
+            left: '50%',
+            transform: `translate(
+              calc(-50% + ${scrollProgress * ((-50 * window.innerWidth / 100) + 8)}px),
+              calc(-50% + ${scrollProgress * ((-50 * window.innerHeight / 100) + 10)}px)
+            )`,
             opacity: 1,
             transition: 'none',
             objectFit: 'contain',
