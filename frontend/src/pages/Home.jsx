@@ -74,7 +74,7 @@ export default function Home() {
 
       {/* ── DESKTOP: Screen 1 hero ── */}
       <div className="hidden md:flex h-screen items-center justify-center -mt-[60px]">
-        <h1 className="font-hm_text text-[10rem] text-[#F0F0F0] leading-[0.9] uppercase select-none text-center">
+        <h1 className="font-hm_text text-[15rem] text-[#F0F0F0] leading-[0.9] uppercase select-none text-center">
           2026<br />WORLD CUP<br />PREDICTOR
         </h1>
       </div>
@@ -83,7 +83,7 @@ export default function Home() {
       <div className="flex md:hidden flex-col gap-5 pt-[62px] pb-[80px] px-4 min-h-screen">
 
         {/* Welcome text */}
-        <h1 className="font-hm_text text-[3rem] text-[#F0F0F0] leading-[0.9] uppercase select-none">
+        <h1 className="font-hm_text text-[5rem] text-[#F0F0F0] leading-[0.9] uppercase select-none">
           2026<br />WORLD CUP<br />PREDICTOR
         </h1>
 
