@@ -7,7 +7,7 @@ const NAV_ITEMS = [
   { label: 'Fixtures',    path: '/fixtures',    icon: '/icons/fixtures.svg'    },
   { label: 'Results',     path: '/results',     icon: '/icons/results.svg'     },
   { label: 'Standings',   path: '/standings',   icon: '/icons/standings.svg'   },
-  { label: 'Knockouts',   path: '/knockouts',   icon: '/icons/knockouts.svg'   },
+  { label: 'Knockouts',   path: '/knockouts',   icon: '/icons/ko.svg'   },
 ];
 
 export default function Navbar() {
