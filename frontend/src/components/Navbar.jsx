@@ -13,6 +13,13 @@ const NAV_ITEMS = [
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const isHome = window.location.pathname === '/';
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const threshold = isHome ? window.innerHeight * 0.3 : 20;
+      setScrolled(window.scrollY > threshold);
+    };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -32,7 +39,7 @@ export default function Navbar() {
   const inactiveClassName = "text-[#aaa] border-transparent hover:text-white hover:bg-white/5";
 
   return (
-    <nav className="fixed top-0 left-0 right-0 h-[60px] z-[9999]"
+    <nav className={`fixed top-0 left-0 right-0 h-[60px] z-[9999] transition-all duration-500 ${isHome && !scrolled ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
       style={{
         backgroundImage: 'url(/navbar.png)',
         backgroundSize: 'cover',
