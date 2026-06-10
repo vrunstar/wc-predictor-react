@@ -210,8 +210,8 @@ export default function Knockouts() {
     const pairHeight = CARD_H * 2 + CARD_GAP + 8; // total height of a pair block
 
     return (
-      <div className="overflow-x-auto pb-4">
-        <div className="flex flex-col gap-6 w-max px-2">
+      <div className="overflow-x-auto pb-4 -mx-4 px-4">
+        <div className="flex flex-col gap-8 w-max">
           {pairs.map((pair, pi) => {
             const svgH = pairHeight;
             const midY = svgH / 2;
@@ -219,34 +219,22 @@ export default function Knockouts() {
             const bottomCardMid = CARD_H + CARD_GAP + 8 + CARD_H / 2;
 
             return (
-              <div key={pi} className="flex items-center gap-0">
-                {/* Left: two stacked cards */}
-                <div className="flex flex-col gap-2 shrink-0">
+              <div key={pi} className="flex flex-row items-center">
+                {/* Left: two stacked cards — fixed width */}
+                <div className="flex flex-col gap-2 w-[150px] shrink-0">
                   {renderMobileCard(pair.top)}
                   {renderMobileCard(pair.bottom)}
                 </div>
 
-                {/* SVG paths: top card → midpoint, bottom card → midpoint, midpoint → right */}
+                {/* SVG L-paths */}
                 <svg width="40" height={svgH} className="shrink-0 overflow-visible">
-                  {/* Top card to midpoint */}
-                  <path
-                    d={`M 0 ${topCardMid} H 20 V ${midY}`}
-                    fill="none" stroke="white" strokeWidth="1.5" strokeOpacity="0.4"
-                  />
-                  {/* Bottom card to midpoint */}
-                  <path
-                    d={`M 0 ${bottomCardMid} H 20 V ${midY}`}
-                    fill="none" stroke="white" strokeWidth="1.5" strokeOpacity="0.4"
-                  />
-                  {/* Midpoint to right */}
-                  <path
-                    d={`M 20 ${midY} H 40`}
-                    fill="none" stroke="white" strokeWidth="1.5" strokeOpacity="0.4"
-                  />
+                  <path d={`M 0 ${topCardMid} H 20 V ${midY}`} fill="none" stroke="white" strokeWidth="1.5" strokeOpacity="0.5" />
+                  <path d={`M 0 ${bottomCardMid} H 20 V ${midY}`} fill="none" stroke="white" strokeWidth="1.5" strokeOpacity="0.5" />
+                  <path d={`M 20 ${midY} H 40`} fill="none" stroke="white" strokeWidth="1.5" strokeOpacity="0.5" />
                 </svg>
 
-                {/* Right: next stage card (dimmed if TBD) */}
-                <div className="shrink-0 flex items-center" style={{ height: svgH }}>
+                {/* Right: next stage card */}
+                <div className="w-[150px] shrink-0 flex items-center" style={{ height: svgH }}>
                   {renderMobileCard(pair.next, false, !pair.next)}
                 </div>
               </div>
