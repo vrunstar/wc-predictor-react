@@ -62,8 +62,7 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
 
 
 def get_ist() -> date:
-    ist = timezone(timedelta(hours=5, minutes=30))
-    return datetime.now(ist).date()
+    return date(2026, 6, 12)
 
 # ---------------------------------------------------------------------
 # TEAMS
@@ -410,3 +409,34 @@ def players_by_team(team_id: int) -> list[dict]:
         return res.data or []
     except Exception:
         return []
+
+# ---------------------------------------------------------------------
+# EVENTS
+# ---------------------------------------------------------------------
+@ttl_cache(ttl=60)
+def events_by_match(match_id: int) -> list[dict]:
+    try:
+        res = (supabase.table("events")
+               .select("*")
+               .eq("match_id", match_id)
+               .order("time")
+               .execute())
+        return res.data or []
+    except Exception:
+        return []
+
+def event_upsert(event: dict) -> dict:
+    res = (supabase.table("events")
+           .insert(event)
+           .execute())
+    events_by_match.cache_clear()
+    return res.data
+
+def event_delete(event_id: int) -> dict:
+    res = (supabase.table("events")
+           .delete()
+           .eq("id", event_id)
+           .execute())
+    # Clear all since we don't know which match_id this belonged to
+    clear_all_caches()
+    return res.data

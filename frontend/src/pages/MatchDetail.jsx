@@ -78,8 +78,8 @@ export default function MatchDetail() {
 
   const home = fixture.home || {};
   const away = fixture.away || {};
-  const homeCode = home.team_code || '???';
-  const awayCode = away.team_code || '???';
+  const homeCode = home.team_code || 'TBD';
+  const awayCode = away.team_code || 'TBD';
   const homeName = home.name || homeCode;
   const awayName = away.name || awayCode;
   const homeRank = ranks[home.team_id] || '—';

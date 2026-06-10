@@ -113,7 +113,10 @@ export default function Fixtures() {
                   {/* Score Row */}
                   <div className="grid grid-cols-[24px_1fr_auto_1fr_24px] items-center gap-[0.6rem] w-full">
                     <div className="flex items-center justify-center">
-                      <img src={getFlagUrl(homeCode)} alt={homeCode} className="w-[22px] md:w-[28px] h-auto object-contain border border-[#1e1e1e]" onError={(e) => { e.target.style.display = 'none'; }} />
+                    {homeCode
+                      ? <img src={getFlagUrl(homeCode)} alt={homeCode} className="w-[22px] md:w-[28px] h-auto object-contain border border-[#1e1e1e]" onError={(e) => { e.target.style.display = 'none'; }} />
+                      : <div className="w-[22px] md:w-[28px] h-[16px] bg-[#1e1e1e] rounded-[2px] border border-[#2a2a2a]" />
+                    }
                     </div>
                     <div className="font-hm_text md:font-champion text-[1.375rem] md:text-2xl tracking-wider text-[#F0F0F0] leading-none">
                       {homeCode}

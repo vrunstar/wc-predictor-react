@@ -46,5 +46,18 @@ export const api = {
   runPredictions: (secret) => fetchJson(`${API_BASE}/admin/run-predictions`, {
     method: 'POST',
     headers: { 'Authorization': `Bearer ${secret}` }
+  }),
+
+  getMatchEvents: (matchId) => fetchJson(`${API_BASE}/fixtures/${matchId}/events`),
+
+  addEvent: (event, secret) => fetchJson(`${API_BASE}/admin/events`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${secret}` },
+    body: JSON.stringify(event)
+  }),
+
+  deleteEvent: (eventId, secret) => fetchJson(`${API_BASE}/admin/events/${eventId}`, {
+    method: 'DELETE',
+    headers: { 'Authorization': `Bearer ${secret}` }
   })
 };

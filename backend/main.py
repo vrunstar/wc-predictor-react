@@ -67,6 +67,13 @@ class ResultSubmit(BaseModel):
     away_goals: int
     secret: str
 
+class EventUpsert(BaseModel):
+    match_id: int
+    team_id: int
+    player: str
+    event: str
+    time: Optional[int] = None
+
 # Helper dependency to verify admin secret
 def verify_admin_auth(authorization: Optional[str] = Header(None)):
     if not authorization:
@@ -207,6 +214,11 @@ def auth_logout():
     db.logout()
     return {"status": "success"}
 
+# EVENTS
+@app.get("/api/fixtures/{match_id}/events", response_model=List[dict])
+def get_map_events(match_id; int):
+    return db.events_by_match(match_id)
+
 # ADMIN ACTIONS
 @app.post("/api/admin/submit-result")
 def admin_submit_result(req: ResultSubmit):
@@ -232,6 +244,20 @@ def admin_run_predictions(authenticated: bool = Depends(verify_admin_auth)):
             db.pred_updated(pred)
             count += 1
         return {"status": "success", "count": count, "message": f"Successfully generated predictions for {count} match(es)."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+@app.post("/api/admin/events")
+def upsert_event(event: EventUpsert, authenticated: bool = Depends(verify_admin_auth)):
+    try:
+        return db.event_upsert(event.model_dump())
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.delete("/api/admin/events/{event_id}")
+def delete_event(event_id: int, authenticated: bool = Depends(verify_admin_auth)):
+    try:
+        return db.event_delete(event_id)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
