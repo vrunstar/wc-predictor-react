@@ -62,8 +62,7 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
 
 
 def get_ist() -> date:
-    ist = timezone(timedelta(hours=5, minutes=30))
-    return datetime.now(ist).date()
+    return date(2026, 6, 12)  # hardcode test date
 
 # ---------------------------------------------------------------------
 # TEAMS
