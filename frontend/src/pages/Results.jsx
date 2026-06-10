@@ -52,14 +52,9 @@ export default function Results() {
 
   if (error) {
     return (
-      <div className="text-center py-24 bg-[#091424] border border-[#242424]/40 rounded-[10px] p-6">
-        <div className="text-red-500 text-lg mb-2">⚠️ {error}</div>
-        <button 
-          onClick={() => window.location.reload()}
-          className="px-4 py-2 bg-white text-black font-semibold rounded hover:bg-neutral-200"
-        >
-          Retry
-        </button>
+      <div className="text-center bg-[#091424] border border-[#242424]/40 rounded-[10px] p-6">
+        <div className="text-red-500 text-lg mb-2">{error}</div>
+        <button onClick={() => window.location.reload()} className="px-10 py-1 bg-white text-black font-semibold rounded hover:bg-neutral-200">Retry</button>
       </div>
     );
   }

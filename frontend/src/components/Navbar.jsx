@@ -15,7 +15,7 @@ export default function Navbar() {
     <>
       {/* ── DESKTOP NAV ── */}
       <nav
-        className="fixed top-0 left-0 right-0 h-[60px] z-[9999] hidden md:flex items-center justify-between px-[160px]"
+        className="fixed top-0 left-0 right-0 h-[70px] z-[9999] hidden md:flex items-center justify-between px-[160px]"
         style={{
           backgroundColor: '#0a0a0a',
           backgroundSize: 'cover',
@@ -36,7 +36,7 @@ export default function Navbar() {
               className={({ isActive }) =>
                 `relative text-xs tracking-widest font-semibold font-inter transition-colors duration-150 ${
                   isActive
-                    ? 'text-white after:absolute after:bottom-[-18px] after:left-0 after:right-0 after:h-[2px] after:bg-white'
+                    ? 'text-white after:absolute after:bottom-[-27px] after:left-0 after:right-0 after:h-[2px] after:bg-white'
                     : 'text-[#aaa] hover:text-white'
                 }`
               }
@@ -84,7 +84,7 @@ export default function Navbar() {
       </div>
 
       {/* ── MOBILE BOTTOM NAV ── */}
-      <nav className="fixed bottom-0 left-0 right-0 h-[60px] z-[9999] flex md:hidden items-center justify-around bg-[#0a0a0a]">
+      <nav className="fixed bottom-0 left-0 right-0 h-[70px] z-[9999] flex md:hidden items-center justify-around bg-[#0a0a0a]">
         {NAV_ITEMS.map((item) => (
           <NavLink
             key={item.label}
@@ -101,9 +101,9 @@ export default function Navbar() {
                 <img
                   src={item.icon}
                   alt={item.label}
-                  className={`w-[20px] h-[20px] object-contain ${isActive ? 'opacity-100' : 'opacity-40'}`}
+                  className={`w-[25px] h-[25px] object-contain ${isActive ? 'opacity-100' : 'opacity-40'}`}
                 />
-                <span className={`text-[5px] tracking-widest font-semibold font-inter ${isActive ? 'text-white' : 'text-[#555]'}`}>
+                <span className={`text-[7.5px] tracking-widest font-medium font-inter ${isActive ? 'text-white' : 'text-[#555]'}`}>
                   {item.label === 'Knockouts' ? 'KO' : item.label}
                 </span>
               </>
