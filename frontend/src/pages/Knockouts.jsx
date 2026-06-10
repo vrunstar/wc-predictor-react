@@ -254,12 +254,12 @@ export default function Knockouts() {
       {/* ── MOBILE ── */}
       <div className="flex md:hidden flex-col gap-4 pb-24">
         {/* Stage tabs */}
-        <div className="flex border border-[#242424]/40 rounded-[8px] overflow-hidden">
+        <div className="flex border border-[#ffffff]/40 rounded-[8px] overflow-hidden">
           {STAGES.map((s) => (
             <button
               key={s.key}
               onClick={() => setActiveStage(s.key)}
-              className={`flex-1 py-2 text-xs uppercase tracking-widest font-semibold font-inter transition-colors ${activeStage === s.key ? 'bg-white text-black' : 'bg-transparent text-[#555]'}`}
+              className={`flex-1 py-2 text-xs tracking-widest font-semibold font-inter transition-colors ${activeStage === s.key ? 'bg-white text-black' : 'bg-transparent text-[#c4c4c4]'}`}
             >
               {s.label}
             </button>

@@ -94,8 +94,8 @@ export default function Fixtures() {
             {matches.map((fx) => {
               const home = fx.home || {};
               const away = fx.away || {};
-              const homeCode = home.team_code || '???';
-              const awayCode = away.team_code || '???';
+              const homeCode = home.team_code || 'TBD';
+              const awayCode = away.team_code || 'TBD';
               const homeRank = ranks[home.team_id] || '—';
               const awayRank = ranks[away.team_id] || '—';
               const homeForm = forms[home.team_id] || '';
