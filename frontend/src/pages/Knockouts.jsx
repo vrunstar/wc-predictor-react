@@ -3,12 +3,18 @@ import { useNavigate } from 'react-router-dom';
 import { api } from '../utils/api';
 import { getFlagUrl } from '../utils/helpers';
 
+const CARD_W = 130;
+const CARD_H = 60;
+const COL_GAP = 9;
+
 export default function Knockouts() {
   const [stages, setStages] = useState({ r32: [], r16: [], qf: [], sf: [], final: null, third: null });
   const [slotToCode, setSlotToCode] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeStage, setActiveStage] = useState('r32');
+  const bracketRef = useRef(null);
+  const [paths, setPaths] = useState([]);
 
   const navigate = useNavigate();
 
@@ -60,10 +66,73 @@ export default function Knockouts() {
     loadData();
   }, []);
 
+  // Calculate SVG paths after render
+  useEffect(() => {
+    if (!bracketRef.current) return;
+    const container = bracketRef.current;
+    const containerRect = container.getBoundingClientRect();
+
+    const cardEls = container.querySelectorAll('[data-card-id]');
+    const cardMap = {};
+    cardEls.forEach(el => {
+      const id = el.getAttribute('data-card-id');
+      const rect = el.getBoundingClientRect();
+      cardMap[id] = {
+        left: rect.left - containerRect.left,
+        right: rect.right - containerRect.left,
+        top: rect.top - containerRect.top,
+        bottom: rect.bottom - containerRect.top,
+        midY: rect.top - containerRect.top + rect.height / 2,
+      };
+    });
+
+    const newPaths = [];
+
+    // Connect pairs: r32_l → r16_l, r16_l → qf_l, qf_l → sf_l, sf_l → final
+    const connections = [
+      { from: 'r32_l', to: 'r16_l', count: 4 },
+      { from: 'r32_r', to: 'r16_r', count: 4 },
+      { from: 'r16_l', to: 'qf_l', count: 2 },
+      { from: 'r16_r', to: 'qf_r', count: 2 },
+      { from: 'qf_l', to: 'sf_l', count: 1 },
+      { from: 'qf_r', to: 'sf_r', count: 1 },
+      { from: 'sf_l', to: 'final', count: 1 },
+      { from: 'sf_r', to: 'final', count: 1 },
+    ];
+
+    connections.forEach(({ from, to, count }) => {
+      for (let i = 0; i < count; i++) {
+        const topId = `${from}_${i * 2}`;
+        const botId = `${from}_${i * 2 + 1}`;
+        const nextId = `${to}_${i}`;
+
+        const topCard = cardMap[topId];
+        const botCard = cardMap[botId];
+        const nextCard = cardMap[nextId];
+
+        if (!topCard || !botCard || !nextCard) continue;
+
+        const midY = (topCard.midY + botCard.midY) / 2;
+        const x1 = topCard.right;
+        const x2 = nextCard.left;
+        const midX = x1 + (x2 - x1) / 2;
+
+        // Top card → midpoint
+        newPaths.push(`M ${x1} ${topCard.midY} H ${midX} V ${midY}`);
+        // Bottom card → midpoint
+        newPaths.push(`M ${x1} ${botCard.midY} H ${midX} V ${midY}`);
+        // midpoint → next card
+        newPaths.push(`M ${midX} ${midY} H ${x2}`);
+      }
+    });
+
+    setPaths(newPaths);
+  }, [stages, loading]);
+
   if (loading) return <div className="flex items-center justify-center py-24"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div></div>;
   if (error) return (
     <div className="text-center py-24 bg-[#091424] border border-[#242424]/40 rounded-[10px] p-6">
-      <div className="text-red-500 text-lg mb-2">⚠️ {error}</div>
+      <div className="text-red-500 text-lg mb-2">{error}</div>
       <button onClick={() => window.location.reload()} className="px-4 py-2 bg-white text-black font-semibold rounded hover:bg-neutral-200">Retry</button>
     </div>
   );
@@ -104,9 +173,13 @@ export default function Knockouts() {
     );
   };
 
-  // Desktop bracket card
-  const renderBracketCard = (fx, isFinal = false) => {
-    if (!fx) return <div className="w-[130px] h-[60px] bg-[#0d0d0d]/40 border border-dashed border-[#2a2a2a] rounded-[6px]" />;
+  const renderBracketCard = (fx, isFinal = false, cardId = null) => {
+    if (!fx) return (
+      <div
+        data-card-id={cardId}
+        className="w-[130px] h-[60px] bg-[#0d0d0d]/40 border border-dashed border-[#2a2a2a] rounded-[6px]"
+      />
+    );
     const home = fx.home || {}, away = fx.away || {};
     const results = fx.results || [], res = results[0] || {};
     const hasResult = results.length > 0;
@@ -115,6 +188,7 @@ export default function Knockouts() {
     const borderClass = isFinal ? 'border-white border-2' : 'border-[#2a2a2a] hover:border-white/30';
     return (
       <div
+        data-card-id={cardId}
         onClick={() => fx.match_id && navigate(`/match/${fx.match_id}`)}
         className={`bg-[#091424] rounded-[6px] border ${borderClass} ${fx.match_id ? 'cursor-pointer' : 'cursor-default'} p-[0.4rem_0.55rem] w-[130px] flex flex-col gap-[0.2rem] shrink-0 transition-all duration-150`}
       >
@@ -124,11 +198,8 @@ export default function Knockouts() {
     );
   };
 
-  // Mobile card — wider
   const renderMobileCard = (fx, isFinal = false, dimmed = false) => {
-    if (!fx) return (
-      <div className="w-[150px] h-[64px] bg-[#0d0d0d]/40 border border-dashed border-[#2a2a2a] rounded-[8px] shrink-0" />
-    );
+    if (!fx) return <div className="w-[150px] h-[64px] bg-[#0d0d0d]/40 border border-dashed border-[#2a2a2a] rounded-[8px] shrink-0" />;
     const home = fx.home || {}, away = fx.away || {};
     const results = fx.results || [], res = results[0] || {};
     const hasResult = results.length > 0;
@@ -146,19 +217,22 @@ export default function Knockouts() {
     );
   };
 
-  const renderColumn = (matches) => (
-    <div className="flex flex-col justify-around h-[82vh] shrink-0">
-      {matches.map((fx) => (
-        <div key={fx.match_id || fx.home_label + fx.away_label}>{renderBracketCard(fx)}</div>
-      ))}
-    </div>
-  );
-
   const r32_l = stages.r32.slice(0, 8), r32_r = stages.r32.slice(8);
   const r16_l = stages.r16.slice(0, 4), r16_r = stages.r16.slice(4);
   const qf_l = stages.qf.slice(0, 2), qf_r = stages.qf.slice(2);
   const sf_l = stages.sf.slice(0, 1), sf_r = stages.sf.slice(1);
 
+  const renderColumn = (matches, colId) => (
+    <div className="flex flex-col justify-around h-[82vh] shrink-0">
+      {matches.map((fx, i) => (
+        <div key={fx?.match_id || i}>
+          {renderBracketCard(fx, false, `${colId}_${i}`)}
+        </div>
+      ))}
+    </div>
+  );
+
+  // Mobile bracket
   const STAGES = [
     { key: 'r32', label: 'R32' },
     { key: 'r16', label: 'R16' },
@@ -167,8 +241,6 @@ export default function Knockouts() {
     { key: 'final', label: 'Final' },
   ];
 
-  // For each stage, current matches and next stage matches (paired)
-  // Each pair of current[i*2], current[i*2+1] feeds into next[i]
   const stageConfig = {
     r32: { current: [...r32_l, ...r32_r], next: [...stages.r16] },
     r16: { current: [...r16_l, ...r16_r], next: [...stages.qf] },
@@ -178,26 +250,19 @@ export default function Knockouts() {
   };
 
   const { current: currentMatches, next: nextMatches } = stageConfig[activeStage] || { current: [], next: [] };
+  const CARD_H_M = 64, CARD_GAP_M = 16;
 
-  // Card + path heights
-  const CARD_H = 64;   // px, matches the card height
-  const CARD_GAP = 16; // gap between cards in a pair
-
-  // Render the mobile left-to-right bracket for active stage
   const renderMobileBracket = () => {
     if (activeStage === 'final') {
       return (
         <div className="flex flex-col gap-3 px-2">
           {currentMatches.map((fx, i) => (
-            <div key={fx?.match_id || i}>
-              {renderMobileCard(fx, i === 0)}
-            </div>
+            <div key={fx?.match_id || i}>{renderMobileCard(fx, i === 0)}</div>
           ))}
         </div>
       );
     }
 
-    // Group current matches into pairs, each pair → one next match
     const pairs = [];
     for (let i = 0; i < currentMatches.length; i += 2) {
       pairs.push({
@@ -207,7 +272,7 @@ export default function Knockouts() {
       });
     }
 
-    const pairHeight = CARD_H * 2 + CARD_GAP + 8; // total height of a pair block
+    const pairHeight = CARD_H_M * 2 + CARD_GAP_M + 8;
 
     return (
       <div className="overflow-x-auto pb-4 -mx-4 px-4">
@@ -215,25 +280,19 @@ export default function Knockouts() {
           {pairs.map((pair, pi) => {
             const svgH = pairHeight;
             const midY = svgH / 2;
-            const topCardMid = CARD_H / 2;
-            const bottomCardMid = CARD_H + CARD_GAP + 8 + CARD_H / 2;
-
+            const topCardMid = CARD_H_M / 2;
+            const bottomCardMid = CARD_H_M + CARD_GAP_M + 8 + CARD_H_M / 2;
             return (
               <div key={pi} className="flex flex-row items-center">
-                {/* Left: two stacked cards — fixed width */}
                 <div className="flex flex-col gap-2 w-[150px] shrink-0">
                   {renderMobileCard(pair.top)}
                   {renderMobileCard(pair.bottom)}
                 </div>
-
-                {/* SVG L-paths */}
                 <svg width="40" height={svgH} className="shrink-0 overflow-visible">
                   <path d={`M 0 ${topCardMid} H 20 V ${midY}`} fill="none" stroke="white" strokeWidth="1.5" strokeOpacity="0.5" />
                   <path d={`M 0 ${bottomCardMid} H 20 V ${midY}`} fill="none" stroke="white" strokeWidth="1.5" strokeOpacity="0.5" />
                   <path d={`M 20 ${midY} H 40`} fill="none" stroke="white" strokeWidth="1.5" strokeOpacity="0.5" />
                 </svg>
-
-                {/* Right: next stage card */}
                 <div className="w-[150px] shrink-0 flex items-center" style={{ height: svgH }}>
                   {renderMobileCard(pair.next, false, !pair.next)}
                 </div>
@@ -253,7 +312,6 @@ export default function Knockouts() {
 
       {/* ── MOBILE ── */}
       <div className="flex md:hidden flex-col gap-4 pb-24">
-        {/* Stage tabs */}
         <div className="flex border border-[#ffffff]/40 rounded-[8px] overflow-hidden">
           {STAGES.map((s) => (
             <button
@@ -265,30 +323,49 @@ export default function Knockouts() {
             </button>
           ))}
         </div>
-
         {renderMobileBracket()}
       </div>
 
-      {/* ── DESKTOP bracket ── */}
-      <div className="hidden md:flex justify-start xl:justify-center overflow-x-auto select-none py-4 w-full">
-        <div className="grid grid-cols-[repeat(9,130px)] gap-[9px] w-max mx-auto items-center">
-          {renderColumn(r32_l)}
-          {renderColumn(r16_l)}
-          {renderColumn(qf_l)}
-          {renderColumn(sf_l)}
-          <div className="flex flex-col items-center justify-center h-[82vh] gap-6 w-[130px] shrink-0">
-            <div className="flex-1 flex flex-col items-center justify-end pb-3 gap-2">
-              <img src="/trophy.png" alt="World Cup Trophy" className="w-[40px] h-auto object-contain select-none" />
-              {renderBracketCard(stages.final, true)}
+      {/* ── DESKTOP ── */}
+      <div className="hidden md:block overflow-x-auto select-none py-4 w-full">
+        <div
+          ref={bracketRef}
+          className="relative w-max mx-auto"
+          style={{ minHeight: '82vh' }}
+        >
+          {/* SVG path overlay */}
+          <svg
+            className="absolute inset-0 pointer-events-none"
+            style={{ width: '100%', height: '100%', overflow: 'visible' }}
+          >
+            {paths.map((d, i) => (
+              <path key={i} d={d} fill="none" stroke="white" strokeWidth="1.5" strokeOpacity="0.35" />
+            ))}
+          </svg>
+
+          {/* Grid */}
+          <div className="grid grid-cols-[repeat(9,130px)] gap-[9px] items-center" style={{ height: '82vh' }}>
+            {renderColumn(r32_l, 'r32_l')}
+            {renderColumn(r16_l, 'r16_l')}
+            {renderColumn(qf_l, 'qf_l')}
+            {renderColumn(sf_l, 'sf_l')}
+
+            {/* Center: Final + 3rd */}
+            <div className="flex flex-col items-center justify-center h-full gap-6 w-[130px] shrink-0">
+              <div className="flex-1 flex flex-col items-center justify-end pb-3 gap-2">
+                <img src="/trophy.png" alt="Trophy" className="w-[40px] h-auto object-contain select-none" />
+                {renderBracketCard(stages.final, true, 'final_0')}
+              </div>
+              <div className="flex-1 flex flex-col items-center justify-start pt-3 gap-2">
+                {renderBracketCard(stages.third, false, 'third_0')}
+              </div>
             </div>
-            <div className="flex-1 flex flex-col items-center justify-start pt-3 gap-2">
-              {renderBracketCard(stages.third, false)}
-            </div>
+
+            {renderColumn(sf_r, 'sf_r')}
+            {renderColumn(qf_r, 'qf_r')}
+            {renderColumn(r16_r, 'r16_r')}
+            {renderColumn(r32_r, 'r32_r')}
           </div>
-          {renderColumn(sf_r)}
-          {renderColumn(qf_r)}
-          {renderColumn(r16_r)}
-          {renderColumn(r32_r)}
         </div>
       </div>
     </div>
