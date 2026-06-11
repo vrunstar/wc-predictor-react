@@ -67,6 +67,13 @@ class ResultSubmit(BaseModel):
     away_goals: int
     secret: str
 
+class EventUpsert(BaseModel):
+    match_id: int
+    team_id: int
+    player: str
+    event: str
+    time: Optional[int] = None
+
 # Helper dependency to verify admin secret
 def verify_admin_auth(authorization: Optional[str] = Header(None)):
     if not authorization:
@@ -189,6 +196,11 @@ def get_stadium_by_city(city: str):
 def get_players_by_team(team_id: int):
     return db.players_by_team(team_id)
 
+# EVENTS
+@app.get("/api/fixtures/{match_id}/events", response_model=List[dict])
+def get_match_events(match_id: int):
+    return db.events_by_match(match_id)
+
 # AUTH / VERIFY
 @app.post("/api/auth/verify-secret")
 def verify_secret(req: SecretVerifyRequest):
@@ -270,6 +282,21 @@ def get_h2h(home_code: str, away_code: str):
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error reading H2H data: {str(e)}")
+    
+# EVENTS SUBMIT
+@app.post("/api/admin/events")
+def upsert_event(event: EventUpsert, authenticated: bool = Depends(verify_admin_auth)):
+    try:
+        return db.event_upsert(event.model_dump())
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.delete("/api/admin/events/{event_id}")
+def delete_event(event_id: int, authenticated: bool = Depends(verify_admin_auth)):
+    try:
+        return db.event_delete(event_id)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 # KIT COLORS
 @app.get("/api/kit-colors")

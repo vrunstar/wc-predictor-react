@@ -409,3 +409,34 @@ def players_by_team(team_id: int) -> list[dict]:
         return res.data or []
     except Exception:
         return []
+
+
+# ---------------------------------------------------------------------
+# EVENTS
+# ---------------------------------------------------------------------
+@ttl_cache(ttl=60)
+def events_by_match(match_id: int) -> list[dict]:
+    try:
+        res = (supabase.table("events")
+               .select("*")
+               .eq("match_id", match_id)
+               .order("time")
+               .execute())
+        return res.data or []
+    except Exception:
+        return []
+
+def event_upsert(event: dict) -> dict:
+    res = (supabase.table("events")
+           .insert(event)
+           .execute())
+    events_by_match.cache_clear()
+    return res.data
+
+def event_delete(event_id: int) -> dict:
+    res = (supabase.table("events")
+           .delete()
+           .eq("id", event_id)
+           .execute())
+    clear_all_caches()
+    return res.data

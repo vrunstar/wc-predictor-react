@@ -31,7 +31,7 @@ export const api = {
   getH2H: (homeCode, awayCode) => fetchJson(`${API_BASE}/h2h/${homeCode}/${awayCode}`),
   getKitColors: () => fetchJson(`${API_BASE}/kit-colors`),
   getMatchEvents: (matchId) => fetchJson(`${API_BASE}/fixtures/${matchId}/events`),
-  
+
   verifySecret: (secret) => fetchJson(`${API_BASE}/auth/verify-secret`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -47,5 +47,23 @@ export const api = {
   runPredictions: (secret) => fetchJson(`${API_BASE}/admin/run-predictions`, {
     method: 'POST',
     headers: { 'Authorization': `Bearer ${secret}` }
-  })
+  }),
+
+  runPredictions: (secret) => fetchJson(`${API_BASE}/admin/run-predictions`, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${secret}` }
+  }),          // <-- add comma here
+
+  getMatchEvents: (matchId) => fetchJson(`${API_BASE}/fixtures/${matchId}/events`),
+
+  addEvent: (event, secret) => fetchJson(`${API_BASE}/admin/events`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${secret}` },
+    body: JSON.stringify(event)
+  }),
+
+  deleteEvent: (eventId, secret) => fetchJson(`${API_BASE}/admin/events/${eventId}`, {
+    method: 'DELETE',
+    headers: { 'Authorization': `Bearer ${secret}` }
+  }),
 };
