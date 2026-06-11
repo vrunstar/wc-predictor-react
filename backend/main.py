@@ -220,8 +220,8 @@ def auth_logout():
 
 # EVENTS
 @app.get("/api/fixtures/{match_id}/events", response_model=List[dict])
-def get_match_events(mid: int):
-    return db.events_by_match(mid)
+def get_match_events(match_id: int):
+    return db.events_by_match(match_id)
 
 # ADMIN ACTIONS
 @app.post("/api/admin/submit-result")
