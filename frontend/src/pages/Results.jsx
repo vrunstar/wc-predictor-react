@@ -16,15 +16,21 @@ export default function Results() {
     async function loadData() {
       try {
         setLoading(true);
-        const [predictionsData, ranksData, formsData] = await Promise.all([
+        const [resultsData, predictionsData, ranksData, formsData] = await Promise.all([
+          api.getResults(),
           api.getPredictions(),
           api.getStandingsRanks(),
           api.getStandingsForm()
         ]);
-        const completedData = predictionsData.filter((pred) => {
-          const fx = pred.fixture || {};
-          return fx.results !== null && fx.results !== undefined;
-        });
+        const predMap = Object.fromEntries(predictionsData.map(p => [p.match_id, p]));
+        const completedData = resultsData.map(r => ({
+          ...predMap[r.match_id],
+          match_id: r.match_id,
+          fixture: {
+            ...r.fixture,
+            results: { home_goals: r.home_goals, away_goals: r.away_goals }
+          }
+        }));
         setCompleted(completedData);
         setRanks(ranksData);
         setForms(formsData);
