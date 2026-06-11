@@ -15,6 +15,7 @@ export default function MatchDetail() {
   const [h2h, setH2h] = useState(null);
   const [homePlayers, setHomePlayers] = useState([]);
   const [awayPlayers, setAwayPlayers] = useState([]);
+  const [events, setEvents] = useState([]);
   const [kitColors, setKitColors] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -41,17 +42,19 @@ export default function MatchDetail() {
         const home = fixtureData.home || {};
         const away = fixtureData.away || {};
 
-        const [h2hData, stadiumData, homePlayersData, awayPlayersData] = await Promise.all([
+        const [h2hData, stadiumData, homePlayersData, awayPlayersData, eventsData] = await Promise.all([
           api.getH2H(home.team_code, away.team_code),
           fixtureData.city ? api.getStadium(fixtureData.city) : Promise.resolve({}),
           home.team_id ? api.getPlayers(home.team_id) : Promise.resolve([]),
-          away.team_id ? api.getPlayers(away.team_id) : Promise.resolve([])
+          away.team_id ? api.getPlayers(away.team_id) : Promise.resolve([]),
+          api.getMatchEvents(parseInt(matchId))
         ]);
 
         setH2h(h2hData);
         setStadium(stadiumData);
         setHomePlayers(homePlayersData);
         setAwayPlayers(awayPlayersData);
+        setEvents(eventsData || []);
         setActiveTab(home.team_code || 'home');
       } catch (err) {
         console.error(err);
@@ -71,7 +74,7 @@ export default function MatchDetail() {
 
   if (error || !fixture) return (
     <div className="text-center py-24 bg-[#091424] border border-[#242424]/40 rounded-[10px] p-6">
-      <div className="text-red-500 text-lg mb-2">⚠️ {error || 'Match not found'}</div>
+      <div className="text-red-500 text-lg mb-2">{error || 'Match not found'}</div>
       <Link to="/fixtures" className="px-4 py-2 bg-white text-black font-semibold rounded hover:bg-neutral-200">Back to Fixtures</Link>
     </div>
   );
@@ -102,7 +105,6 @@ export default function MatchDetail() {
   const stadCapacity = stadium.capacity ? stadium.capacity.toLocaleString() : '—';
   const stadMapsUrl = `https://www.google.com/maps/search/${encodeURIComponent(stadName + ' ' + stadCity)}`;
 
-  // Score block
   const scoreBlock = res ? (
     <div className="flex flex-col items-center">
       <div className="font-champion text-[2.5rem] md:text-[3rem] text-white tracking-widest leading-none select-none">
@@ -130,6 +132,48 @@ export default function MatchDetail() {
     </div>
   );
 
+  const CardRect = ({ type }) => {
+    if (type === 'yellow_card') return <span className="inline-block w-[10px] h-[14px] bg-yellow-400 rounded-[2px] ml-1 shrink-0 align-middle" />;
+    if (type === 'red_card') return <span className="inline-block w-[10px] h-[14px] bg-red-600 rounded-[2px] ml-1 shrink-0 align-middle" />;
+    return null;
+  };
+
+  const eventSuffix = (type) => {
+    if (type === 'own_goal') return ' (og)';
+    if (type === 'penalty') return ' (p)';
+    return '';
+  };
+
+  const renderEventsTimeline = () => (
+    <div className="flex flex-col gap-1.5">
+      {events.map((ev, i) => {
+        const isHome = ev.team_id === home.team_id;
+        const suffix = eventSuffix(ev.event);
+        return (
+          <div key={i} className="grid grid-cols-[1fr_44px_1fr] items-center gap-1">
+            <div className="flex items-center justify-end">
+              {isHome && (
+                <span className="font-inter text-[0.78rem] text-[#e0e0e0] text-right flex items-center gap-1">
+                  {ev.player}{suffix}<CardRect type={ev.event} />
+                </span>
+              )}
+            </div>
+            <div className="font-inter text-[0.68rem] text-[#555] font-bold text-center whitespace-nowrap">
+              {ev.time ? `${ev.time}'` : '—'}
+            </div>
+            <div className="flex items-center">
+              {!isHome && (
+                <span className="font-inter text-[0.78rem] text-[#e0e0e0] flex items-center gap-1">
+                  {ev.player}{suffix}<CardRect type={ev.event} />
+                </span>
+              )}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+
   const renderPlayersCol = (players) => {
     if (!players || players.length === 0) return <div className="text-[#333] text-[0.78rem] font-medium">—</div>;
     return (
@@ -138,13 +182,8 @@ export default function MatchDetail() {
           const photoUrl = getPlayerPhotoUrl(p.photo_key);
           const googleUrl = `https://www.google.com/search?q=${encodeURIComponent(p.full_name + ' footballer')}`;
           return (
-            <a
-              key={p.player_id}
-              href={googleUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-3 bg-white/2 border border-[#3a3a3a] rounded-[8px] p-2 hover:border-white/30 transition-colors"
-            >
+            <a key={p.player_id} href={googleUrl} target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-3 bg-white/2 border border-[#3a3a3a] rounded-[8px] p-2 hover:border-white/30 transition-colors">
               {photoUrl ? (
                 <img src={photoUrl} alt={p.full_name} className="w-[45px] h-[45px] rounded-full object-cover border border-[#2a2a2a] shrink-0" onError={(e) => { e.target.style.display = 'none'; }} />
               ) : (
@@ -170,15 +209,14 @@ export default function MatchDetail() {
           MATCH {matchId}
           <span className="font-inter text-sm font-extrabold text-gray-400 tracking-widest uppercase">{matchStage}</span>
         </div>
-        <button onClick={() => navigate(-1)} className="absolute right-0 flex items-center justify-center w-8 h-8 bg-[#091424] border border-[#242424]/40 hover:border-white/50 hover:text-white rounded-[6px] text-gray-500 font-inter text-xs font-bold transition-all duration-150">✕</button>
+        <button onClick={() => navigate(-1)} className="absolute right-0 flex items-center justify-center w-8 h-8 bg-[#091424] border border-[#242424]/40 hover:border-white/50 hover:text-white rounded-[6px] text-gray-500 font-inter text-xs font-bold transition-all duration-150">x</button>
       </div>
 
-      {/* ── MOBILE layout ── */}
+      {/* ── MOBILE ── */}
       <div className="flex md:hidden flex-col gap-3">
 
-        {/* Team block — no card */}
+        {/* Team block */}
         <div className="flex flex-col gap-2 px-1">
-          {/* Row 1: flags + codes + score center */}
           <div className="grid grid-cols-[1fr_auto_1fr] items-center">
             <div className="flex items-center gap-2">
               <img src={getFlagUrl(homeCode)} alt={homeCode} className="w-[28px] h-auto object-contain border border-[#1e1e1e] shrink-0" onError={(e) => { e.target.style.display = 'none'; }} />
@@ -190,7 +228,6 @@ export default function MatchDetail() {
               <img src={getFlagUrl(awayCode)} alt={awayCode} className="w-[28px] h-auto object-contain border border-[#1e1e1e] shrink-0" onError={(e) => { e.target.style.display = 'none'; }} />
             </div>
           </div>
-          {/* Row 2: full names */}
           <div className="grid grid-cols-[1fr_auto_1fr]">
             <span className="font-inter text-xs text-[#444] font-medium">{homeName}</span>
             <span className="w-8" />
@@ -198,7 +235,7 @@ export default function MatchDetail() {
           </div>
         </div>
 
-        {/* Rank + Form card */}
+        {/* Rank + Form */}
         <div className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-3">
           <div className="grid grid-cols-[1fr_auto_1fr] items-center">
             <div className="flex items-center gap-2">
@@ -229,14 +266,10 @@ export default function MatchDetail() {
           </div>
         )}
 
-        {/* Venue card */}
+        {/* Venue */}
         {(stadName || stadCity) && (
           <a href={stadMapsUrl} target="_blank" rel="noopener noreferrer" className="relative border border-[#2a2a2a] rounded-[10px] overflow-hidden h-[140px] block">
-            {stadPhotoKey ? (
-              <div style={{ backgroundImage: `url(${getStadiumPhotoUrl(stadPhotoKey)})` }} className="absolute inset-0 bg-cover bg-center" />
-            ) : (
-              <div className="absolute inset-0 bg-[#0B0B0B]" />
-            )}
+            {stadPhotoKey ? <div style={{ backgroundImage: `url(${getStadiumPhotoUrl(stadPhotoKey)})` }} className="absolute inset-0 bg-cover bg-center" /> : <div className="absolute inset-0 bg-[#0B0B0B]" />}
             <div className="absolute inset-0 bg-black/70" />
             <div className="relative z-10 flex flex-col justify-center items-center h-full text-center px-4">
               <div className="font-champion text-[1.4rem] text-[#F0F0F0] tracking-wider leading-none">{stadName}</div>
@@ -259,8 +292,16 @@ export default function MatchDetail() {
           </div>
         )}
 
-        {/* Key Players — tabs */}
-        {(homePlayers.length > 0 || awayPlayers.length > 0) && (
+        {/* Events — if result exists */}
+        {res && events.length > 0 && (
+          <div className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-3">
+            <div className="font-inter text-[0.6rem] text-gray-500 font-bold tracking-[0.15em] uppercase mb-3 text-center">Match Events</div>
+            {renderEventsTimeline()}
+          </div>
+        )}
+
+        {/* Key Players — only if no result */}
+        {!res && (homePlayers.length > 0 || awayPlayers.length > 0) && (
           <div className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-3">
             <div className="font-inter text-[0.6rem] text-gray-500 font-bold tracking-[0.15em] uppercase mb-3 text-center">Key Players</div>
             <div className="flex mb-3 border border-[#2a2a2a] rounded-[6px] overflow-hidden">
@@ -273,7 +314,7 @@ export default function MatchDetail() {
 
       </div>
 
-      {/* ── DESKTOP layout ── */}
+      {/* ── DESKTOP ── */}
       <div className="hidden md:flex flex-col gap-0">
         <div className="bg-[#091424] border border-[#242424]/40 rounded-[12px] p-12">
 
@@ -326,7 +367,7 @@ export default function MatchDetail() {
           {/* Venue */}
           {(stadName || stadCity) && (
             <div className="mt-8 border-t border-[#242424] pt-8">
-              <div className="font-inter text-xs text-gray-400 font-bold tracking-[0.15em] mb-4 text-center">Venue</div>
+              <div className="font-inter text-xs text-gray-400 font-bold tracking-[0.15em] uppercase mb-4 text-center">Venue</div>
               <a href={stadMapsUrl} target="_blank" rel="noopener noreferrer" className="relative border border-[#2a2a2a] rounded-[8px] overflow-hidden h-[200px] block hover:border-white/30 transition-colors">
                 {stadPhotoKey ? <div style={{ backgroundImage: `url(${getStadiumPhotoUrl(stadPhotoKey)})` }} className="absolute inset-0 bg-cover bg-center" /> : <div className="absolute inset-0 bg-[#0B0B0B]" />}
                 <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/70 to-black/5" />
@@ -342,7 +383,7 @@ export default function MatchDetail() {
           {/* H2H */}
           {h2h && h2h.available && (
             <div className="mt-8 border-t border-[#242424] pt-8">
-              <div className="font-inter text-xs text-gray-400 font-bold tracking-[0.15em] mb-4 text-center">Head-To-Head Record</div>
+              <div className="font-inter text-xs text-gray-400 font-bold tracking-[0.15em] uppercase mb-4 text-center">Head-To-Head Record</div>
               <div className="flex items-center justify-center gap-3 px-6 py-4 bg-white/2 border border-[#3a3a3a] rounded-[8px]">
                 <span className="font-champion text-[2.5rem] text-green-400 leading-none">{h2h.home_w}</span>
                 <span className="font-champion text-xl text-gray-500 leading-none">–</span>
@@ -350,13 +391,24 @@ export default function MatchDetail() {
                 <span className="font-champion text-xl text-gray-500 leading-none">–</span>
                 <span className="font-champion text-[2.5rem] text-red-400 leading-none">{h2h.away_w}</span>
               </div>
+              <div className="flex justify-between font-inter text-[0.7rem] text-[#444] font-bold tracking-wider mt-2 px-1">
+                <span>{homeCode}</span><span>DRAW</span><span>{awayCode}</span>
+              </div>
             </div>
           )}
 
-          {/* Key Players */}
-          {(homePlayers.length > 0 || awayPlayers.length > 0) && (
+          {/* Events — if result exists */}
+          {res && events.length > 0 && (
             <div className="mt-8 border-t border-[#242424] pt-8">
-              <div className="font-inter text-xs text-gray-400 font-bold tracking-[0.15em] mb-6 text-center">Key Players</div>
+              <div className="font-inter text-xs text-gray-400 font-bold tracking-[0.15em] uppercase mb-4 text-center">Match Events</div>
+              {renderEventsTimeline()}
+            </div>
+          )}
+
+          {/* Key Players — only if no result */}
+          {!res && (homePlayers.length > 0 || awayPlayers.length > 0) && (
+            <div className="mt-8 border-t border-[#242424] pt-8">
+              <div className="font-inter text-xs text-gray-400 font-bold tracking-[0.15em] uppercase mb-6 text-center">Key Players</div>
               <div className="grid grid-cols-2 gap-6">
                 <div>
                   <div className="text-[0.8rem] text-gray-500 font-bold tracking-wider mb-2 font-inter">{homeCode} Players</div>
