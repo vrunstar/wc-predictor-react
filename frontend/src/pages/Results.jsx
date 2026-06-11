@@ -23,7 +23,7 @@ export default function Results() {
         ]);
         const completedData = predictionsData.filter((pred) => {
           const fx = pred.fixture || {};
-          return (fx.results || []).length > 0;
+          return fx.results !== null && fx.results !== undefined;
         });
         setCompleted(completedData);
         setRanks(ranksData);
@@ -98,7 +98,7 @@ export default function Results() {
               const homeForm = forms[home.team_id] || '';
               const awayForm = forms[away.team_id] || '';
               const venue = fx.venue || fx.city || '';
-              const res = (fx.results || [])[0] || {};
+              const res = fx.results || {};
               const actualH = res.home_goals ?? '?';
               const actualA = res.away_goals ?? '?';
               const predH = p.pred_home_goals ?? '?';
@@ -140,7 +140,7 @@ export default function Results() {
                     </div>
                   </div>
 
-                  {/* Meta row — mobile: city · time only */}
+                  {/* Meta row — mobile */}
                   <div className="flex md:hidden justify-center mt-[0.5rem] pt-[0.5rem] border-t border-[#1e1e1e]">
                     <span className="font-inter text-[0.72rem] text-[#555] tracking-wider">
                       {venue && `${venue} · `}{matchStage}
