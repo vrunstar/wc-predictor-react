@@ -30,6 +30,7 @@ export const api = {
   getPlayers: (teamId) => fetchJson(`${API_BASE}/players/${teamId}`),
   getH2H: (homeCode, awayCode) => fetchJson(`${API_BASE}/h2h/${homeCode}/${awayCode}`),
   getKitColors: () => fetchJson(`${API_BASE}/kit-colors`),
+  getMatchEvents: (matchId) => fetchJson(`${API_BASE}/fixtures/${matchId}/events`),
   
   verifySecret: (secret) => fetchJson(`${API_BASE}/auth/verify-secret`, {
     method: 'POST',
