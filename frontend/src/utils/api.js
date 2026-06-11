@@ -31,6 +31,7 @@ export const api = {
   getH2H: (homeCode, awayCode) => fetchJson(`${API_BASE}/h2h/${homeCode}/${awayCode}`),
   getKitColors: () => fetchJson(`${API_BASE}/kit-colors`),
   getMatchEvents: (matchId) => fetchJson(`${API_BASE}/fixtures/${matchId}/events`),
+  getFixturesMatchday: () => fetchJson(`${API_BASE}/fixtures/matchday`),
 
   verifySecret: (secret) => fetchJson(`${API_BASE}/auth/verify-secret`, {
     method: 'POST',
