@@ -118,12 +118,12 @@ export default function Admin() {
       // 2. Submit all pending events
       for (const ev of pendingEvents) {
         await api.addEvent({
-          match_id: currentFx.match_id,
-          team_code: ev.team_code,
-          player: ev.player,
-          event: ev.event,
-          time: ev.time
-        }, secret);
+        match_id: currentFx.match_id,
+        team_id: ev.team_id,
+        player: ev.player,
+        event: ev.event,
+        time: ev.time
+}, secret);
       }
 
       setStatusMsg({ type: 'ok', text: res.message || `Result + ${pendingEvents.length} event(s) saved.` });
@@ -170,8 +170,8 @@ export default function Admin() {
   );
 
   return (
-    <div className="w-[60vw] mx-auto flex flex-col gap-6">
-      <h1 className="font-champion text-[5rem] tracking-wider text-[#F0F0F0] leading-none mb-2 text-center">ADMIN</h1>
+    <div className="max-w-[800px] mx-auto flex flex-col gap-6">
+      <h1 className="font-hm_text text-[5rem] tracking-wider text-[#F0F0F0] leading-none mb-2 text-center">ADMIN</h1>
 
       {/* Current Match */}
       {!currentFx ? (
