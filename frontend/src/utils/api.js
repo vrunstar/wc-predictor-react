@@ -12,7 +12,7 @@ async function fetchJson(url, options = {}) {
 export const api = {
   getTeams: () => fetchJson(`${API_BASE}/teams`),
   getTeam: (id) => fetchJson(`${API_BASE}/teams/${id}`),
-  getFixturesToday: () => fetchJson(`${API_BASE}/fixtures/today`),
+  getFixturesToday: () => fetchJson(`${API_BASE}/fixtures/matchday`),
   getFixturesUpcoming: () => fetchJson(`${API_BASE}/fixtures/upcoming`),
   getFixturesGroup: () => fetchJson(`${API_BASE}/fixtures/group`),
   getFixturesByStage: (stage) => fetchJson(`${API_BASE}/fixtures/stage/${stage}`),
@@ -59,6 +59,4 @@ export const api = {
     method: 'DELETE',
     headers: { 'Authorization': `Bearer ${secret}` }
   }),
-
-  getFixturesMatchday: () => fetchJson(`${API_BASE}/fixtures/matchday`),
 };

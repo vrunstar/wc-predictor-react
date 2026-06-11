@@ -14,13 +14,13 @@ def start():
     scheduler = BackgroundScheduler(timezone=IST)
 
     scheduler.add_job(
-        func = predict_today,
-        trigger = CronTrigger(hour=0, minute=1, timezone=IST),
-        id = "midnight_pred",
+        func=predict_today,
+        trigger=CronTrigger(hour=12, minute=0, timezone=IST),
+        id="noon_pred",
         replace_existing=True,
         misfire_grace_time=3600
     )
 
     scheduler.start()
-    logger.info("Scheduler started - predictions run daily at 00:01 IST")
+    logger.info("Scheduler started - predictions run daily at 12:00 PM IST")
     return scheduler

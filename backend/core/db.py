@@ -65,6 +65,10 @@ def get_ist() -> date:
     ist = timezone(timedelta(hours=5, minutes=30))
     return datetime.now(ist).date()
 
+def get_est() -> date:
+    est = timezone(timedelta(hours=-5))
+    return datetime.now(est).date()
+
 # ---------------------------------------------------------------------
 # TEAMS
 # ---------------------------------------------------------------------
@@ -416,24 +420,10 @@ def players_by_team(team_id: int) -> list[dict]:
 # ---------------------------------------------------------------------
 @ttl_cache(ttl=300)
 def fixtures_current_matchday() -> list[dict]:
-    """
-    Returns all scheduled fixtures that have predictions,
-    for the earliest upcoming matchday.
-    """
-    try:
-        res = (supabase.table("prediction")
-               .select("*, fixture:fixtures!match_id(*, home:teams!home_id(*), away:teams!away_id(*), results(*))")
-               .execute())
-
-        rows = [r for r in res.data if r.get("fixture") and r["fixture"].get("status") == "scheduled"]
-
-        if not rows:
-            return []
-
-        earliest = min(r["fixture"]["matchday_ist"] for r in rows if r["fixture"].get("matchday_ist"))
-        matchday_rows = [r for r in rows if r["fixture"].get("matchday_ist") == earliest]
-        matchday_rows.sort(key=lambda r: r["fixture"]["kickoff_ist"])
-        return matchday_rows
-    except Exception as e:
-        print(f"fixtures_current_matchday error: {e}")
-        return []
+    today = str(get_est())
+    res = (supabase.table("fixtures")
+           .select("*, home:teams!home_id(*), away:teams!away_id(*), results(*)")
+           .eq("matchday_est", today)
+           .order("kickoff_ist")
+           .execute())
+    return res.data
