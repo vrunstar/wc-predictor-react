@@ -119,7 +119,7 @@ export default function Admin() {
       for (const ev of pendingEvents) {
         await api.addEvent({
           match_id: currentFx.match_id,
-          team_id: ev.team_id,
+          team_code: ev.team_code,
           player: ev.player,
           event: ev.event,
           time: ev.time
@@ -170,7 +170,7 @@ export default function Admin() {
   );
 
   return (
-    <div className="max-w-[500px] mx-auto flex flex-col gap-6">
+    <div className="w-[60vw] mx-auto flex flex-col gap-6">
       <h1 className="font-champion text-[5rem] tracking-wider text-[#F0F0F0] leading-none mb-2 text-center">ADMIN</h1>
 
       {/* Current Match */}
