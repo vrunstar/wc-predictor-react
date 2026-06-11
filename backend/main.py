@@ -68,10 +68,10 @@ class ResultSubmit(BaseModel):
     secret: str
 
 class EventUpsert(BaseModel):
-    match_id: int,
-    team_id: int,
-    player: str,
-    event: str,
+    match_id: int
+    team_id: int
+    player: str
+    event: str
     time: Optional[int] = None
 
 # Helper dependency to verify admin secret
