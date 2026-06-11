@@ -2,19 +2,37 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../utils/api';
 import { formatKickoff, stageLabel, getFlagUrl, renderFormSpans } from '../utils/helpers';
 
+const EVENT_TYPES = ['goal', 'own_goal', 'penalty', 'yellow_card', 'red_card', 'injury'];
+const EVENT_ICONS = {
+  goal: '⚽',
+  own_goal: '⚽',
+  penalty: '⚽',
+  yellow_card: '🟨',
+  red_card: '🟥',
+  injury: '🤕'
+};
+
 export default function Admin() {
   const [fixtures, setFixtures] = useState([]);
   const [ranks, setRanks] = useState({});
   const [forms, setForms] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
-  // Form states
+
   const [secret, setSecret] = useState(() => localStorage.getItem('admin_secret') || '');
   const [homeGoals, setHomeGoals] = useState('');
   const [awayGoals, setAwayGoals] = useState('');
-  const [statusMsg, setStatusMsg] = useState(null); // { type: 'ok'|'err', text: '' }
+  const [statusMsg, setStatusMsg] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+
+  // Local event being built
+  const [eventTeamId, setEventTeamId] = useState('');
+  const [eventPlayer, setEventPlayer] = useState('');
+  const [eventType, setEventType] = useState('goal');
+  const [eventTime, setEventTime] = useState('');
+
+  // Local list of events (not yet saved)
+  const [pendingEvents, setPendingEvents] = useState([]);
 
   useEffect(() => {
     async function loadData() {
@@ -30,7 +48,7 @@ export default function Admin() {
         setForms(formsData);
       } catch (err) {
         console.error(err);
-        setError('Failed to load today\'s fixtures for administration.');
+        setError('Failed to load today\'s fixtures.');
       } finally {
         setLoading(false);
       }
@@ -44,94 +62,8 @@ export default function Admin() {
     localStorage.setItem('admin_secret', val);
   };
 
-  // Find first incomplete match today
   const incomplete = fixtures.filter(fx => !fx.results || fx.results.length === 0);
   const currentFx = incomplete[0] || null;
-
-  const handleSubmitResult = async (e) => {
-    e.preventDefault();
-    if (!secret) {
-      setStatusMsg({ type: 'err', text: 'Admin secret is required' });
-      return;
-    }
-    if (!currentFx) {
-      setStatusMsg({ type: 'err', text: 'No match available to update' });
-      return;
-    }
-    if (homeGoals === '' || awayGoals === '') {
-      setStatusMsg({ type: 'err', text: 'Enter goals for both teams' });
-      return;
-    }
-
-    try {
-      setSubmitting(true);
-      setStatusMsg(null);
-      
-      const res = await api.submitResult(
-        currentFx.match_id, 
-        parseInt(homeGoals), 
-        parseInt(awayGoals), 
-        secret
-      );
-      
-      setStatusMsg({ type: 'ok', text: res.message || 'Result saved. ELO & standings updated successfully.' });
-      
-      // Reload fixtures to reflect updates
-      const updatedFixtures = await api.getFixturesToday();
-      setFixtures(updatedFixtures);
-      setHomeGoals('');
-      setAwayGoals('');
-    } catch (err) {
-      console.error(err);
-      setStatusMsg({ type: 'err', text: err.message || 'Failed to submit result.' });
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const handleRunPredictions = async () => {
-    if (!secret) {
-      setStatusMsg({ type: 'err', text: 'Admin secret is required' });
-      return;
-    }
-
-    try {
-      setSubmitting(true);
-      setStatusMsg(null);
-      
-      const res = await api.runPredictions(secret);
-      
-      setStatusMsg({ type: 'ok', text: res.message || `Predictions generated for today's matches.` });
-    } catch (err) {
-      console.error(err);
-      setStatusMsg({ type: 'err', text: err.message || 'Failed to run predictions.' });
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-24">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="text-center py-24 bg-[#091424] border border-[#242424]/40 rounded-[10px] p-6">
-        <div className="text-red-500 text-lg mb-2">⚠️ {error}</div>
-        <button 
-          onClick={() => window.location.reload()}
-          className="px-4 py-2 bg-white text-black font-semibold rounded hover:bg-neutral-200"
-        >
-          Retry
-        </button>
-      </div>
-    );
-  }
-
   const home = currentFx?.home || {};
   const away = currentFx?.away || {};
   const homeCode = home.team_code || '???';
@@ -144,138 +76,275 @@ export default function Admin() {
   const venue = currentFx?.venue || currentFx?.city || '';
   const matchStage = currentFx ? stageLabel(currentFx.stage, currentFx.group_name) : '';
 
+  const matchTeams = currentFx ? [
+    { id: home.team_id, code: homeCode },
+    { id: away.team_id, code: awayCode }
+  ] : [];
+
+  const handleAddEvent = () => {
+    if (!eventTeamId || !eventPlayer.trim()) return;
+    setPendingEvents(prev => [...prev, {
+      team_id: parseInt(eventTeamId),
+      team_code: matchTeams.find(t => t.id === parseInt(eventTeamId))?.code || '',
+      player: eventPlayer.trim(),
+      event: eventType,
+      time: eventTime ? parseInt(eventTime) : null
+    }]);
+    setEventPlayer('');
+    setEventTime('');
+  };
+
+  const handleRemoveEvent = (index) => {
+    setPendingEvents(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSubmit = async () => {
+    if (!secret) { setStatusMsg({ type: 'err', text: 'Admin secret is required' }); return; }
+    if (!currentFx) { setStatusMsg({ type: 'err', text: 'No match available' }); return; }
+    if (homeGoals === '' || awayGoals === '') { setStatusMsg({ type: 'err', text: 'Enter goals for both teams' }); return; }
+
+    try {
+      setSubmitting(true);
+      setStatusMsg(null);
+
+      // 1. Submit result
+      const res = await api.submitResult(
+        currentFx.match_id,
+        parseInt(homeGoals),
+        parseInt(awayGoals),
+        secret
+      );
+
+      // 2. Submit all pending events
+      for (const ev of pendingEvents) {
+        await api.addEvent({
+          match_id: currentFx.match_id,
+          team_id: ev.team_id,
+          player: ev.player,
+          event: ev.event,
+          time: ev.time
+        }, secret);
+      }
+
+      setStatusMsg({ type: 'ok', text: res.message || `Result + ${pendingEvents.length} event(s) saved.` });
+
+      // Reset
+      const updatedFixtures = await api.getFixturesToday();
+      setFixtures(updatedFixtures);
+      setHomeGoals('');
+      setAwayGoals('');
+      setPendingEvents([]);
+    } catch (err) {
+      console.error(err);
+      setStatusMsg({ type: 'err', text: err.message || 'Failed to submit.' });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleRunPredictions = async () => {
+    if (!secret) { setStatusMsg({ type: 'err', text: 'Admin secret is required' }); return; }
+    try {
+      setSubmitting(true);
+      setStatusMsg(null);
+      const res = await api.runPredictions(secret);
+      setStatusMsg({ type: 'ok', text: res.message || `Predictions generated.` });
+    } catch (err) {
+      setStatusMsg({ type: 'err', text: err.message || 'Failed to run predictions.' });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (loading) return (
+    <div className="flex items-center justify-center py-24">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
+    </div>
+  );
+
+  if (error) return (
+    <div className="text-center py-24 bg-[#091424] border border-[#242424]/40 rounded-[10px] p-6">
+      <div className="text-red-500 text-lg mb-2">⚠️ {error}</div>
+      <button onClick={() => window.location.reload()} className="px-4 py-2 bg-white text-black font-semibold rounded">Retry</button>
+    </div>
+  );
+
   return (
     <div className="max-w-[500px] mx-auto flex flex-col gap-6">
-      {/* Title */}
-      <h1 className="font-champion text-[5rem] tracking-wider text-[#F0F0F0] leading-none mb-2 text-center">
-        ADMIN
-      </h1>
+      <h1 className="font-champion text-[5rem] tracking-wider text-[#F0F0F0] leading-none mb-2 text-center">ADMIN</h1>
 
-      {/* Incomplete Match display */}
+      {/* Current Match */}
       {!currentFx ? (
         <div className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-6 text-center text-gray-500 font-inter text-[0.85rem]">
           No incomplete matches today
         </div>
       ) : (
-        <div className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-[1.1rem_1.4rem]">
-          {/* Match Row */}
-          <div className="grid grid-cols-[30px_1fr_auto_1fr_30px] items-center gap-[0.6rem] w-full">
-            <div className="flex items-center justify-center">
-              <img
-                src={getFlagUrl(homeCode)}
-                alt={`${homeCode} Flag`}
-                className="w-[26px] h-auto object-contain border border-[#1e1e1e]"
-                onError={(e) => { e.target.style.display = 'none'; }}
-              />
-            </div>
-            <div className="font-champion text-2xl tracking-wider text-[#F0F0F0] leading-none">
-              {homeCode}
-            </div>
+        <div className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-[1.1rem_1.4rem] flex flex-col gap-4">
+
+          {/* Match header */}
+          <div className="grid grid-cols-[30px_1fr_auto_1fr_30px] items-center gap-[0.6rem]">
+            <img src={getFlagUrl(homeCode)} alt={homeCode} className="w-[26px] h-auto object-contain border border-[#1e1e1e]" onError={(e) => { e.target.style.display = 'none'; }} />
+            <div className="font-champion text-2xl tracking-wider text-[#F0F0F0] leading-none">{homeCode}</div>
             <div className="text-center min-w-[90px]">
-              <span className="font-inter text-xl font-extrabold text-white tracking-widest leading-none">
-                {koTime}
-              </span>
+              <span className="font-inter text-xl font-extrabold text-white tracking-widest">{koTime}</span>
             </div>
-            <div className="font-champion text-2xl tracking-wider text-[#F0F0F0] leading-none text-right">
-              {awayCode}
-            </div>
-            <div className="flex items-center justify-center">
-              <img
-                src={getFlagUrl(awayCode)}
-                alt={`${awayCode} Flag`}
-                className="w-[26px] h-auto object-contain border border-[#1e1e1e]"
-                onError={(e) => { e.target.style.display = 'none'; }}
-              />
-            </div>
+            <div className="font-champion text-2xl tracking-wider text-[#F0F0F0] leading-none text-right">{awayCode}</div>
+            <img src={getFlagUrl(awayCode)} alt={awayCode} className="w-[26px] h-auto object-contain border border-[#1e1e1e] justify-self-end" onError={(e) => { e.target.style.display = 'none'; }} />
           </div>
 
-          {/* Metadata Subrow */}
-          <div className="grid grid-cols-[1fr_auto_1fr] items-center mt-[0.7rem] pt-[0.6rem] border-t border-[#3a3a3a] text-[0.75rem] font-inter text-gray-400">
+          {/* Meta */}
+          <div className="grid grid-cols-[1fr_auto_1fr] items-center pt-[0.6rem] border-t border-[#3a3a3a] text-[0.75rem] font-inter text-gray-400">
             <div className="flex items-center gap-2">
               <span className="font-semibold text-gray-500">{homeRank}</span>
               {renderFormSpans(homeForm)}
             </div>
-            <div className="text-center text-[#999]">
-              Match {currentFx.match_id} &middot; {matchStage} {venue && `· ${venue}`}
-            </div>
+            <div className="text-center text-[#999]">Match {currentFx.match_id} · {matchStage} {venue && `· ${venue}`}</div>
             <div className="flex items-center gap-2 justify-end">
               {renderFormSpans(awayForm)}
               <span className="font-semibold text-gray-500">{awayRank}</span>
             </div>
           </div>
 
-          {/* Score Input Form */}
-          <form onSubmit={handleSubmitResult} className="mt-4 flex flex-col gap-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-1">
-                <label className="text-[0.7rem] text-[#999] uppercase tracking-wider font-semibold font-inter">
-                  Home Goals ({homeCode})
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  placeholder="0"
-                  value={homeGoals}
-                  onChange={(e) => setHomeGoals(e.target.value)}
-                  className="bg-[#0d0d0d] border border-[#242424]/40 text-white px-3 py-2 rounded-[8px] focus:outline-none focus:border-white/25 text-center font-inter"
-                />
-              </div>
-              <div className="flex flex-col gap-1">
-                <label className="text-[0.7rem] text-[#999] uppercase tracking-wider font-semibold font-inter">
-                  Away Goals ({awayCode})
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  placeholder="0"
-                  value={awayGoals}
-                  onChange={(e) => setAwayGoals(e.target.value)}
-                  className="bg-[#0d0d0d] border border-[#242424]/40 text-white px-3 py-2 rounded-[8px] focus:outline-none focus:border-white/25 text-center font-inter"
-                />
-              </div>
+          {/* Goals input */}
+          <div className="grid grid-cols-2 gap-4 pt-2 border-t border-[#1e1e1e]">
+            <div className="flex flex-col gap-1">
+              <label className="text-[0.7rem] text-[#999] uppercase tracking-wider font-semibold font-inter">Home Goals ({homeCode})</label>
+              <input type="number" min="0" placeholder="0" value={homeGoals} onChange={(e) => setHomeGoals(e.target.value)}
+                className="bg-[#0d0d0d] border border-[#242424]/40 text-white px-3 py-2 rounded-[8px] focus:outline-none focus:border-white/25 text-center font-inter" />
             </div>
-          </form>
+            <div className="flex flex-col gap-1">
+              <label className="text-[0.7rem] text-[#999] uppercase tracking-wider font-semibold font-inter">Away Goals ({awayCode})</label>
+              <input type="number" min="0" placeholder="0" value={awayGoals} onChange={(e) => setAwayGoals(e.target.value)}
+                className="bg-[#0d0d0d] border border-[#242424]/40 text-white px-3 py-2 rounded-[8px] focus:outline-none focus:border-white/25 text-center font-inter" />
+            </div>
+          </div>
+
+          {/* Events builder */}
+          <div className="flex flex-col gap-3 pt-2 border-t border-[#1e1e1e]">
+            <div className="font-inter text-[0.65rem] text-gray-500 font-bold tracking-[0.15em] uppercase">Add Events</div>
+
+            {/* Desktop: one row */}
+            <div className="hidden md:grid grid-cols-[60px_130px_90px_1fr_80px] gap-2 items-end">
+              <div className="flex flex-col gap-1">
+                <label className="text-[0.7rem] text-[#999] uppercase tracking-wider font-semibold font-inter">Min</label>
+                <input type="number" min="1" max="120" placeholder="45" value={eventTime} onChange={(e) => setEventTime(e.target.value)}
+                  className="bg-[#0d0d0d] border border-[#242424]/40 text-white px-2 py-2 rounded-[8px] focus:outline-none focus:border-white/25 text-center font-inter text-sm" />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-[0.7rem] text-[#999] uppercase tracking-wider font-semibold font-inter">Event</label>
+                <select value={eventType} onChange={(e) => setEventType(e.target.value)}
+                  className="bg-[#0d0d0d] border border-[#242424]/40 text-white px-2 py-2 rounded-[8px] focus:outline-none focus:border-white/25 font-inter text-sm">
+                  {EVENT_TYPES.map(t => (
+                    <option key={t} value={t}>{t.replace('_', ' ')}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-[0.7rem] text-[#999] uppercase tracking-wider font-semibold font-inter">Team</label>
+                <select value={eventTeamId} onChange={(e) => setEventTeamId(e.target.value)}
+                  className="bg-[#0d0d0d] border border-[#242424]/40 text-white px-2 py-2 rounded-[8px] focus:outline-none focus:border-white/25 font-inter text-sm">
+                  <option value="">—</option>
+                  {matchTeams.map(t => (
+                    <option key={t.id} value={t.id}>{t.code}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-[0.7rem] text-[#999] uppercase tracking-wider font-semibold font-inter">Player</label>
+                <input type="text" placeholder="Player name" value={eventPlayer} onChange={(e) => setEventPlayer(e.target.value)}
+                  className="bg-[#0d0d0d] border border-[#242424]/40 text-white px-3 py-2 rounded-[8px] focus:outline-none focus:border-white/25 font-inter text-sm placeholder-gray-600" />
+              </div>
+              <button onClick={handleAddEvent} disabled={!eventTeamId || !eventPlayer.trim()}
+                className="bg-[#091424] border border-[#242424]/40 hover:border-white/50 hover:text-white text-[#aaa] disabled:opacity-30 rounded-[8px] py-2 font-semibold text-sm tracking-wider uppercase font-inter transition-all duration-150">
+                + Add
+              </button>
+            </div>
+
+            {/* Mobile: two rows */}
+            <div className="flex md:hidden flex-col gap-2">
+              {/* Row 1: time + event + team */}
+              <div className="grid grid-cols-[60px_1fr_90px] gap-2 items-end">
+                <div className="flex flex-col gap-1">
+                  <label className="text-[0.7rem] text-[#999] uppercase tracking-wider font-semibold font-inter">Min</label>
+                  <input type="number" min="1" max="120" placeholder="45" value={eventTime} onChange={(e) => setEventTime(e.target.value)}
+                    className="bg-[#0d0d0d] border border-[#242424]/40 text-white px-2 py-2 rounded-[8px] focus:outline-none focus:border-white/25 text-center font-inter text-sm" />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-[0.7rem] text-[#999] uppercase tracking-wider font-semibold font-inter">Event</label>
+                  <select value={eventType} onChange={(e) => setEventType(e.target.value)}
+                    className="bg-[#0d0d0d] border border-[#242424]/40 text-white px-2 py-2 rounded-[8px] focus:outline-none focus:border-white/25 font-inter text-sm">
+                    {EVENT_TYPES.map(t => (
+                      <option key={t} value={t}>{t.replace('_', ' ')}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-[0.7rem] text-[#999] uppercase tracking-wider font-semibold font-inter">Team</label>
+                  <select value={eventTeamId} onChange={(e) => setEventTeamId(e.target.value)}
+                    className="bg-[#0d0d0d] border border-[#242424]/40 text-white px-2 py-2 rounded-[8px] focus:outline-none focus:border-white/25 font-inter text-sm">
+                    <option value="">—</option>
+                    {matchTeams.map(t => (
+                      <option key={t.id} value={t.id}>{t.code}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Row 2: player */}
+              <div className="flex flex-col gap-1">
+                <label className="text-[0.7rem] text-[#999] uppercase tracking-wider font-semibold font-inter">Player</label>
+                <input type="text" placeholder="Player name" value={eventPlayer} onChange={(e) => setEventPlayer(e.target.value)}
+                  className="bg-[#0d0d0d] border border-[#242424]/40 text-white px-3 py-2 rounded-[8px] focus:outline-none focus:border-white/25 font-inter text-sm placeholder-gray-600" />
+              </div>
+
+              {/* Row 3: add button */}
+              <button onClick={handleAddEvent} disabled={!eventTeamId || !eventPlayer.trim()}
+                className="bg-[#091424] border border-[#242424]/40 hover:border-white/50 hover:text-white text-[#aaa] disabled:opacity-30 rounded-[8px] py-2.5 font-semibold text-sm tracking-wider uppercase font-inter transition-all duration-150">
+                + Add to List
+              </button>
+            </div>
+          </div>
+
+          {/* Pending events list */}
+          {pendingEvents.length > 0 && (
+            <div className="flex flex-col gap-2 pt-2 border-t border-[#1e1e1e]">
+              <div className="font-inter text-[0.65rem] text-gray-500 font-bold tracking-[0.12em] uppercase">Pending Events ({pendingEvents.length})</div>
+              {pendingEvents.map((ev, i) => (
+                <div key={i} className="flex items-center justify-between bg-white/2 border border-[#2a2a2a] rounded-[6px] px-3 py-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm">{EVENT_ICONS[ev.event] || '•'}</span>
+                    <span className="font-inter text-xs font-bold text-gray-400">{ev.team_code}</span>
+                    <span className="font-inter text-sm text-[#e0e0e0] font-medium">{ev.player}</span>
+                    <span className="font-inter text-xs text-gray-500">{ev.event.replace('_', ' ')}</span>
+                    {ev.time && <span className="font-inter text-xs text-gray-600">{ev.time}'</span>}
+                  </div>
+                  <button onClick={() => handleRemoveEvent(i)} className="text-[#444] hover:text-red-400 font-inter text-xs font-bold transition-colors px-1">✕</button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
-      {/* Secret Input */}
-      <div className="flex flex-col gap-1 w-full mt-2">
-        <input
-          type="password"
-          placeholder="Admin Secret"
-          value={secret}
-          onChange={handleSecretChange}
-          className="bg-[#0d0d0d] border border-[#242424]/40 text-white px-4 py-2.5 rounded-[8px] focus:outline-none focus:border-white/25 text-center font-inter placeholder-gray-500"
-        />
-      </div>
+      {/* Secret */}
+      <input type="password" placeholder="Admin Secret" value={secret} onChange={handleSecretChange}
+        className="bg-[#0d0d0d] border border-[#242424]/40 text-white px-4 py-2.5 rounded-[8px] focus:outline-none focus:border-white/25 text-center font-inter placeholder-gray-500" />
 
-      {/* Status Messages */}
+      {/* Status */}
       {statusMsg && (
-        <div 
-          className={`border rounded-[8px] p-[10px_14px] font-inter text-[0.85rem] ${
-            statusMsg.type === 'ok' 
-              ? 'bg-[#4CAF50]/10 border-[#4CAF50]/25 text-[#81c784]' 
-              : 'bg-[#F44336]/10 border-[#F44336]/25 text-[#e57373]'
-          }`}
-        >
+        <div className={`border rounded-[8px] p-[10px_14px] font-inter text-[0.85rem] ${statusMsg.type === 'ok' ? 'bg-[#4CAF50]/10 border-[#4CAF50]/25 text-[#81c784]' : 'bg-[#F44336]/10 border-[#F44336]/25 text-[#e57373]'}`}>
           {statusMsg.text}
         </div>
       )}
 
       {/* Action Buttons */}
-      <div className="grid grid-cols-2 gap-4 mt-2">
-        <button
-          onClick={handleSubmitResult}
-          disabled={submitting || !currentFx}
-          className="bg-white text-black hover:bg-neutral-200 disabled:opacity-50 disabled:bg-white/50 disabled:text-black/50 rounded-[8px] p-3 font-semibold text-sm tracking-wider uppercase font-inter transition-all duration-150 shadow"
-        >
+      <div className="grid grid-cols-2 gap-4">
+        <button onClick={handleSubmit} disabled={submitting || !currentFx}
+          className="bg-white text-black hover:bg-neutral-200 disabled:opacity-50 rounded-[8px] p-3 font-semibold text-sm tracking-wider uppercase font-inter transition-all duration-150">
           {submitting ? 'Submitting...' : 'SUBMIT RESULT'}
         </button>
-        <button
-          onClick={handleRunPredictions}
-          disabled={submitting}
-          className="bg-[#091424] border border-[#242424]/40 hover:border-white/50 hover:text-white text-[#aaa] disabled:opacity-50 rounded-[8px] p-3 font-semibold text-sm tracking-wider uppercase font-inter transition-all duration-150"
-        >
+        <button onClick={handleRunPredictions} disabled={submitting}
+          className="bg-[#091424] border border-[#242424]/40 hover:border-white/50 hover:text-white text-[#aaa] disabled:opacity-50 rounded-[8px] p-3 font-semibold text-sm tracking-wider uppercase font-inter transition-all duration-150">
           {submitting ? 'Generating...' : 'RUN PREDICTIONS'}
         </button>
       </div>
