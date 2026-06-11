@@ -6,7 +6,7 @@ from datetime import datetime
 import pytz
 from core.db import (
     get_ist,
-    fixtures_today, pred_updated,
+    fixtures_today, fixtures_current_matchday, pred_updated,
     pred_map
 )
 
@@ -81,7 +81,8 @@ def est_goals(team: dict, opp: dict, outcome: str, reverse: bool = False) -> int
 def predict_today():
     model, features = load_model()
 
-    fixtures = fixtures_today()
+    matchday_rows = fixtures_current_matchday()
+    fixtures = [r["fixture"] for r in matchday_rows] if matchday_rows else []
 
     if not fixtures:
         print(f"No Games Today {get_ist()}")

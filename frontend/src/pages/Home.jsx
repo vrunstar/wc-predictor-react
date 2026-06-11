@@ -4,11 +4,10 @@ import { api } from '../utils/api';
 import { formatKickoff, getFlagUrl } from '../utils/helpers';
 
 export default function Home() {
-  const [todayMatches, setTodayMatches] = useState([]);
+  const [matchdayPreds, setMatchdayPreds] = useState([]);
   const [completedPredictions, setCompletedPredictions] = useState([]);
   const [metrics, setMetrics] = useState({ total: 0, correct: 0, wrong: 0, accuracy: 0 });
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('predictions');
 
   const navigate = useNavigate();
@@ -17,13 +16,12 @@ export default function Home() {
     async function loadData() {
       try {
         setLoading(true);
-        const [fixturesData, predictionsData] = await Promise.all([
-          api.getFixturesToday(),
+        const [matchdayData, predictionsData] = await Promise.all([
+          api.getFixturesMatchday(),
           api.getPredictions()
         ]);
 
-        const matches = fixturesData.filter(fx => !fx.results || fx.results.length === 0);
-        setTodayMatches(matches);
+        setMatchdayPreds(matchdayData);
 
         const completed = predictionsData.filter((pred) => {
           const fx = pred.fixture || {};
@@ -42,7 +40,6 @@ export default function Home() {
         setMetrics({ total, correct, wrong, accuracy });
       } catch (err) {
         console.error(err);
-        setError('Failed to load dashboard data.');
       } finally {
         setLoading(false);
       }
@@ -50,6 +47,7 @@ export default function Home() {
     loadData();
   }, []);
 
+  // matchday data is prediction rows: { pred_home_goals, pred_away_goals, fixture: {...} }
   const MatchRow = ({ fx, centerText }) => {
     const home = fx.home || {};
     const away = fx.away || {};
@@ -69,6 +67,44 @@ export default function Home() {
     );
   };
 
+  const renderMatchdayRows = () => {
+    if (matchdayPreds.length === 0) return (
+      <div className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-6 text-center text-gray-500 font-inter text-[0.85rem]">No upcoming matches</div>
+    );
+    return (
+      <div className="flex flex-col gap-2">
+        {matchdayPreds.map((pred) => {
+          const fx = pred.fixture || {};
+          const centerText = pred.pred_home_goals != null
+            ? `${pred.pred_home_goals} – ${pred.pred_away_goals}`
+            : formatKickoff(fx.kickoff_ist);
+          return <MatchRow key={fx.match_id} fx={fx} centerText={centerText} />;
+        })}
+      </div>
+    );
+  };
+
+  const renderResultRows = () => {
+    if (completedPredictions.length === 0) return (
+      <div className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-6 text-center text-gray-500 font-inter text-[0.85rem]">No results yet</div>
+    );
+    return (
+      <div className="flex flex-col gap-2">
+        {completedPredictions.map((pred) => {
+          const fx = pred.fixture || {};
+          const res = (fx.results || [])[0] || {};
+          const scoreText = `${res.home_goals ?? '?'} – ${res.away_goals ?? '?'}`;
+          return <MatchRow key={pred.match_id} fx={fx} centerText={scoreText} />;
+        })}
+      </div>
+    );
+  };
+
+  // Get matchday label from first fixture
+  const matchdayLabel = matchdayPreds.length > 0
+    ? `MATCHDAY ${matchdayPreds[0]?.fixture?.matchday_ist || ''}`
+    : "TODAY'S MATCHES";
+
   return (
     <div className="flex flex-col">
 
@@ -81,13 +117,10 @@ export default function Home() {
 
       {/* ── MOBILE: Hero + metrics + tabs all on one screen ── */}
       <div className="flex md:hidden flex-col gap-5 pt-[62px] pb-[80px] px-4 min-h-screen">
-
-        {/* Welcome text */}
         <h1 className="font-hm_text text-[4rem] text-[#F0F0F0] leading-[0.9] uppercase select-none pb-20">
           2026<br />WORLD<br />CUP<br />PREDICTOR
         </h1>
 
-        {/* Metrics */}
         <div className="grid grid-cols-2 gap-2">
           {[
             { value: metrics.correct, label: 'Correct' },
@@ -102,59 +135,22 @@ export default function Home() {
           ))}
         </div>
 
-        {/* Tabs */}
         <div className="flex border border-[#ffffff]/40 rounded-[8px] overflow-hidden">
-          <button
-            onClick={() => setActiveTab('predictions')}
-            className={`flex-1 py-2 text-xs tracking-widest font-semibold font-inter transition-colors ${activeTab === 'predictions' ? 'bg-white text-black' : 'bg-transparent text-[#c4c4c4]'}`}
-          >
-            Today
+          <button onClick={() => setActiveTab('predictions')} className={`flex-1 py-2 text-xs tracking-widest font-semibold font-inter transition-colors ${activeTab === 'predictions' ? 'bg-white text-black' : 'bg-transparent text-[#c4c4c4]'}`}>
+            Predictions
           </button>
-          <button
-            onClick={() => setActiveTab('results')}
-            className={`flex-1 py-2 text-xs  tracking-widest font-semibold font-inter transition-colors ${activeTab === 'results' ? 'bg-white text-black' : 'bg-transparent text-[#c4c4c4]'}`}
-          >
+          <button onClick={() => setActiveTab('results')} className={`flex-1 py-2 text-xs tracking-widest font-semibold font-inter transition-colors ${activeTab === 'results' ? 'bg-white text-black' : 'bg-transparent text-[#c4c4c4]'}`}>
             Results
           </button>
         </div>
 
-        {/* Tab content */}
         {loading ? (
           <div className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-6 text-center text-gray-500 font-inter text-[0.85rem]">Loading...</div>
-        ) : activeTab === 'predictions' ? (
-          todayMatches.length === 0 ? (
-            <div className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-6 text-center text-gray-500 font-inter text-[0.85rem]">No matches today</div>
-          ) : (
-            <div className="flex flex-col gap-2">
-              {todayMatches.map((fx) => {
-                const pred = fx.prediction || {};
-                const centerText = pred.pred_home_goals != null
-                  ? `${pred.pred_home_goals} – ${pred.pred_away_goals}`
-                  : formatKickoff(fx.kickoff_ist);
-                return <MatchRow key={fx.match_id} fx={fx} centerText={centerText} />;
-              })}
-            </div>
-          )
-        ) : (
-          completedPredictions.length === 0 ? (
-            <div className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-6 text-center text-gray-500 font-inter text-[0.85rem]">No results yet</div>
-          ) : (
-            <div className="flex flex-col gap-2">
-              {completedPredictions.map((pred) => {
-                const fx = pred.fixture || {};
-                const res = (fx.results || [])[0] || {};
-                const scoreText = `${res.home_goals ?? '?'} – ${res.away_goals ?? '?'}`;
-                return <MatchRow key={pred.match_id} fx={fx} centerText={scoreText} />;
-              })}
-            </div>
-          )
-        )}
+        ) : activeTab === 'predictions' ? renderMatchdayRows() : renderResultRows()}
       </div>
 
       {/* ── DESKTOP: Screen 2 metrics + columns ── */}
       <div className="hidden md:flex flex-col gap-8 pb-16">
-
-        {/* Metrics */}
         <div className="grid grid-cols-4 gap-4">
           {[
             { value: metrics.correct, label: 'Correct' },
@@ -169,46 +165,19 @@ export default function Home() {
           ))}
         </div>
 
-        {/* Two Columns */}
         <div className="grid grid-cols-2 gap-8">
-
           <div>
-            <h2 className="font-hm_text text-[1.8rem] tracking-wide text-[#F0F0F0] mb-4 uppercase">TODAY'S MATCHES</h2>
+            <h2 className="font-hm_text text-[1.8rem] tracking-wide text-[#F0F0F0] mb-4 uppercase">{matchdayLabel}</h2>
             {loading ? (
               <div className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-6 text-center text-gray-500 font-inter text-[0.85rem]">Loading...</div>
-            ) : todayMatches.length === 0 ? (
-              <div className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-6 text-center text-gray-500 font-inter text-[0.85rem]">No matches today</div>
-            ) : (
-              <div className="flex flex-col gap-2">
-                {todayMatches.map((fx) => {
-                  const pred = fx.prediction || {};
-                  const centerText = pred.pred_home_goals != null
-                    ? `${pred.pred_home_goals} – ${pred.pred_away_goals}`
-                    : formatKickoff(fx.kickoff_ist);
-                  return <MatchRow key={fx.match_id} fx={fx} centerText={centerText} />;
-                })}
-              </div>
-            )}
+            ) : renderMatchdayRows()}
           </div>
-
           <div>
             <h2 className="font-hm_text text-[1.8rem] tracking-wide text-[#F0F0F0] mb-4 uppercase">LATEST RESULTS</h2>
             {loading ? (
               <div className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-6 text-center text-gray-500 font-inter text-[0.85rem]">Loading...</div>
-            ) : completedPredictions.length === 0 ? (
-              <div className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-6 text-center text-gray-500 font-inter text-[0.85rem]">No results yet</div>
-            ) : (
-              <div className="flex flex-col gap-2">
-                {completedPredictions.map((pred) => {
-                  const fx = pred.fixture || {};
-                  const res = (fx.results || [])[0] || {};
-                  const scoreText = `${res.home_goals ?? '?'} – ${res.away_goals ?? '?'}`;
-                  return <MatchRow key={pred.match_id} fx={fx} centerText={scoreText} />;
-                })}
-              </div>
-            )}
+            ) : renderResultRows()}
           </div>
-
         </div>
       </div>
 

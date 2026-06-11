@@ -49,13 +49,6 @@ export const api = {
     headers: { 'Authorization': `Bearer ${secret}` }
   }),
 
-  runPredictions: (secret) => fetchJson(`${API_BASE}/admin/run-predictions`, {
-    method: 'POST',
-    headers: { 'Authorization': `Bearer ${secret}` }
-  }),          // <-- add comma here
-
-  getMatchEvents: (matchId) => fetchJson(`${API_BASE}/fixtures/${matchId}/events`),
-
   addEvent: (event, secret) => fetchJson(`${API_BASE}/admin/events`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${secret}` },
@@ -66,4 +59,6 @@ export const api = {
     method: 'DELETE',
     headers: { 'Authorization': `Bearer ${secret}` }
   }),
+
+  getFixturesMatchday: () => fetchJson(`${API_BASE}/fixtures/matchday`),
 };

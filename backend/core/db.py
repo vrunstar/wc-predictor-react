@@ -63,7 +63,7 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
 
 def get_ist() -> date:
     ist = timezone(timedelta(hours=5, minutes=30))
-    return (datetime.now(ist)).date()
+    return datetime.now(ist).date()
 
 # ---------------------------------------------------------------------
 # TEAMS
@@ -411,33 +411,29 @@ def players_by_team(team_id: int) -> list[dict]:
     except Exception:
         return []
 
-
 # ---------------------------------------------------------------------
-# EVENTS
+# CURRENT MATCHDAY (via predictions)
 # ---------------------------------------------------------------------
-@ttl_cache(ttl=60)
-def events_by_match(match_id: int) -> list[dict]:
+@ttl_cache(ttl=300)
+def fixtures_current_matchday() -> list[dict]:
+    """
+    Returns all scheduled fixtures that have predictions,
+    for the earliest upcoming matchday.
+    """
     try:
-        res = (supabase.table("events")
-               .select("*")
-               .eq("match_id", match_id)
-               .order("time")
+        res = (supabase.table("prediction")
+               .select("*, fixture:fixtures!match_id(*, home:teams!home_id(*), away:teams!away_id(*), results(*))")
                .execute())
-        return res.data or []
-    except Exception:
+
+        rows = [r for r in res.data if r.get("fixture") and r["fixture"].get("status") == "scheduled"]
+
+        if not rows:
+            return []
+
+        earliest = min(r["fixture"]["matchday_ist"] for r in rows if r["fixture"].get("matchday_ist"))
+        matchday_rows = [r for r in rows if r["fixture"].get("matchday_ist") == earliest]
+        matchday_rows.sort(key=lambda r: r["fixture"]["kickoff_ist"])
+        return matchday_rows
+    except Exception as e:
+        print(f"fixtures_current_matchday error: {e}")
         return []
-
-def event_upsert(event: dict) -> dict:
-    res = (supabase.table("events")
-           .insert(event)
-           .execute())
-    events_by_match.cache_clear()
-    return res.data
-
-def event_delete(event_id: int) -> dict:
-    res = (supabase.table("events")
-           .delete()
-           .eq("id", event_id)
-           .execute())
-    clear_all_caches()
-    return res.data
