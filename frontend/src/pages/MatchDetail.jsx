@@ -89,8 +89,7 @@ export default function MatchDetail() {
   const awayRank = ranks[away.team_id] || '—';
   const homeForm = forms[home.team_id] || '';
   const awayForm = forms[away.team_id] || '';
-  const results = fixture.results || [];
-  const res = results[0] || null;
+  const res = fixture.results || null;
   const matchStage = stageLabel(fixture.stage, fixture.group_name);
   const koTime = formatKickoff(fixture.kickoff_ist);
   const homeColor = kitColors[homeCode]?.home || '#FFFFFF';
@@ -301,7 +300,7 @@ export default function MatchDetail() {
         )}
 
         {/* Key Players — only if no result */}
-        {!res && (homePlayers.length > 0 || awayPlayers.length > 0) && (
+        {fixture.status !== 'completed' && (homePlayers.length > 0 || awayPlayers.length > 0) && (
           <div className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-3">
             <div className="font-inter text-[0.6rem] text-gray-500 font-bold tracking-[0.15em] uppercase mb-3 text-center">Key Players</div>
             <div className="flex mb-3 border border-[#2a2a2a] rounded-[6px] overflow-hidden">
@@ -406,7 +405,7 @@ export default function MatchDetail() {
           )}
 
           {/* Key Players — only if no result */}
-          {!res && (homePlayers.length > 0 || awayPlayers.length > 0) && (
+          {fixture.status !== 'completed' && (homePlayers.length > 0 || awayPlayers.length > 0) && (
             <div className="mt-8 border-t border-[#242424] pt-8">
               <div className="font-inter text-xs text-gray-400 font-bold tracking-[0.15em] uppercase mb-6 text-center">Key Players</div>
               <div className="grid grid-cols-2 gap-6">
