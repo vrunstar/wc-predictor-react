@@ -81,8 +81,8 @@ export default function MatchDetail() {
 
   const home = fixture.home || {};
   const away = fixture.away || {};
-  const homeCode = home.team_code || 'TBD';
-  const awayCode = away.team_code || 'TBD';
+  const homeCode = home.team_code || '???';
+  const awayCode = away.team_code || '???';
   const homeName = home.name || homeCode;
   const awayName = away.name || awayCode;
   const homeRank = ranks[home.team_id] || '—';
@@ -203,55 +203,41 @@ export default function MatchDetail() {
   return (
     <div className="flex flex-col gap-4">
 
-      {/* Desktop Header */}
-      <div className="hidden md:flex items-center justify-center my-2 relative">
+      {/* Header */}
+      <div className="flex items-center justify-center my-2 relative">
         <div className="font-champion text-2xl md:text-3xl tracking-wider text-[#F0F0F0] leading-none flex items-baseline justify-center gap-4 text-center">
           MATCH {matchId}
           <span className="font-inter text-sm font-extrabold text-gray-400 tracking-widest uppercase">{matchStage}</span>
         </div>
-        <button onClick={() => navigate(-1)} className="absolute right-0 flex items-center justify-center w-8 h-8 bg-[#091424] border border-[#242424]/40 hover:border-white/50 hover:text-white rounded-[6px] text-gray-500 font-inter text-xs font-bold transition-all duration-150">✕</button>
+        <button onClick={() => navigate(-1)} className="absolute right-0 flex items-center justify-center w-8 h-8 bg-[#091424] border border-[#242424]/40 hover:border-white/50 hover:text-white rounded-[6px] text-gray-500 font-inter text-xs font-bold transition-all duration-150">x</button>
       </div>
 
       {/* ── MOBILE ── */}
       <div className="flex md:hidden flex-col gap-3">
 
-        {/* Sticky hero card */}
-        <div className="sticky top-[60px] z-20 bg-[#091424] border-b border-[#242424]/40 -mx-4 px-4 pt-3 pb-4">
-          {/* Match title row */}
-          <div className="flex items-center justify-between mb-3">
-            <div className="font-champion text-2xl tracking-wider text-[#F0F0F0] leading-none flex items-baseline gap-3">
-              MATCH {matchId}
-              <span className="font-inter text-xs font-extrabold text-gray-400 tracking-widest uppercase">{matchStage}</span>
-            </div>
-            <button onClick={() => navigate(-1)} className="flex items-center justify-center w-8 h-8 bg-black/40 border border-[#242424]/40 hover:border-white/50 hover:text-white rounded-[6px] text-gray-500 font-inter text-xs font-bold transition-all duration-150">✕</button>
-          </div>
-
-          {/* Teams row — fixtures style */}
-          <div className="grid grid-cols-[24px_1fr_auto_1fr_24px] items-center gap-[0.6rem] w-full">
-            <div className="flex items-center justify-center">
-              <img src={getFlagUrl(homeCode)} alt={homeCode} className="w-[22px] h-auto object-contain border border-[#1e1e1e]" onError={(e) => { e.target.style.display = 'none'; }} />
-            </div>
-            <div className="font-champion text-[1.375rem] tracking-wider text-[#F0F0F0] leading-none">
-              {homeCode}
+        {/* Team block */}
+        <div className="flex flex-col gap-2 px-1">
+          <div className="grid grid-cols-[1fr_auto_1fr] items-center">
+            <div className="flex items-center gap-2">
+              <img src={getFlagUrl(homeCode)} alt={homeCode} className="w-[28px] h-auto object-contain border border-[#1e1e1e] shrink-0" onError={(e) => { e.target.style.display = 'none'; }} />
+              <span className="font-champion text-[1.6rem] tracking-wider text-[#F0F0F0] leading-none">{homeCode}</span>
             </div>
             <div className="flex justify-center px-2">{scoreBlock}</div>
-            <div className="font-champion text-[1.375rem] tracking-wider text-[#F0F0F0] leading-none text-right">
-              {awayCode}
-            </div>
-            <div className="flex items-center justify-center">
-              <img src={getFlagUrl(awayCode)} alt={awayCode} className="w-[22px] h-auto object-contain border border-[#1e1e1e]" onError={(e) => { e.target.style.display = 'none'; }} />
+            <div className="flex items-center gap-2 justify-end">
+              <span className="font-champion text-[1.6rem] tracking-wider text-[#F0F0F0] leading-none">{awayCode}</span>
+              <img src={getFlagUrl(awayCode)} alt={awayCode} className="w-[28px] h-auto object-contain border border-[#1e1e1e] shrink-0" onError={(e) => { e.target.style.display = 'none'; }} />
             </div>
           </div>
-
-          {/* Full names */}
-          <div className="grid grid-cols-[1fr_auto_1fr] mt-1">
+          <div className="grid grid-cols-[1fr_auto_1fr]">
             <span className="font-inter text-xs text-[#444] font-medium">{homeName}</span>
             <span className="w-8" />
             <span className="font-inter text-xs text-[#444] font-medium text-right">{awayName}</span>
           </div>
+        </div>
 
-          {/* Rank + Form */}
-          <div className="grid grid-cols-[1fr_auto_1fr] items-center mt-2 pt-2 border-t border-[#3a3a3a]">
+        {/* Rank + Form */}
+        <div className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-3">
+          <div className="grid grid-cols-[1fr_auto_1fr] items-center">
             <div className="flex items-center gap-2">
               <span className="font-inter text-xs text-[#555] font-semibold">{homeRank}</span>
               {renderFormSpans(homeForm)}
@@ -283,10 +269,7 @@ export default function MatchDetail() {
         {/* Venue */}
         {(stadName || stadCity) && (
           <a href={stadMapsUrl} target="_blank" rel="noopener noreferrer" className="relative border border-[#2a2a2a] rounded-[10px] overflow-hidden h-[140px] block">
-            {stadPhotoKey
-              ? <div style={{ backgroundImage: `url(${getStadiumPhotoUrl(stadPhotoKey, true)})` }} className="absolute inset-0 bg-cover bg-top" />
-              : <div className="absolute inset-0 bg-[#0B0B0B]" />
-            }
+            {stadPhotoKey ? <div style={{ backgroundImage: `url(${getStadiumPhotoUrl(stadPhotoKey)})` }} className="absolute inset-0 bg-cover bg-center" /> : <div className="absolute inset-0 bg-[#0B0B0B]" />}
             <div className="absolute inset-0 bg-black/70" />
             <div className="relative z-10 flex flex-col justify-center items-center h-full text-center px-4">
               <div className="font-champion text-[1.4rem] text-[#F0F0F0] tracking-wider leading-none">{stadName}</div>
@@ -306,13 +289,10 @@ export default function MatchDetail() {
               <span className="font-champion text-lg text-gray-500 leading-none">–</span>
               <span className="font-champion text-[2rem] text-red-400 leading-none">{h2h.away_w}</span>
             </div>
-            <div className="flex justify-between font-inter text-[0.6rem] text-[#444] font-bold tracking-wider mt-1 px-4">
-              <span>{homeCode}</span><span>DRAW</span><span>{awayCode}</span>
-            </div>
           </div>
         )}
 
-        {/* Events */}
+        {/* Events — if result exists */}
         {res && events.length > 0 && (
           <div className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-3">
             <div className="font-inter text-[0.6rem] text-gray-500 font-bold tracking-[0.15em] uppercase mb-3 text-center">Match Events</div>
@@ -389,10 +369,7 @@ export default function MatchDetail() {
             <div className="mt-8 border-t border-[#242424] pt-8">
               <div className="font-inter text-xs text-gray-400 font-bold tracking-[0.15em] uppercase mb-4 text-center">Venue</div>
               <a href={stadMapsUrl} target="_blank" rel="noopener noreferrer" className="relative border border-[#2a2a2a] rounded-[8px] overflow-hidden h-[200px] block hover:border-white/30 transition-colors">
-                {stadPhotoKey
-                  ? <div style={{ backgroundImage: `url(${getStadiumPhotoUrl(stadPhotoKey)})` }} className="absolute inset-0 bg-cover bg-center" />
-                  : <div className="absolute inset-0 bg-[#0B0B0B]" />
-                }
+                {stadPhotoKey ? <div style={{ backgroundImage: `url(${getStadiumPhotoUrl(stadPhotoKey)})` }} className="absolute inset-0 bg-cover bg-center" /> : <div className="absolute inset-0 bg-[#0B0B0B]" />}
                 <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/70 to-black/5" />
                 <div className="relative z-10 px-12 flex flex-col justify-center h-full items-start">
                   <div className="font-champion text-[2rem] text-[#F0F0F0] tracking-wider leading-none">{stadName}</div>
@@ -420,7 +397,7 @@ export default function MatchDetail() {
             </div>
           )}
 
-          {/* Events */}
+          {/* Events — if result exists */}
           {res && events.length > 0 && (
             <div className="mt-8 border-t border-[#242424] pt-8">
               <div className="font-inter text-xs text-gray-400 font-bold tracking-[0.15em] uppercase mb-4 text-center">Match Events</div>
