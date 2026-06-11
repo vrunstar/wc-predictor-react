@@ -67,6 +67,13 @@ class ResultSubmit(BaseModel):
     away_goals: int
     secret: str
 
+class EventUpsert(BaseModel):
+    match_id: int,
+    team_id: int,
+    player: str,
+    event: str,
+    time: Optional[int] = None
+
 # Helper dependency to verify admin secret
 def verify_admin_auth(authorization: Optional[str] = Header(None)):
     if not authorization:
@@ -211,6 +218,11 @@ def auth_logout():
     db.logout()
     return {"status": "success"}
 
+# EVENTS
+@app.get("/api/fixtures/{match_id}/events", response_model=List[dict])
+def get_match_events(match_id: int):
+    return db.events_by_match(match_id)
+
 # ADMIN ACTIONS
 @app.post("/api/admin/submit-result")
 def admin_submit_result(req: ResultSubmit):
@@ -227,12 +239,10 @@ def admin_run_predictions(authenticated: bool = Depends(verify_admin_auth)):
     try:
         model, features = predictor.load_model()
         matchday_preds = db.fixtures_current_matchday()
-        # Get plain fixtures for the same matchday
         if matchday_preds:
             earliest_matchday = matchday_preds[0]["fixture"]["matchday_ist"]
             fixtures = [r["fixture"] for r in matchday_preds]
         else:
-            # Fall back to upcoming fixtures with no prediction yet
             all_upcoming = db.fixtures_upcoming()
             pred_map = db.pred_map()
             fixtures = [fx for fx in all_upcoming if fx["match_id"] not in pred_map][:8]
@@ -246,6 +256,20 @@ def admin_run_predictions(authenticated: bool = Depends(verify_admin_auth)):
             db.pred_updated(pred)
             count += 1
         return {"status": "success", "count": count, "message": f"Successfully generated predictions for {count} match(es)."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+@app.post("/api/admin/events")
+def upsert_event(event: EventUpsert, authenticated: bool = Depends(verify_admin_auth)):
+    try:
+        return db.event_upsert(event.model_dump())
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.delete("/api/admin/events/{event_id}")
+def delete_event(event_id: int, authenticated: bool = Depends(verify_admin_auth)):
+    try:
+        return db.event_delete(event_id)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
