@@ -60,7 +60,7 @@ export default function Results() {
   if (completed.length === 0) return (
     <div className="text-center py-24 bg-[#091424] border border-[#242424]/40 rounded-[10px] p-12">
       <div className="text-5xl mb-4">🏆</div>
-      <div className="text-xl font-bold font-hm_text tracking-wider text-gray-400">NO RESULTS YET</div>
+      <div className="text-xl font-bold font-FUCB tracking-wider text-gray-400">NO RESULTS YET</div>
     </div>
   );
 
@@ -82,13 +82,13 @@ export default function Results() {
 
   return (
     <div>
-      <h1 className="font-hm_text text-[3rem] md:text-[5.5rem] tracking-wide text-[#F0F0F0] leading-none mb-6 text-center">
+      <h1 className="font-FUCB text-[3rem] md:text-[5.5rem] tracking-wide text-[#F0F0F0] leading-none mb-6 text-center">
         RESULTS
       </h1>
 
       {Object.entries(groupedResults).map(([date, items]) => (
         <div key={date} className="mb-8">
-          <h2 className="font-inter text-[1.1rem] font-extrabold tracking-widest text-[#aaa] uppercase mb-3 text-center">
+          <h2 className="font-FNR text-[1.1rem] font-extrabold tracking-widest text-[#aaa] uppercase mb-3 text-center">
             {date}
           </h2>
 
@@ -120,19 +120,19 @@ export default function Results() {
                   {/* Score Row */}
                   <div className="grid grid-cols-[24px_1fr_auto_1fr_24px] items-center gap-[0.6rem] w-full">
                     <img src={getFlagUrl(homeCode)} alt={homeCode} className="w-[22px] md:w-[26px] h-auto object-contain border border-[#1e1e1e]" onError={(e) => { e.target.style.display = 'none'; }} />
-                    <div className="font-hm_text md:font-champion text-[1.375rem] md:text-2xl tracking-wider text-[#F0F0F0] leading-none">{homeCode}</div>
+                    <div className="font-FUCB md:font-FSEB text-[1.375rem] md:text-2xl tracking-wider text-[#F0F0F0] leading-none">{homeCode}</div>
                     <div className="text-center min-w-[110px]">
                       <div className="flex items-baseline justify-center gap-2 md:gap-4">
-                        <span className="font-champion text-2xl text-white tracking-widest leading-none">{actualH} – {actualA}</span>
-                        <span className="font-inter font-extrabold text-[0.9rem] md:text-[1.1rem] text-gray-500">({predH}–{predA})</span>
+                        <span className="font-FSEB text-2xl text-white tracking-widest leading-none">{actualH} – {actualA}</span>
+                        <span className="font-FNR font-extrabold text-[0.9rem] md:text-[1.1rem] text-gray-500">({predH}–{predA})</span>
                       </div>
                     </div>
-                    <div className="font-hm_text md:font-champion text-[1.375rem] md:text-2xl tracking-wider text-[#F0F0F0] leading-none text-right">{awayCode}</div>
+                    <div className="font-FUCB md:font-FSEB text-[1.375rem] md:text-2xl tracking-wider text-[#F0F0F0] leading-none text-right">{awayCode}</div>
                     <img src={getFlagUrl(awayCode)} alt={awayCode} className="w-[22px] md:w-[26px] h-auto object-contain border border-[#1e1e1e] justify-self-end" onError={(e) => { e.target.style.display = 'none'; }} />
                   </div>
 
                   {/* Meta row — desktop */}
-                  <div className="hidden md:grid grid-cols-[1fr_auto_1fr] items-center mt-[0.7rem] pt-[0.6rem] border-t border-[#1e1e1e] text-[0.9rem] font-inter text-gray-400">
+                  <div className="hidden md:grid grid-cols-[1fr_auto_1fr] items-center mt-[0.7rem] pt-[0.6rem] border-t border-[#1e1e1e] text-[0.9rem] font-FNR text-gray-400">
                     <div className="flex items-center gap-2">
                       <span className="font-semibold text-gray-500">{homeRank}</span>
                       {renderFormSpans(homeForm)}
@@ -148,7 +148,7 @@ export default function Results() {
 
                   {/* Meta row — mobile */}
                   <div className="flex md:hidden justify-center mt-[0.5rem] pt-[0.5rem] border-t border-[#1e1e1e]">
-                    <span className="font-inter text-[0.72rem] text-[#555] tracking-wider">
+                    <span className="font-FNR text-[0.72rem] text-[#555] tracking-wider">
                       {venue && `${venue} · `}{matchStage}
                     </span>
                   </div>

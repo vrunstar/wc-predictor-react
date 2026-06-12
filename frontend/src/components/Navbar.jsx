@@ -34,7 +34,7 @@ export default function Navbar() {
               key={item.label}
               to={item.path}
               className={({ isActive }) =>
-                `relative text-xs tracking-widest font-semibold font-inter transition-colors duration-150 ${
+                `relative text-xs tracking-widest font-semibold font-FNR transition-colors duration-150 ${
                   isActive
                     ? 'text-white after:absolute after:bottom-[-27px] after:left-0 after:right-0 after:h-[2px] after:bg-white'
                     : 'text-[#aaa] hover:text-white'
@@ -103,7 +103,7 @@ export default function Navbar() {
                   alt={item.label}
                   className={`w-[25px] h-[25px] object-contain ${isActive ? 'opacity-100' : 'opacity-40'}`}
                 />
-                <span className={`text-[7.5px] tracking-widest font-medium font-inter ${isActive ? 'text-white' : 'text-[#555]'}`}>
+                <span className={`text-[7.5px] tracking-widest font-medium font-FNR ${isActive ? 'text-white' : 'text-[#555]'}`}>
                   {item.label === 'Knockouts' ? 'KO' : item.label}
                 </span>
               </>

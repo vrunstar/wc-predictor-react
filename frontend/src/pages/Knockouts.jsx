@@ -162,12 +162,12 @@ export default function Knockouts() {
           <div className="w-[20px] h-[15px] bg-[#141414] border border-[#2a2a2a] rounded-[2px]" />
         )}
         {isPlaceholder ? (
-          <span className="font-inter text-gray-500 text-[0.8rem] font-medium leading-none truncate max-w-[80px]">{display}</span>
+          <span className="font-FNR text-gray-500 text-[0.8rem] font-medium leading-none truncate max-w-[80px]">{display}</span>
         ) : (
-          <span className="font-hm_text text-[0.8rem] text-[#F0F0F0] leading-none tracking-wide select-none">{display}</span>
+          <span className="font-FUCB text-[0.8rem] text-[#F0F0F0] leading-none tracking-wide select-none">{display}</span>
         )}
         {score !== undefined && score !== null && score !== '' && (
-          <span className="font-champion text-[1rem] text-[#00C853] ml-auto leading-none select-none">{score}</span>
+          <span className="font-FSEB text-[1rem] text-[#00C853] ml-auto leading-none select-none">{score}</span>
         )}
       </div>
     );
@@ -306,7 +306,7 @@ export default function Knockouts() {
 
   return (
     <div className="w-full flex flex-col">
-      <h1 className="font-hm_text text-[3rem] md:text-[5.5rem] tracking-wide text-[#F0F0F0] leading-none mb-4 text-center">
+      <h1 className="font-FUCB text-[3rem] md:text-[5.5rem] tracking-wide text-[#F0F0F0] leading-none mb-4 text-center">
         KNOCKOUTS
       </h1>
 
@@ -317,7 +317,7 @@ export default function Knockouts() {
             <button
               key={s.key}
               onClick={() => setActiveStage(s.key)}
-              className={`flex-1 py-2 text-xs tracking-widest font-semibold font-inter transition-colors ${activeStage === s.key ? 'bg-white text-black' : 'bg-transparent text-[#c4c4c4]'}`}
+              className={`flex-1 py-2 text-xs tracking-widest font-semibold font-FNR transition-colors ${activeStage === s.key ? 'bg-white text-black' : 'bg-transparent text-[#c4c4c4]'}`}
             >
               {s.label}
             </button>

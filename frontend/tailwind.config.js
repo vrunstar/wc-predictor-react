@@ -14,9 +14,9 @@ export default {
         green: "#00C853",
       },
       fontFamily: {
-        champion: ["ChampionGothic", "sans-serif"],
-        inter: ["Inter", "sans-serif"],
-        hm_text : ["HitmarkerText" , "sans-serif"],
+        FSEB: ["FSEB", "sans-serif"],
+        FNR: ["FNR", "sans-serif"],
+        FUCB : ["FUCB" , "sans-serif"],
       },
     },
   },

@@ -54,7 +54,7 @@ export default function Predictions() {
 
   if (fixtures.length === 0) return (
     <div className="text-center bg-[#091424] border border-[#242424]/40 rounded-[10px] p-12">
-      <div className="text-xl font-bold font-hm_text tracking-wider text-gray-400">No predictions yet</div>
+      <div className="text-xl font-bold font-FUCB tracking-wider text-gray-400">No predictions yet</div>
     </div>
   );
 
@@ -71,7 +71,7 @@ export default function Predictions() {
   return (
     <div>
       <div className="mb-6 text-center">
-        <h1 className="font-hm_text text-[3rem] md:text-[5.5rem] tracking-wide text-[#F0F0F0] leading-none mb-1">
+        <h1 className="font-FUCB text-[3rem] md:text-[5.5rem] tracking-wide text-[#F0F0F0] leading-none mb-1">
           PREDICTIONS
         </h1>
       </div>
@@ -80,7 +80,7 @@ export default function Predictions() {
 
       {Object.entries(grouped).map(([date, matches]) => (
         <div key={date} className="mb-8">
-          <h2 className="font-inter text-[0.8rem] font-medium tracking-widest text-[#aaa] mb-3 text-center">{date}</h2>
+          <h2 className="font-FNR text-[0.8rem] font-medium tracking-widest text-[#aaa] mb-3 text-center">{date}</h2>
           <div className="flex flex-col gap-3">
             {matches.map((fx) => {
               const home = fx.home || {};
@@ -111,15 +111,15 @@ export default function Predictions() {
                 >
                   <div className="grid grid-cols-[30px_1fr_auto_1fr_30px] items-center gap-[0.6rem] w-full">
                     <img src={getFlagUrl(homeCode)} alt={homeCode} className="w-[28px] h-auto object-contain border border-[#1e1e1e]" onError={(e) => { e.target.style.display = 'none'; }} />
-                    <div className="font-hm_text md:font-champion text-2xl tracking-wider text-[#F0F0F0] leading-none">{homeCode}</div>
+                    <div className="font-FUCB md:font-FSEB text-2xl tracking-wider text-[#F0F0F0] leading-none">{homeCode}</div>
                     <div className="text-center min-w-[90px]">
-                      <span className="font-champion text-[2rem] text-white tracking-widest leading-none">{hGoals} – {aGoals}</span>
+                      <span className="font-FSEB text-[2rem] text-white tracking-widest leading-none">{hGoals} – {aGoals}</span>
                     </div>
-                    <div className="font-hm_text md:font-champion text-2xl tracking-wider text-[#F0F0F0] leading-none text-right">{awayCode}</div>
+                    <div className="font-FUCB md:font-FSEB text-2xl tracking-wider text-[#F0F0F0] leading-none text-right">{awayCode}</div>
                     <img src={getFlagUrl(awayCode)} alt={awayCode} className="w-[28px] h-auto object-contain border border-[#1e1e1e]" onError={(e) => { e.target.style.display = 'none'; }} />
                   </div>
 
-                  <div className="hidden md:grid grid-cols-[1fr_auto_1fr] items-center mt-[0.7rem] pt-[0.6rem] border-t border-[#3a3a3a] text-[0.9rem] font-inter text-gray-400">
+                  <div className="hidden md:grid grid-cols-[1fr_auto_1fr] items-center mt-[0.7rem] pt-[0.6rem] border-t border-[#3a3a3a] text-[0.9rem] font-FNR text-gray-400">
                     <div className="flex items-center gap-2">
                       <span className="font-semibold text-gray-500">{homeRank}</span>
                       {renderFormSpans(homeForm)}
@@ -134,7 +134,7 @@ export default function Predictions() {
                   </div>
 
                   <div className="flex md:hidden justify-center mt-[0.5rem] pt-[0.5rem] border-t border-[#3a3a3a]">
-                    <span className="font-inter text-[0.72rem] text-[#555] tracking-wider">
+                    <span className="font-FNR text-[0.72rem] text-[#555] tracking-wider">
                       {venue && `${venue} · `}{koTime} · <span className="text-gray-400 font-semibold">{conf}% {outcomeLabel}</span>
                     </span>
                   </div>

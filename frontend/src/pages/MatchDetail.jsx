@@ -106,28 +106,28 @@ export default function MatchDetail() {
 
   const scoreBlock = res ? (
     <div className="flex flex-col items-center">
-      <div className="font-champion text-[2.5rem] md:text-[3rem] text-white tracking-widest leading-none select-none">
+      <div className="font-FSEB text-[2.5rem] md:text-[3rem] text-white tracking-widest leading-none select-none">
         {res.home_goals} – {res.away_goals}
       </div>
-      <div className="font-inter text-[0.72rem] text-gray-500 mt-1 uppercase tracking-wider font-semibold">
+      <div className="font-FNR text-[0.72rem] text-gray-500 mt-1 uppercase tracking-wider font-semibold">
         ({prediction?.pred_home_goals ?? '?'}–{prediction?.pred_away_goals ?? '?'} pred)
       </div>
     </div>
   ) : prediction ? (
     <div className="flex flex-col items-center">
-      <div className="font-champion text-[2.5rem] md:text-[3rem] text-white tracking-widest leading-none select-none">
+      <div className="font-FSEB text-[2.5rem] md:text-[3rem] text-white tracking-widest leading-none select-none">
         {prediction.pred_home_goals} – {prediction.pred_away_goals}
       </div>
-      <div className="font-inter text-[0.72rem] text-gray-400 mt-1 uppercase tracking-wider font-semibold">
+      <div className="font-FNR text-[0.72rem] text-gray-400 mt-1 uppercase tracking-wider font-semibold">
         {Math.round((prediction.model_confidence || 0) * 100)}% conf
       </div>
     </div>
   ) : (
     <div className="flex flex-col items-center">
-      <div className="font-champion text-[2.5rem] md:text-[3rem] text-white tracking-widest leading-none select-none">
+      <div className="font-FSEB text-[2.5rem] md:text-[3rem] text-white tracking-widest leading-none select-none">
         {koTime}
       </div>
-      <div className="font-inter text-[0.62rem] text-gray-500 mt-1 uppercase tracking-[0.14em] font-black">IST</div>
+      <div className="font-FNR text-[0.62rem] text-gray-500 mt-1 uppercase tracking-[0.14em] font-black">IST</div>
     </div>
   );
 
@@ -152,17 +152,17 @@ export default function MatchDetail() {
           <div key={i} className="grid grid-cols-[1fr_44px_1fr] items-center gap-1">
             <div className="flex items-center justify-end">
               {isHome && (
-                <span className="font-inter text-[0.78rem] text-[#e0e0e0] text-right flex items-center gap-1">
+                <span className="font-FNR text-[0.78rem] text-[#e0e0e0] text-right flex items-center gap-1">
                   {ev.player}{suffix}<CardRect type={ev.event} />
                 </span>
               )}
             </div>
-            <div className="font-inter text-[0.68rem] text-[#555] font-bold text-center whitespace-nowrap">
+            <div className="font-FNR text-[0.68rem] text-[#555] font-bold text-center whitespace-nowrap">
               {ev.time ? `${ev.time}'` : '—'}
             </div>
             <div className="flex items-center">
               {!isHome && (
-                <span className="font-inter text-[0.78rem] text-[#e0e0e0] flex items-center gap-1">
+                <span className="font-FNR text-[0.78rem] text-[#e0e0e0] flex items-center gap-1">
                   {ev.player}{suffix}<CardRect type={ev.event} />
                 </span>
               )}
@@ -186,11 +186,11 @@ export default function MatchDetail() {
               {photoUrl ? (
                 <img src={photoUrl} alt={p.full_name} className="w-[45px] h-[45px] rounded-full object-cover border border-[#2a2a2a] shrink-0" onError={(e) => { e.target.style.display = 'none'; }} />
               ) : (
-                <div className="w-[45px] h-[45px] rounded-full bg-[#141414] border border-[#2a2a2a] flex items-center justify-center shrink-0 font-champion text-[0.8rem] text-gray-500">{p.number}</div>
+                <div className="w-[45px] h-[45px] rounded-full bg-[#141414] border border-[#2a2a2a] flex items-center justify-center shrink-0 font-FSEB text-[0.8rem] text-gray-500">{p.number}</div>
               )}
               <div className="flex flex-col">
-                <div className="font-inter text-sm font-semibold text-[#e0e0e0] tracking-[0.04em]">{p.full_name}</div>
-                <div className="font-inter text-[0.75rem] font-semibold text-gray-500 tracking-[0.08em] mt-0.5">{p.number} · {p.position}</div>
+                <div className="font-FNR text-sm font-semibold text-[#e0e0e0] tracking-[0.04em]">{p.full_name}</div>
+                <div className="font-FNR text-[0.75rem] font-semibold text-gray-500 tracking-[0.08em] mt-0.5">{p.number} · {p.position}</div>
               </div>
             </a>
           );
@@ -204,11 +204,11 @@ export default function MatchDetail() {
 
       {/* Header */}
       <div className="flex items-center justify-center my-2 relative">
-        <div className="font-champion text-2xl md:text-3xl tracking-wider text-[#F0F0F0] leading-none flex items-baseline justify-center gap-4 text-center">
+        <div className="font-FSEB text-2xl md:text-3xl tracking-wider text-[#F0F0F0] leading-none flex items-baseline justify-center gap-4 text-center">
           MATCH {matchId}
-          <span className="font-inter text-sm font-extrabold text-gray-400 tracking-widest uppercase">{matchStage}</span>
+          <span className="font-FNR text-sm font-extrabold text-gray-400 tracking-widest uppercase">{matchStage}</span>
         </div>
-        <button onClick={() => navigate(-1)} className="absolute right-0 flex items-center justify-center w-8 h-8 bg-[#091424] border border-[#242424]/40 hover:border-white/50 hover:text-white rounded-[6px] text-gray-500 font-inter text-xs font-bold transition-all duration-150">x</button>
+        <button onClick={() => navigate(-1)} className="absolute right-0 flex items-center justify-center w-8 h-8 bg-[#091424] border border-[#242424]/40 hover:border-white/50 hover:text-white rounded-[6px] text-gray-500 font-FNR text-xs font-bold transition-all duration-150">x</button>
       </div>
 
       {/* ── MOBILE ── */}
@@ -219,18 +219,18 @@ export default function MatchDetail() {
           <div className="grid grid-cols-[1fr_auto_1fr] items-center">
             <div className="flex items-center gap-2">
               <img src={getFlagUrl(homeCode)} alt={homeCode} className="w-[28px] h-auto object-contain border border-[#1e1e1e] shrink-0" onError={(e) => { e.target.style.display = 'none'; }} />
-              <span className="font-champion text-[1.6rem] tracking-wider text-[#F0F0F0] leading-none">{homeCode}</span>
+              <span className="font-FSEB text-[1.6rem] tracking-wider text-[#F0F0F0] leading-none">{homeCode}</span>
             </div>
             <div className="flex justify-center px-2">{scoreBlock}</div>
             <div className="flex items-center gap-2 justify-end">
-              <span className="font-champion text-[1.6rem] tracking-wider text-[#F0F0F0] leading-none">{awayCode}</span>
+              <span className="font-FSEB text-[1.6rem] tracking-wider text-[#F0F0F0] leading-none">{awayCode}</span>
               <img src={getFlagUrl(awayCode)} alt={awayCode} className="w-[28px] h-auto object-contain border border-[#1e1e1e] shrink-0" onError={(e) => { e.target.style.display = 'none'; }} />
             </div>
           </div>
           <div className="grid grid-cols-[1fr_auto_1fr]">
-            <span className="font-inter text-xs text-[#444] font-medium">{homeName}</span>
+            <span className="font-FNR text-xs text-[#444] font-medium">{homeName}</span>
             <span className="w-8" />
-            <span className="font-inter text-xs text-[#444] font-medium text-right">{awayName}</span>
+            <span className="font-FNR text-xs text-[#444] font-medium text-right">{awayName}</span>
           </div>
         </div>
 
@@ -238,13 +238,13 @@ export default function MatchDetail() {
         <div className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-3">
           <div className="grid grid-cols-[1fr_auto_1fr] items-center">
             <div className="flex items-center gap-2">
-              <span className="font-inter text-xs text-[#555] font-semibold">{homeRank}</span>
+              <span className="font-FNR text-xs text-[#555] font-semibold">{homeRank}</span>
               {renderFormSpans(homeForm)}
             </div>
             <div className="w-px h-4 bg-[#333] mx-2" />
             <div className="flex items-center gap-2 justify-end">
               {renderFormSpans(awayForm)}
-              <span className="font-inter text-xs text-[#555] font-semibold">{awayRank}</span>
+              <span className="font-FNR text-xs text-[#555] font-semibold">{awayRank}</span>
             </div>
           </div>
         </div>
@@ -252,7 +252,7 @@ export default function MatchDetail() {
         {/* Win probability */}
         {showProb && (
           <div className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-3">
-            <div className="flex justify-between font-inter text-[0.65rem] font-bold text-gray-400 mb-1.5">
+            <div className="flex justify-between font-FNR text-[0.65rem] font-bold text-gray-400 mb-1.5">
               <span>{homeCode} {hProb}%</span>
               <span>Draw {dProb}%</span>
               <span>{aProb}% {awayCode}</span>
@@ -271,8 +271,8 @@ export default function MatchDetail() {
             {stadPhotoKey ? <div style={{ backgroundImage: `url(${getStadiumPhotoUrl(stadPhotoKey)})` }} className="absolute inset-0 bg-cover bg-center" /> : <div className="absolute inset-0 bg-[#0B0B0B]" />}
             <div className="absolute inset-0 bg-black/70" />
             <div className="relative z-10 flex flex-col justify-center items-center h-full text-center px-4">
-              <div className="font-champion text-[1.4rem] text-[#F0F0F0] tracking-wider leading-none">{stadName}</div>
-              <div className="font-inter text-xs text-[#666] mt-1 font-semibold">{stadCity} · {stadCapacity}</div>
+              <div className="font-FSEB text-[1.4rem] text-[#F0F0F0] tracking-wider leading-none">{stadName}</div>
+              <div className="font-FNR text-xs text-[#666] mt-1 font-semibold">{stadCity} · {stadCapacity}</div>
             </div>
           </a>
         )}
@@ -280,13 +280,13 @@ export default function MatchDetail() {
         {/* H2H */}
         {h2h && h2h.available && (
           <div className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-3">
-            <div className="font-inter text-[0.6rem] text-gray-500 font-bold tracking-[0.15em] uppercase mb-2 text-center">Head-To-Head</div>
+            <div className="font-FNR text-[0.6rem] text-gray-500 font-bold tracking-[0.15em] uppercase mb-2 text-center">Head-To-Head</div>
             <div className="flex items-center justify-center gap-3">
-              <span className="font-champion text-[2rem] text-green-400 leading-none">{h2h.home_w}</span>
-              <span className="font-champion text-lg text-gray-500 leading-none">–</span>
-              <span className="font-champion text-[2rem] text-gray-400 leading-none">{h2h.draws}</span>
-              <span className="font-champion text-lg text-gray-500 leading-none">–</span>
-              <span className="font-champion text-[2rem] text-red-400 leading-none">{h2h.away_w}</span>
+              <span className="font-FSEB text-[2rem] text-green-400 leading-none">{h2h.home_w}</span>
+              <span className="font-FSEB text-lg text-gray-500 leading-none">–</span>
+              <span className="font-FSEB text-[2rem] text-gray-400 leading-none">{h2h.draws}</span>
+              <span className="font-FSEB text-lg text-gray-500 leading-none">–</span>
+              <span className="font-FSEB text-[2rem] text-red-400 leading-none">{h2h.away_w}</span>
             </div>
           </div>
         )}
@@ -294,7 +294,7 @@ export default function MatchDetail() {
         {/* Events — if result exists */}
         {res && events.length > 0 && (
           <div className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-3">
-            <div className="font-inter text-[0.6rem] text-gray-500 font-bold tracking-[0.15em] uppercase mb-3 text-center">Match Events</div>
+            <div className="font-FNR text-[0.6rem] text-gray-500 font-bold tracking-[0.15em] uppercase mb-3 text-center">Match Events</div>
             {renderEventsTimeline()}
           </div>
         )}
@@ -302,10 +302,10 @@ export default function MatchDetail() {
         {/* Key Players — only if no result */}
         {fixture.status !== 'completed' && (homePlayers.length > 0 || awayPlayers.length > 0) && (
           <div className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-3">
-            <div className="font-inter text-[0.6rem] text-gray-500 font-bold tracking-[0.15em] uppercase mb-3 text-center">Key Players</div>
+            <div className="font-FNR text-[0.6rem] text-gray-500 font-bold tracking-[0.15em] uppercase mb-3 text-center">Key Players</div>
             <div className="flex mb-3 border border-[#2a2a2a] rounded-[6px] overflow-hidden">
-              <button onClick={() => setActiveTab(homeCode)} className={`flex-1 py-1.5 font-champion text-sm tracking-wider transition-colors ${activeTab === homeCode ? 'bg-white text-black' : 'bg-transparent text-[#555]'}`}>{homeCode}</button>
-              <button onClick={() => setActiveTab(awayCode)} className={`flex-1 py-1.5 font-champion text-sm tracking-wider transition-colors ${activeTab === awayCode ? 'bg-white text-black' : 'bg-transparent text-[#555]'}`}>{awayCode}</button>
+              <button onClick={() => setActiveTab(homeCode)} className={`flex-1 py-1.5 font-FSEB text-sm tracking-wider transition-colors ${activeTab === homeCode ? 'bg-white text-black' : 'bg-transparent text-[#555]'}`}>{homeCode}</button>
+              <button onClick={() => setActiveTab(awayCode)} className={`flex-1 py-1.5 font-FSEB text-sm tracking-wider transition-colors ${activeTab === awayCode ? 'bg-white text-black' : 'bg-transparent text-[#555]'}`}>{awayCode}</button>
             </div>
             {activeTab === homeCode ? renderPlayersCol(homePlayers) : renderPlayersCol(awayPlayers)}
           </div>
@@ -322,26 +322,26 @@ export default function MatchDetail() {
             <div className="flex flex-col items-start">
               <div className="flex items-center gap-3">
                 <img src={getFlagUrl(homeCode)} alt={homeCode} className="w-[45px] h-auto object-contain border border-[#1e1e1e]" onError={(e) => { e.target.style.display = 'none'; }} />
-                <span className="font-champion text-[2rem] tracking-wider text-[#F0F0F0] leading-none select-none">{homeCode}</span>
+                <span className="font-FSEB text-[2rem] tracking-wider text-[#F0F0F0] leading-none select-none">{homeCode}</span>
               </div>
-              <div className="font-inter text-[1.25rem] text-[#666] mt-1.5 font-medium">{homeName}</div>
+              <div className="font-FNR text-[1.25rem] text-[#666] mt-1.5 font-medium">{homeName}</div>
               <div className="flex items-center gap-2 mt-1">
-                <span className="font-inter text-sm text-[#444] font-semibold">{homeRank}</span>
-                <span className="font-inter text-sm text-[#333]">·</span>
+                <span className="font-FNR text-sm text-[#444] font-semibold">{homeRank}</span>
+                <span className="font-FNR text-sm text-[#333]">·</span>
                 {renderFormSpans(homeForm)}
               </div>
             </div>
             <div className="flex justify-center">{scoreBlock}</div>
             <div className="flex flex-col items-end">
               <div className="flex items-center gap-3 justify-end">
-                <span className="font-champion text-[2rem] tracking-wider text-[#F0F0F0] leading-none select-none">{awayCode}</span>
+                <span className="font-FSEB text-[2rem] tracking-wider text-[#F0F0F0] leading-none select-none">{awayCode}</span>
                 <img src={getFlagUrl(awayCode)} alt={awayCode} className="w-[45px] h-auto object-contain border border-[#1e1e1e]" onError={(e) => { e.target.style.display = 'none'; }} />
               </div>
-              <div className="font-inter text-[1.25rem] text-[#666] mt-1.5 font-medium">{awayName}</div>
+              <div className="font-FNR text-[1.25rem] text-[#666] mt-1.5 font-medium">{awayName}</div>
               <div className="flex items-center gap-2 mt-1 justify-end">
                 {renderFormSpans(awayForm)}
-                <span className="font-inter text-sm text-[#333]">·</span>
-                <span className="font-inter text-sm text-[#444] font-semibold">{awayRank}</span>
+                <span className="font-FNR text-sm text-[#333]">·</span>
+                <span className="font-FNR text-sm text-[#444] font-semibold">{awayRank}</span>
               </div>
             </div>
           </div>
@@ -349,8 +349,8 @@ export default function MatchDetail() {
           {/* Win Probability */}
           {showProb && (
             <div className="mt-8 border-t border-[#242424] pt-8">
-              <div className="font-inter text-xs text-gray-400 font-bold tracking-[0.15em] uppercase mb-4 text-center">Win Probability</div>
-              <div className="flex justify-between font-inter text-[0.7rem] font-bold text-gray-400 mb-1.5">
+              <div className="font-FNR text-xs text-gray-400 font-bold tracking-[0.15em] uppercase mb-4 text-center">Win Probability</div>
+              <div className="flex justify-between font-FNR text-[0.7rem] font-bold text-gray-400 mb-1.5">
                 <span>{homeCode} {hProb}%</span>
                 <span>Draw {dProb}%</span>
                 <span>{aProb}% {awayCode}</span>
@@ -366,14 +366,14 @@ export default function MatchDetail() {
           {/* Venue */}
           {(stadName || stadCity) && (
             <div className="mt-8 border-t border-[#242424] pt-8">
-              <div className="font-inter text-xs text-gray-400 font-bold tracking-[0.15em] uppercase mb-4 text-center">Venue</div>
+              <div className="font-FNR text-xs text-gray-400 font-bold tracking-[0.15em] uppercase mb-4 text-center">Venue</div>
               <a href={stadMapsUrl} target="_blank" rel="noopener noreferrer" className="relative border border-[#2a2a2a] rounded-[8px] overflow-hidden h-[200px] block hover:border-white/30 transition-colors">
                 {stadPhotoKey ? <div style={{ backgroundImage: `url(${getStadiumPhotoUrl(stadPhotoKey)})` }} className="absolute inset-0 bg-cover bg-center" /> : <div className="absolute inset-0 bg-[#0B0B0B]" />}
                 <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/70 to-black/5" />
                 <div className="relative z-10 px-12 flex flex-col justify-center h-full items-start">
-                  <div className="font-champion text-[2rem] text-[#F0F0F0] tracking-wider leading-none">{stadName}</div>
-                  <div className="font-inter text-base text-[#666] mt-1 tracking-[0.04em] font-semibold">{stadCity}</div>
-                  <div className="font-inter text-sm text-[#444] mt-0.5 tracking-[0.04em] font-semibold">Capacity {stadCapacity}</div>
+                  <div className="font-FSEB text-[2rem] text-[#F0F0F0] tracking-wider leading-none">{stadName}</div>
+                  <div className="font-FNR text-base text-[#666] mt-1 tracking-[0.04em] font-semibold">{stadCity}</div>
+                  <div className="font-FNR text-sm text-[#444] mt-0.5 tracking-[0.04em] font-semibold">Capacity {stadCapacity}</div>
                 </div>
               </a>
             </div>
@@ -382,15 +382,15 @@ export default function MatchDetail() {
           {/* H2H */}
           {h2h && h2h.available && (
             <div className="mt-8 border-t border-[#242424] pt-8">
-              <div className="font-inter text-xs text-gray-400 font-bold tracking-[0.15em] uppercase mb-4 text-center">Head-To-Head Record</div>
+              <div className="font-FNR text-xs text-gray-400 font-bold tracking-[0.15em] uppercase mb-4 text-center">Head-To-Head Record</div>
               <div className="flex items-center justify-center gap-3 px-6 py-4 bg-white/2 border border-[#3a3a3a] rounded-[8px]">
-                <span className="font-champion text-[2.5rem] text-green-400 leading-none">{h2h.home_w}</span>
-                <span className="font-champion text-xl text-gray-500 leading-none">–</span>
-                <span className="font-champion text-[2.5rem] text-gray-400 leading-none">{h2h.draws}</span>
-                <span className="font-champion text-xl text-gray-500 leading-none">–</span>
-                <span className="font-champion text-[2.5rem] text-red-400 leading-none">{h2h.away_w}</span>
+                <span className="font-FSEB text-[2.5rem] text-green-400 leading-none">{h2h.home_w}</span>
+                <span className="font-FSEB text-xl text-gray-500 leading-none">–</span>
+                <span className="font-FSEB text-[2.5rem] text-gray-400 leading-none">{h2h.draws}</span>
+                <span className="font-FSEB text-xl text-gray-500 leading-none">–</span>
+                <span className="font-FSEB text-[2.5rem] text-red-400 leading-none">{h2h.away_w}</span>
               </div>
-              <div className="flex justify-between font-inter text-[0.7rem] text-[#444] font-bold tracking-wider mt-2 px-1">
+              <div className="flex justify-between font-FNR text-[0.7rem] text-[#444] font-bold tracking-wider mt-2 px-1">
                 <span>{homeCode}</span><span>DRAW</span><span>{awayCode}</span>
               </div>
             </div>
@@ -399,7 +399,7 @@ export default function MatchDetail() {
           {/* Events — if result exists */}
           {res && events.length > 0 && (
             <div className="mt-8 border-t border-[#242424] pt-8">
-              <div className="font-inter text-xs text-gray-400 font-bold tracking-[0.15em] uppercase mb-4 text-center">Match Events</div>
+              <div className="font-FNR text-xs text-gray-400 font-bold tracking-[0.15em] uppercase mb-4 text-center">Match Events</div>
               {renderEventsTimeline()}
             </div>
           )}
@@ -407,14 +407,14 @@ export default function MatchDetail() {
           {/* Key Players — only if no result */}
           {fixture.status !== 'completed' && (homePlayers.length > 0 || awayPlayers.length > 0) && (
             <div className="mt-8 border-t border-[#242424] pt-8">
-              <div className="font-inter text-xs text-gray-400 font-bold tracking-[0.15em] uppercase mb-6 text-center">Key Players</div>
+              <div className="font-FNR text-xs text-gray-400 font-bold tracking-[0.15em] uppercase mb-6 text-center">Key Players</div>
               <div className="grid grid-cols-2 gap-6">
                 <div>
-                  <div className="text-[0.8rem] text-gray-500 font-bold tracking-wider mb-2 font-inter">{homeCode} Players</div>
+                  <div className="text-[0.8rem] text-gray-500 font-bold tracking-wider mb-2 font-FNR">{homeCode} Players</div>
                   {renderPlayersCol(homePlayers)}
                 </div>
                 <div>
-                  <div className="text-[0.8rem] text-gray-500 font-bold tracking-wider mb-2 font-inter">{awayCode} Players</div>
+                  <div className="text-[0.8rem] text-gray-500 font-bold tracking-wider mb-2 font-FNR">{awayCode} Players</div>
                   {renderPlayersCol(awayPlayers)}
                 </div>
               </div>

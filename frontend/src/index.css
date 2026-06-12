@@ -5,16 +5,24 @@
 @tailwind utilities;
 
 @font-face {
-  font-family: 'ChampionGothic';
-  src: url('/fonts/HitmarkerNormal-Black.woff2') format('woff2');
+  font-family: 'FSEB';
+  src: url('/fonts/FWC2026-SemiExpandedBlack.e378fa1c.woff2') format('woff2');
   font-weight: 900;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'HitmarkerCondensed';
-  src: url('/fonts/HitmarkerCondensed-Bold.woff2') format('woff2');
+  font-family: 'FNR';
+  src: url('/fonts/FWC2026-NormalRegular.woff2') format('woff2');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'FUCB';
+  src: url('/fonts/FWC2026-UltraCondensedBlack.woff2') format('woff2');
   font-weight: 900;
   font-style: normal;
   font-display: swap;
@@ -22,7 +30,7 @@
 
 @font-face {
   font-family: 'HitmarkerText';
-  src: url('/fonts/FWC2026-UltraCondensedBlack.woff2') format('woff2');
+  src: url('/fonts/FWC2026-NormalBlack.2bd896c8.woff2') format('woff2');
   font-weight: 900;
   font-style: normal;
   font-display: swap;

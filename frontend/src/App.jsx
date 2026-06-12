@@ -13,7 +13,7 @@ import MatchDetail from './pages/MatchDetail';
 function App() {
   return (
     <Router>
-      <div className="min-h-screen text-[#F0F0F0] select-none font-inter pb-12 w-full max-w-[100vw] overflow-x-hidden">
+      <div className="min-h-screen text-[#F0F0F0] select-none font-FNR pb-12 w-full max-w-[100vw] overflow-x-hidden">
         <Navbar />
         {/* Main Content container pushed below fixed navbar */}
         <main className="pt-24 px-4 md:px-8 max-w-[85vw] mx-auto">

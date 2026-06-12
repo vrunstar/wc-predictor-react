@@ -176,15 +176,15 @@ export default function Admin() {
 
   return (
     <div className="max-w-[800px] mx-auto flex flex-col gap-6">
-      <h1 className="font-hm_text text-[5rem] tracking-wider text-[#F0F0F0] leading-none mb-2 text-center">ADMIN</h1>
+      <h1 className="font-FUCB text-[5rem] tracking-wider text-[#F0F0F0] leading-none mb-2 text-center">ADMIN</h1>
 
       {/* Match selector */}
       <div className="flex flex-col gap-1">
-        <label className="text-[0.7rem] text-[#999] tracking-wider font-medium font-inter">Select Match</label>
+        <label className="text-[0.7rem] text-[#999] tracking-wider font-medium font-FNR">Select Match</label>
         <select
           value={selectedMatchId ?? ''}
           onChange={handleMatchChange}
-          className="bg-[#0d0d0d] border border-[#242424]/40 text-white px-3 py-2 rounded-[8px] focus:outline-none focus:border-white/25 font-inter text-sm"
+          className="bg-[#0d0d0d] border border-[#242424]/40 text-white px-3 py-2 rounded-[8px] focus:outline-none focus:border-white/25 font-FNR text-sm"
         >
           {fixtures.map(fx => {
             const hasResult = fx.results && (!Array.isArray(fx.results) || fx.results.length > 0);
@@ -196,7 +196,7 @@ export default function Admin() {
 
       {/* Current Match */}
       {!currentFx ? (
-        <div className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-6 text-center text-gray-500 font-inter text-[0.85rem]">
+        <div className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-6 text-center text-gray-500 font-FNR text-[0.85rem]">
           No match selected
         </div>
       ) : (
@@ -205,42 +205,42 @@ export default function Admin() {
           {/* Match header */}
           <div className="grid grid-cols-[30px_1fr_auto_1fr_30px] items-center gap-[0.6rem]">
             <img src={getFlagUrl(homeCode)} alt={homeCode} className="w-[26px] h-auto object-contain border border-[#1e1e1e]" onError={(e) => { e.target.style.display = 'none'; }} />
-            <div className="font-hm_text text-2xl tracking-wider text-[#F0F0F0] leading-none">{homeCode}</div>
+            <div className="font-FUCB text-2xl tracking-wider text-[#F0F0F0] leading-none">{homeCode}</div>
             <div className="text-center min-w-[90px]">
-              <span className="font-inter text-xl font-extrabold text-white tracking-widest">{koTime}</span>
+              <span className="font-FNR text-xl font-extrabold text-white tracking-widest">{koTime}</span>
             </div>
-            <div className="font-hm_text text-2xl tracking-wider text-[#F0F0F0] leading-none text-right">{awayCode}</div>
+            <div className="font-FUCB text-2xl tracking-wider text-[#F0F0F0] leading-none text-right">{awayCode}</div>
             <img src={getFlagUrl(awayCode)} alt={awayCode} className="w-[26px] h-auto object-contain border border-[#1e1e1e] justify-self-end" onError={(e) => { e.target.style.display = 'none'; }} />
           </div>
 
           {/* Meta */}
-          <div className="grid grid-cols-[1fr_auto_1fr] items-center pt-[0.6rem] border-t border-[#3a3a3a] text-[0.75rem] font-inter text-gray-400">
+          <div className="grid grid-cols-[1fr_auto_1fr] items-center pt-[0.6rem] border-t border-[#3a3a3a] text-[0.75rem] font-FNR text-gray-400">
             <div className="text-center text-[#999]">Match {currentFx.match_id} · {matchStage} {venue && `· ${venue}`}</div>
           </div>
 
           {/* Goals input */}
           <div className="grid grid-cols-2 gap-4 pt-2 border-t border-[#1e1e1e]">
             <div className="flex flex-col gap-1">
-              <label className="text-[0.7rem] text-[#999] uppercase tracking-wider font-semibold font-inter">Home Goals ({homeCode})</label>
+              <label className="text-[0.7rem] text-[#999] uppercase tracking-wider font-semibold font-FNR">Home Goals ({homeCode})</label>
               <input type="number" min="0" placeholder="0" value={homeGoals} onChange={(e) => setHomeGoals(e.target.value)}
-                className="bg-[#0d0d0d] border border-[#242424]/40 text-white px-3 py-2 rounded-[8px] focus:outline-none focus:border-white/25 text-center font-inter" />
+                className="bg-[#0d0d0d] border border-[#242424]/40 text-white px-3 py-2 rounded-[8px] focus:outline-none focus:border-white/25 text-center font-FNR" />
             </div>
             <div className="flex flex-col gap-1">
-              <label className="text-[0.7rem] text-[#999] uppercase tracking-wider font-semibold font-inter">Away Goals ({awayCode})</label>
+              <label className="text-[0.7rem] text-[#999] uppercase tracking-wider font-semibold font-FNR">Away Goals ({awayCode})</label>
               <input type="number" min="0" placeholder="0" value={awayGoals} onChange={(e) => setAwayGoals(e.target.value)}
-                className="bg-[#0d0d0d] border border-[#242424]/40 text-white px-3 py-2 rounded-[8px] focus:outline-none focus:border-white/25 text-center font-inter" />
+                className="bg-[#0d0d0d] border border-[#242424]/40 text-white px-3 py-2 rounded-[8px] focus:outline-none focus:border-white/25 text-center font-FNR" />
             </div>
           </div>
 
           {/* Events builder */}
           <div className="flex flex-col gap-3 pt-2 border-t border-[#1e1e1e]">
-            <div className="font-inter text-[0.65rem] text-gray-500 font-bold tracking-[0.15em] uppercase">Add Events</div>
+            <div className="font-FNR text-[0.65rem] text-gray-500 font-bold tracking-[0.15em] uppercase">Add Events</div>
 
             <div className="grid grid-cols-2 gap-3">
               <div className="flex flex-col gap-1">
-                <label className="text-[0.7rem] text-[#999] uppercase tracking-wider font-semibold font-inter">Team</label>
+                <label className="text-[0.7rem] text-[#999] uppercase tracking-wider font-semibold font-FNR">Team</label>
                 <select value={eventTeamId} onChange={(e) => setEventTeamId(e.target.value)}
-                  className="bg-[#0d0d0d] border border-[#242424]/40 text-white px-3 py-2 rounded-[8px] focus:outline-none focus:border-white/25 font-inter text-sm">
+                  className="bg-[#0d0d0d] border border-[#242424]/40 text-white px-3 py-2 rounded-[8px] focus:outline-none focus:border-white/25 font-FNR text-sm">
                   <option value="">Select</option>
                   {matchTeams.map(t => (
                     <option key={t.id} value={t.id}>{t.code}</option>
@@ -248,9 +248,9 @@ export default function Admin() {
                 </select>
               </div>
               <div className="flex flex-col gap-1">
-                <label className="text-[0.7rem] text-[#999] tracking-wider font-semibold font-inter">Event</label>
+                <label className="text-[0.7rem] text-[#999] tracking-wider font-semibold font-FNR">Event</label>
                 <select value={eventType} onChange={(e) => setEventType(e.target.value)}
-                  className="bg-[#0d0d0d] border border-[#242424]/40 text-white px-3 py-2 rounded-[8px] focus:outline-none focus:border-white/25 font-inter text-sm">
+                  className="bg-[#0d0d0d] border border-[#242424]/40 text-white px-3 py-2 rounded-[8px] focus:outline-none focus:border-white/25 font-FNR text-sm">
                   {EVENT_TYPES.map(t => (
                     <option key={t} value={t}>{t.replace('_', ' ')}</option>
                   ))}
@@ -260,19 +260,19 @@ export default function Admin() {
 
             <div className="grid grid-cols-[1fr_80px] gap-3">
               <div className="flex flex-col gap-1">
-                <label className="text-[0.7rem] text-[#999] tracking-wider font-semibold font-inter">Player</label>
+                <label className="text-[0.7rem] text-[#999] tracking-wider font-semibold font-FNR">Player</label>
                 <input type="text" placeholder="Player" value={eventPlayer} onChange={(e) => setEventPlayer(e.target.value)}
-                  className="bg-[#0d0d0d] border border-[#242424]/40 text-white px-3 py-2 rounded-[8px] focus:outline-none focus:border-white/25 font-inter text-sm placeholder-gray-600" />
+                  className="bg-[#0d0d0d] border border-[#242424]/40 text-white px-3 py-2 rounded-[8px] focus:outline-none focus:border-white/25 font-FNR text-sm placeholder-gray-600" />
               </div>
               <div className="flex flex-col gap-1">
-                <label className="text-[0.7rem] text-[#999] tracking-wider font-semibold font-inter">Minute</label>
+                <label className="text-[0.7rem] text-[#999] tracking-wider font-semibold font-FNR">Minute</label>
                 <input type="text" placeholder="0" value={eventTime} onChange={(e) => setEventTime(e.target.value)}
-                  className="bg-[#0d0d0d] border border-[#242424]/40 text-white px-3 py-2 rounded-[8px] focus:outline-none focus:border-white/25 text-center font-inter text-sm" />
+                  className="bg-[#0d0d0d] border border-[#242424]/40 text-white px-3 py-2 rounded-[8px] focus:outline-none focus:border-white/25 text-center font-FNR text-sm" />
               </div>
             </div>
 
             <button onClick={handleAddEvent} disabled={!eventTeamId || !eventPlayer.trim()}
-              className="bg-[#091424] border border-[#242424]/40 hover:border-white/50 hover:text-white text-[#aaa] disabled:opacity-30 rounded-[8px] p-2.5 font-semibold text-sm tracking-wider uppercase font-inter transition-all duration-150">
+              className="bg-[#091424] border border-[#242424]/40 hover:border-white/50 hover:text-white text-[#aaa] disabled:opacity-30 rounded-[8px] p-2.5 font-semibold text-sm tracking-wider uppercase font-FNR transition-all duration-150">
               + Add to List
             </button>
           </div>
@@ -280,22 +280,22 @@ export default function Admin() {
           {/* Pending events list */}
           {pendingEvents.length > 0 && (
             <div className="flex flex-col gap-2 pt-2 border-t border-[#1e1e1e]">
-              <div className="font-inter text-[0.65rem] text-gray-500 font-bold tracking-[0.12em] uppercase">Pending Events ({pendingEvents.length})</div>
+              <div className="font-FNR text-[0.65rem] text-gray-500 font-bold tracking-[0.12em] uppercase">Pending Events ({pendingEvents.length})</div>
               {pendingEvents.map((ev, i) => (
                 <div key={i} className="flex items-center justify-between bg-white/2 border border-[#2a2a2a] rounded-[6px] px-3 py-2">
                   <div className="flex items-center gap-2">
-                    <span className="font-inter text-xs font-bold text-gray-400">{ev.team_code}</span>
-                    <span className="font-inter text-sm text-[#e0e0e0] font-medium flex items-center gap-1">
+                    <span className="font-FNR text-xs font-bold text-gray-400">{ev.team_code}</span>
+                    <span className="font-FNR text-sm text-[#e0e0e0] font-medium flex items-center gap-1">
                       {ev.player}
                       {ev.event === 'penalty' && ' (p)'}
                       {ev.event === 'own_goal' && ' (og)'}
                       {ev.event === 'yellow_card' && <span className="inline-block w-2.5 h-3.5 bg-yellow-400 rounded-[1px]"></span>}
                       {ev.event === 'red_card' && <span className="inline-block w-2.5 h-3.5 bg-red-500 rounded-[1px]"></span>}
                     </span>
-                    <span className="font-inter text-xs text-gray-500">{ev.event.replace('_', ' ')}</span>
-                    {ev.time && <span className="font-inter text-xs text-gray-600">{ev.time}'</span>}
+                    <span className="font-FNR text-xs text-gray-500">{ev.event.replace('_', ' ')}</span>
+                    {ev.time && <span className="font-FNR text-xs text-gray-600">{ev.time}'</span>}
                   </div>
-                  <button onClick={() => handleRemoveEvent(i)} className="text-[#444] hover:text-red-400 font-inter text-xs font-bold transition-colors px-1">x</button>
+                  <button onClick={() => handleRemoveEvent(i)} className="text-[#444] hover:text-red-400 font-FNR text-xs font-bold transition-colors px-1">x</button>
                 </div>
               ))}
             </div>
@@ -305,11 +305,11 @@ export default function Admin() {
 
       {/* Secret */}
       <input type="password" placeholder="Admin Secret" value={secret} onChange={handleSecretChange}
-        className="bg-[#0d0d0d] border border-[#242424]/40 text-white px-4 py-2.5 rounded-[8px] focus:outline-none focus:border-white/25 text-center font-inter placeholder-gray-500" />
+        className="bg-[#0d0d0d] border border-[#242424]/40 text-white px-4 py-2.5 rounded-[8px] focus:outline-none focus:border-white/25 text-center font-FNR placeholder-gray-500" />
 
       {/* Status */}
       {statusMsg && (
-        <div className={`border rounded-[8px] p-[10px_14px] font-inter text-[0.85rem] ${statusMsg.type === 'ok' ? 'bg-[#4CAF50]/10 border-[#4CAF50]/25 text-[#81c784]' : 'bg-[#F44336]/10 border-[#F44336]/25 text-[#e57373]'}`}>
+        <div className={`border rounded-[8px] p-[10px_14px] font-FNR text-[0.85rem] ${statusMsg.type === 'ok' ? 'bg-[#4CAF50]/10 border-[#4CAF50]/25 text-[#81c784]' : 'bg-[#F44336]/10 border-[#F44336]/25 text-[#e57373]'}`}>
           {statusMsg.text}
         </div>
       )}
@@ -317,11 +317,11 @@ export default function Admin() {
       {/* Action Buttons */}
       <div className="grid grid-cols-2 gap-4">
         <button onClick={handleSubmit} disabled={submitting || !currentFx}
-          className="bg-white text-black hover:bg-neutral-200 disabled:opacity-50 rounded-[8px] p-3 font-semibold text-sm tracking-wider uppercase font-inter transition-all duration-150">
+          className="bg-white text-black hover:bg-neutral-200 disabled:opacity-50 rounded-[8px] p-3 font-semibold text-sm tracking-wider uppercase font-FNR transition-all duration-150">
           {submitting ? 'Submitting...' : 'SUBMIT RESULT'}
         </button>
         <button onClick={handleRunPredictions} disabled={submitting}
-          className="bg-[#091424] border border-[#242424]/40 hover:border-white/50 hover:text-white text-[#aaa] disabled:opacity-50 rounded-[8px] p-3 font-semibold text-sm tracking-wider uppercase font-inter transition-all duration-150">
+          className="bg-[#091424] border border-[#242424]/40 hover:border-white/50 hover:text-white text-[#aaa] disabled:opacity-50 rounded-[8px] p-3 font-semibold text-sm tracking-wider uppercase font-FNR transition-all duration-150">
           {submitting ? 'Generating...' : 'RUN PREDICTIONS'}
         </button>
       </div>
