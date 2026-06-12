@@ -89,7 +89,9 @@ export default function MatchDetail() {
   const awayRank = ranks[away.team_id] || '—';
   const homeForm = forms[home.team_id] || '';
   const awayForm = forms[away.team_id] || '';
-  const results = fixture.results || [];
+  const res = Array.isArray(fixture.results)
+    ? (fixture.results[0] || null)
+    : (fixture.results || null);
   const res = results[0] || null;
   const matchStage = stageLabel(fixture.stage, fixture.group_name);
   const koTime = formatKickoff(fixture.kickoff_ist);
