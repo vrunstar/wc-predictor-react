@@ -69,7 +69,7 @@ class ResultSubmit(BaseModel):
 
 class EventUpsert(BaseModel):
     match_id: int
-    team_id: int
+    team_code: str
     player: str
     event: str
     time: Optional[int] = None

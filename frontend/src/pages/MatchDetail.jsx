@@ -146,7 +146,7 @@ export default function MatchDetail() {
   const renderEventsTimeline = () => (
     <div className="flex flex-col gap-1.5">
       {events.map((ev, i) => {
-        const isHome = ev.team_id === home.team_id;
+        const isHome = ev.team_code === homeCode;
         const suffix = eventSuffix(ev.event);
         return (
           <div key={i} className="grid grid-cols-[1fr_44px_1fr] items-center gap-1">

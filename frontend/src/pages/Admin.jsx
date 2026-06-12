@@ -121,11 +121,11 @@ export default function Admin() {
       for (const ev of pendingEvents) {
         await api.addEvent({
         match_id: currentFx.match_id,
-        team_id: ev.team_id,
+        team_code: ev.team_code,
         player: ev.player,
         event: ev.event,
         time: ev.time
-}, secret);
+        }, secret);
       }
 
       setStatusMsg({ type: 'ok', text: res.message || `Result + ${pendingEvents.length} event(s) saved.` });
