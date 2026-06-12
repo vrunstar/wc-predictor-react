@@ -424,6 +424,7 @@ def fixtures_current_matchday() -> list[dict]:
     res = (supabase.table("fixtures")
            .select("*, home:teams!home_id(*), away:teams!away_id(*), results(*)")
            .eq("matchday_est", today)
+           .neq("status", "completed")
            .order("kickoff_ist")
            .execute())
     return res.data

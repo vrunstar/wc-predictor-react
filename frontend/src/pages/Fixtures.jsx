@@ -20,18 +20,16 @@ function generateICS(fixtures) {
     const venue = fx.city || fx.venue || '';
     const matchStage = fx.group_name ? `Group ${fx.group_name}` : fx.stage || '';
 
-    // Parse kickoff_ist as IST datetime
     let dtstart = '';
     let dtend = '';
     if (fx.kickoff_ist) {
       try {
         const d = new Date(fx.kickoff_ist);
-        // Format as local IST (no Z suffix so calendar apps treat it as floating)
         const pad = (n) => String(n).padStart(2, '0');
         const fmt = (dt) =>
           `${dt.getFullYear()}${pad(dt.getMonth() + 1)}${pad(dt.getDate())}T${pad(dt.getHours())}${pad(dt.getMinutes())}00`;
         dtstart = `TZID=Asia/Kolkata:${fmt(d)}`;
-        const end = new Date(d.getTime() + 105 * 60 * 1000); // +105 min
+        const end = new Date(d.getTime() + 105 * 60 * 1000);
         dtend = `TZID=Asia/Kolkata:${fmt(end)}`;
       } catch (e) {}
     }
@@ -111,28 +109,18 @@ export default function Fixtures() {
     </div>
   );
 
+  // Group by matchday_ist
   const groupedFixtures = {};
   fixtures.forEach((fx) => {
-    let dateStr = 'TBD';
-    if (fx.kickoff_ist) {
-      try {
-        const d = new Date(fx.kickoff_ist);
-        dateStr = !isNaN(d.getTime())
-          ? d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
-          : fx.matchday_ist || 'TBD';
-      } catch (e) {
-        dateStr = fx.matchday_ist || 'TBD';
-      }
-    } else {
-      dateStr = fx.matchday_ist || 'TBD';
-    }
+    const dateStr = fx.matchday_ist
+      ? new Date(fx.matchday_ist + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
+      : 'TBD';
     if (!groupedFixtures[dateStr]) groupedFixtures[dateStr] = [];
     groupedFixtures[dateStr].push(fx);
   });
 
   return (
     <div>
-      {/* Title row with calendar button */}
       <div className="flex items-center justify-center mb-6 relative">
         <h1 className="font-hm_text text-[3rem] md:text-[5.5rem] tracking-wide text-[#F0F0F0] leading-none text-center">
           FIXTURES
@@ -151,7 +139,6 @@ export default function Fixtures() {
           <h2 className="font-inter text-[0.8rem] font-medium tracking-widest text-[#aaa] mb-3 text-center">
             {date}
           </h2>
-
           <div className="flex flex-col gap-3">
             {matches.map((fx) => {
               const home = fx.home || {};
@@ -182,7 +169,6 @@ export default function Fixtures() {
                     <img src={getFlagUrl(awayCode)} alt={awayCode} className="w-[22px] md:w-[28px] h-auto object-contain border border-[#1e1e1e]" onError={(e) => { e.target.style.display = 'none'; }} />
                   </div>
 
-                  {/* Meta — desktop */}
                   <div className="hidden md:grid grid-cols-[1fr_auto_1fr] items-center mt-[0.7rem] pt-[0.6rem] border-t border-[#3a3a3a] text-[0.9rem] font-inter text-gray-400">
                     <div className="flex items-center gap-2">
                       <span className="font-semibold text-gray-500">{homeRank}</span>
@@ -195,7 +181,6 @@ export default function Fixtures() {
                     </div>
                   </div>
 
-                  {/* Meta — mobile */}
                   <div className="flex md:hidden justify-center mt-[0.5rem] pt-[0.5rem] border-t border-[#3a3a3a]">
                     <span className="font-inter text-[0.72rem] text-[#555] tracking-wider">
                       Match {fx.match_id} · {matchStage} {venue && `· ${venue}`}
