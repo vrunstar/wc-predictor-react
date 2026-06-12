@@ -28,7 +28,8 @@ export default function Home() {
 
         const completed = predictionsData.filter((pred) => {
           const fx = pred.fixture || {};
-          return (fx.results || []).length > 0;
+          const results = fx.results;
+          return results && (Array.isArray(results) ? results.length > 0 : Object.keys(results).length > 0);
         });
         setCompletedPredictions(completed.slice(0, 5));
 
@@ -95,7 +96,7 @@ export default function Home() {
       <div className="flex flex-col gap-2">
         {completedPredictions.map((pred) => {
           const fx = pred.fixture || {};
-          const res = (fx.results || [])[0] || {};
+          const res = Array.isArray(fx.results) ? fx.results[0] || {} : fx.results || {};
           const scoreText = `${res.home_goals ?? '?'} – ${res.away_goals ?? '?'}`;
           return <MatchRow key={pred.match_id} fx={fx} centerText={scoreText} />;
         })}
