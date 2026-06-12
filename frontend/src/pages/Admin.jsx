@@ -81,6 +81,8 @@ export default function Admin() {
     { id: away.team_id, code: awayCode }
   ] : [];
 
+  console.log('matchTeams:', matchTeams);
+
   const handleAddEvent = () => {
     if (!eventTeamId || !eventPlayer.trim()) return;
     setPendingEvents(prev => [...prev, {
