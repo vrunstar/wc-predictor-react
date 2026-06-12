@@ -59,7 +59,7 @@ export default function Standings() {
 
   return (
     <div className="w-full overflow-x-hidden">
-      <h1 className="font-FUCB text-[3rem] md:text-[5.5rem] tracking-wide text-[#F0F0F0] leading-none mb-6 text-center">
+      <h1 className="font-FNB text-[3rem] md:text-[5.5rem] tracking-wide text-[#F0F0F0] leading-none mb-6 text-center">
         STANDINGS
       </h1>
 
@@ -76,7 +76,7 @@ export default function Standings() {
           return (
             <div key={grpName} className="bg-[#091424] rounded-[10px] border border-[#242424]/40 p-[1rem_1.2rem] flex flex-col gap-2">
               {/* Group header */}
-              <div className="font-FUCB text-[1.3rem] tracking-[0.1em] text-[#F0F0F0] border-b border-[#3a3a3a] pb-[0.5rem] mb-[0.4rem] uppercase">
+              <div className="font-FNR text-[1.3rem] tracking-[0.1em] text-[#F0F0F0] border-b border-[#3a3a3a] pb-[0.5rem] mb-[0.4rem]">
                 GROUP {grpName}
               </div>
 
@@ -113,7 +113,7 @@ export default function Standings() {
                           onError={(e) => { e.target.style.display = 'none'; }}
                         />
                         {/* Code — FUCB on mobile, FSEB on desktop */}
-                        <span className="font-FUCB text-[1rem] tracking-wider text-[#F0F0F0]">
+                        <span className="font-FSEB text-[1rem] tracking-wider text-[#F0F0F0]">
                           {code}
                         </span>
                       </div>
