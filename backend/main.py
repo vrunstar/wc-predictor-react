@@ -72,7 +72,7 @@ class EventUpsert(BaseModel):
     team_code: str
     player: str
     event: str
-    time: Optional[int] = None
+    time: Optional[str] = None
 
 # Helper dependency to verify admin secret
 def verify_admin_auth(authorization: Optional[str] = Header(None)):
