@@ -62,7 +62,7 @@ export default function Admin() {
     localStorage.setItem('admin_secret', val);
   };
 
-  const incomplete = fixtures.filter(fx => !fx.results || fx.results.length === 0);
+  const incomplete = fixtures.filter(fx => !fx.results || Array.isArray(fx.results) && fx.results.length === 0);
   const currentFx = incomplete[0] || null;
   const home = currentFx?.home || {};
   const away = currentFx?.away || {};
