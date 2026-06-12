@@ -17,6 +17,7 @@ export default {
         FSEB: ["FSEB", "sans-serif"],
         FNR: ["FNR", "sans-serif"],
         FUCB : ["FUCB" , "sans-serif"],
+        FNB : ["FNB" , "sans-serif"],
       },
     },
   },

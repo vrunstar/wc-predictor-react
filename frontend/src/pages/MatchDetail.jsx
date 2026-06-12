@@ -107,7 +107,7 @@ export default function MatchDetail() {
 
   const scoreBlock = res ? (
     <div className="flex flex-col items-center">
-      <div className="font-FSEB text-[2.5rem] md:text-[3rem] text-white tracking-widest leading-none select-none">
+      <div className="font-FNB text-[2.5rem] md:text-[3rem] text-white tracking-widest leading-none select-none">
         {res.home_goals} – {res.away_goals}
       </div>
       <div className="font-FNR text-[0.72rem] text-gray-500 mt-1  tracking-wider font-semibold">
@@ -116,7 +116,7 @@ export default function MatchDetail() {
     </div>
   ) : prediction ? (
     <div className="flex flex-col items-center">
-      <div className="font-FSEB text-[2.5rem] md:text-[3rem] text-white tracking-widest leading-none select-none">
+      <div className="font-FNB text-[2.5rem] md:text-[3rem] text-white tracking-widest leading-none select-none">
         {prediction.pred_home_goals} – {prediction.pred_away_goals}
       </div>
       <div className="font-FNR text-[0.72rem] text-gray-400 mt-1  tracking-wider font-semibold">
@@ -125,10 +125,9 @@ export default function MatchDetail() {
     </div>
   ) : (
     <div className="flex flex-col items-center">
-      <div className="font-FSEB text-[2.5rem] md:text-[3rem] text-white tracking-widest leading-none select-none">
+      <div className="font-FNB text-[2.5rem] md:text-[3rem] text-white tracking-widest leading-none select-none">
         {koTime}
       </div>
-      <div className="font-FNR text-[0.62rem] text-gray-500 mt-1  tracking-[0.14em] font-black">IST</div>
     </div>
   );
 
@@ -153,17 +152,17 @@ export default function MatchDetail() {
           <div key={i} className="grid grid-cols-[1fr_44px_1fr] items-center gap-1">
             <div className="flex items-center justify-end">
               {isHome && (
-                <span className="font-FNR text-[0.78rem] text-[#e0e0e0] text-right flex items-center gap-1">
+                <span className="font-FNR text-[0.9rem] text-[#e0e0e0] text-right flex items-center gap-11.5">
                   {ev.player}{suffix}<CardRect type={ev.event} />
                 </span>
               )}
             </div>
-            <div className="font-FNR text-[0.68rem] text-[#555] font-bold text-center whitespace-nowrap">
+            <div className="font-FNB text-[0.9rem] text-[#555] font-bold text-center whitespace-nowrap">
               {ev.time ? `${ev.time}'` : '—'}
             </div>
             <div className="flex items-center">
               {!isHome && (
-                <span className="font-FNR text-[0.78rem] text-[#e0e0e0] flex items-center gap-1">
+                <span className="font-FNR text-[0.9rem] text-[#e0e0e0] flex items-center gap-1.5">
                   {ev.player}{suffix}<CardRect type={ev.event} />
                 </span>
               )}
@@ -216,7 +215,7 @@ export default function MatchDetail() {
       <div className="flex md:hidden flex-col gap-3 pb-24">
 
         {/* Hero card */}
-        <div className="bg-[#091424] border border-[#242424]/40 rounded-[12px] p-4 flex flex-col gap-3 -mx-3">
+        <div className="bg-[#091424] border border-[#242424]/40 rounded-[12px] flex flex-col gap-3 -mx-3">
           {/* Top row: Match · Stage + close */}
           <div className="flex items-center justify-between">
             <span className="font-FNR text-xl tracking-wider text-[#F0F0F0] leading-none">
@@ -230,14 +229,14 @@ export default function MatchDetail() {
             <div className="flex flex-col gap-1">
               <div className="flex items-center gap-2">
                 <img src={getFlagUrl(homeCode)} alt={homeCode} className="w-[28px] h-auto object-contain border border-[#1e1e1e] shrink-0" onError={(e) => { e.target.style.display = 'none'; }} />
-                <span className="font-FSEB text-[1.6rem] tracking-wider text-[#F0F0F0] leading-none">{homeCode}</span>
+                <span className="font-FUCB text-[1.6rem] tracking-wider text-[#F0F0F0] leading-none">{homeCode}</span>
               </div>
               <span className="font-FNR text-xs text-[#444] font-medium">{homeName}</span>
             </div>
             <div className="flex justify-center">{scoreBlock}</div>
             <div className="flex flex-col gap-1 items-end">
               <div className="flex items-center gap-2">
-                <span className="font-FSEB text-[1.6rem] tracking-wider text-[#F0F0F0] leading-none">{awayCode}</span>
+                <span className="font-FUCB text-[1.6rem] tracking-wider text-[#F0F0F0] leading-none">{awayCode}</span>
                 <img src={getFlagUrl(awayCode)} alt={awayCode} className="w-[28px] h-auto object-contain border border-[#1e1e1e] shrink-0" onError={(e) => { e.target.style.display = 'none'; }} />
               </div>
               <span className="font-FNR text-xs text-[#444] font-medium text-right">{awayName}</span>
@@ -308,8 +307,13 @@ export default function MatchDetail() {
           </div>
         )}
 
-        {/* Key Players */}
-        {!res && (homePlayers.length > 0 || awayPlayers.length > 0) && (
+        {/* Key Players or Events */}
+        {!res && events.length > 0 ? (
+          <div className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-3 -mx-3">
+            <div className="font-FNR text-[0.6rem] text-gray-500 font-bold tracking-[0.15em]  mb-3 text-center">Match Events</div>
+            {renderEventsTimeline()}
+          </div>
+        ) : !res && (homePlayers.length > 0 || awayPlayers.length > 0) && (
           <div className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-3 -mx-3">
             <div className="font-FNR text-[0.6rem] text-gray-500 font-bold tracking-[0.15em]  mb-3 text-center">Key Players</div>
             <div className="flex mb-3 border border-[#2a2a2a] rounded-[6px] overflow-hidden">
