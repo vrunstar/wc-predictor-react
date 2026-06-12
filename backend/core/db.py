@@ -429,6 +429,19 @@ def fixtures_current_matchday() -> list[dict]:
            .execute())
     return res.data
 
+@ttl_cache(ttl=300)
+def fixtures_admin_pending() -> list[dict]:
+    today = get_est()
+    yesterday = str(today - timedelta(days=1))
+    today_str = str(today)
+    res = (supabase.table("fixtures")
+           .select("*, home:teams!home_id(*), away:teams!away_id(*), results(*)")
+           .in_("matchday_est", [yesterday, today_str])
+           .neq("status", "completed")
+           .order("kickoff_ist")
+           .execute())
+    return res.data
+
 # ---------------------------------------------------------------------
 # EVENTS
 # ---------------------------------------------------------------------
@@ -458,3 +471,4 @@ def event_delete(event_id: int) -> dict:
            .execute())
     clear_all_caches()
     return res.data
+

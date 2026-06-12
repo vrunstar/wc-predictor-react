@@ -119,6 +119,10 @@ def get_fixtures_today():
 def get_fixtures_matchday():
     return db.fixtures_current_matchday()
 
+@app.get("/api/fixtures/admin-pending", response_model=List[dict])
+def get_fixtures_admin_pending():
+    return db.fixtures_admin_pending()
+
 @app.get("/api/fixtures/upcoming", response_model=List[dict])
 def get_fixtures_upcoming():
     return db.fixtures_upcoming()
@@ -238,10 +242,9 @@ def admin_submit_result(req: ResultSubmit):
 def admin_run_predictions(authenticated: bool = Depends(verify_admin_auth)):
     try:
         model, features = predictor.load_model()
-        matchday_preds = db.fixtures_current_matchday()
+        matchday_preds = db.fixtures_admin_pending()
         if matchday_preds:
-            earliest_matchday = matchday_preds[0]["fixture"]["matchday_ist"]
-            fixtures = [r["fixture"] for r in matchday_preds]
+            fixtures = matchday_preds
         else:
             all_upcoming = db.fixtures_upcoming()
             pred_map = db.pred_map()

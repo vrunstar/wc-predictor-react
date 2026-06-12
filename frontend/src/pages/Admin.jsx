@@ -33,7 +33,7 @@ export default function Admin() {
       try {
         setLoading(true);
         const [fixturesData, ranksData, formsData] = await Promise.all([
-          api.getFixturesToday(),
+          api.getFixturesAdminPending(),
           api.getStandingsRanks(),
           api.getStandingsForm()
         ]);
