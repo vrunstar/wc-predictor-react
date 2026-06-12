@@ -59,7 +59,7 @@ export default function Standings() {
 
   return (
     <div className="w-full overflow-x-hidden">
-      <h1 className="font-FNB text-[3rem] md:text-[5.5rem] tracking-wide text-[#F0F0F0] leading-none mb-6 text-center">
+      <h1 className="font-FUCB text-[6rem] md:text-[5.5rem] tracking-wide text-[#F0F0F0] leading-none mb-6 text-center">
         STANDINGS
       </h1>
 
