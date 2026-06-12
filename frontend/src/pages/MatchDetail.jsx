@@ -92,7 +92,6 @@ export default function MatchDetail() {
   const res = Array.isArray(fixture.results)
     ? (fixture.results[0] || null)
     : (fixture.results || null);
-  const res = results[0] || null;
   const matchStage = stageLabel(fixture.stage, fixture.group_name);
   const koTime = formatKickoff(fixture.kickoff_ist);
   const homeColor = kitColors[homeCode]?.home || '#FFFFFF';
@@ -148,13 +147,13 @@ export default function MatchDetail() {
   const renderEventsTimeline = () => (
     <div className="flex flex-col gap-1.5">
       {events.map((ev, i) => {
-        const isHome = ev.team_id === home.team_id;
+        const isHome = Number(ev.team_id) === Number(home.team_id);
         const suffix = eventSuffix(ev.event);
         return (
           <div key={i} className="grid grid-cols-[1fr_44px_1fr] items-center gap-1">
             <div className="flex items-center justify-end">
               {isHome && (
-                <span className="font-FNR text-[0.9rem] text-[#e0e0e0] text-right flex items-center gap-11.5">
+                <span className="font-FNR text-[0.9rem] text-[#e0e0e0] text-right flex items-center gap-1.5">
                   {ev.player}{suffix}<CardRect type={ev.event} />
                 </span>
               )}
@@ -165,7 +164,7 @@ export default function MatchDetail() {
             <div className="flex items-center">
               {!isHome && (
                 <span className="font-FNR text-[0.9rem] text-[#e0e0e0] flex items-center gap-1.5">
-                  {ev.player}{suffix}<CardRect type={ev.event} />
+                  <CardRect type={ev.event} />{ev.player}{suffix}
                 </span>
               )}
             </div>
