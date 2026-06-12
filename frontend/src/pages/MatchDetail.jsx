@@ -89,7 +89,8 @@ export default function MatchDetail() {
   const awayRank = ranks[away.team_id] || '—';
   const homeForm = forms[home.team_id] || '';
   const awayForm = forms[away.team_id] || '';
-  const res = fixture.results || null;
+  const results = fixture.results || [];
+  const res = results[0] || null;
   const matchStage = stageLabel(fixture.stage, fixture.group_name);
   const koTime = formatKickoff(fixture.kickoff_ist);
   const homeColor = kitColors[homeCode]?.home || '#FFFFFF';
@@ -109,7 +110,7 @@ export default function MatchDetail() {
       <div className="font-FSEB text-[2.5rem] md:text-[3rem] text-white tracking-widest leading-none select-none">
         {res.home_goals} – {res.away_goals}
       </div>
-      <div className="font-FNR text-[0.72rem] text-gray-500 mt-1 uppercase tracking-wider font-semibold">
+      <div className="font-FNR text-[0.72rem] text-gray-500 mt-1  tracking-wider font-semibold">
         ({prediction?.pred_home_goals ?? '?'}–{prediction?.pred_away_goals ?? '?'} pred)
       </div>
     </div>
@@ -118,7 +119,7 @@ export default function MatchDetail() {
       <div className="font-FSEB text-[2.5rem] md:text-[3rem] text-white tracking-widest leading-none select-none">
         {prediction.pred_home_goals} – {prediction.pred_away_goals}
       </div>
-      <div className="font-FNR text-[0.72rem] text-gray-400 mt-1 uppercase tracking-wider font-semibold">
+      <div className="font-FNR text-[0.72rem] text-gray-400 mt-1  tracking-wider font-semibold">
         {Math.round((prediction.model_confidence || 0) * 100)}% conf
       </div>
     </div>
@@ -127,7 +128,7 @@ export default function MatchDetail() {
       <div className="font-FSEB text-[2.5rem] md:text-[3rem] text-white tracking-widest leading-none select-none">
         {koTime}
       </div>
-      <div className="font-FNR text-[0.62rem] text-gray-500 mt-1 uppercase tracking-[0.14em] font-black">IST</div>
+      <div className="font-FNR text-[0.62rem] text-gray-500 mt-1  tracking-[0.14em] font-black">IST</div>
     </div>
   );
 
@@ -146,7 +147,7 @@ export default function MatchDetail() {
   const renderEventsTimeline = () => (
     <div className="flex flex-col gap-1.5">
       {events.map((ev, i) => {
-        const isHome = ev.team_code === homeCode;
+        const isHome = ev.team_id === home.team_id;
         const suffix = eventSuffix(ev.event);
         return (
           <div key={i} className="grid grid-cols-[1fr_44px_1fr] items-center gap-1">
@@ -202,41 +203,49 @@ export default function MatchDetail() {
   return (
     <div className="flex flex-col gap-4">
 
-      {/* Header */}
-      <div className="flex items-center justify-center my-2 relative">
-        <div className="font-FSEB text-2xl md:text-3xl tracking-wider text-[#F0F0F0] leading-none flex items-baseline justify-center gap-4 text-center">
+      {/* Header — desktop only */}
+      <div className="hidden md:flex items-center justify-center my-2 relative">
+        <div className="font-FSEB text-3xl tracking-wider text-[#F0F0F0] leading-none flex items-baseline justify-center gap-4 text-center">
           MATCH {matchId}
-          <span className="font-FNR text-sm font-extrabold text-gray-400 tracking-widest uppercase">{matchStage}</span>
+          <span className="font-FNR text-sm font-extrabold text-gray-400 tracking-widest ">{matchStage}</span>
         </div>
         <button onClick={() => navigate(-1)} className="absolute right-0 flex items-center justify-center w-8 h-8 bg-[#091424] border border-[#242424]/40 hover:border-white/50 hover:text-white rounded-[6px] text-gray-500 font-FNR text-xs font-bold transition-all duration-150">x</button>
       </div>
 
       {/* ── MOBILE ── */}
-      <div className="flex md:hidden flex-col gap-3">
+      <div className="flex md:hidden flex-col gap-3 pb-24">
 
-        {/* Team block */}
-        <div className="flex flex-col gap-2 px-1">
-          <div className="grid grid-cols-[1fr_auto_1fr] items-center">
-            <div className="flex items-center gap-2">
-              <img src={getFlagUrl(homeCode)} alt={homeCode} className="w-[28px] h-auto object-contain border border-[#1e1e1e] shrink-0" onError={(e) => { e.target.style.display = 'none'; }} />
-              <span className="font-FSEB text-[1.6rem] tracking-wider text-[#F0F0F0] leading-none">{homeCode}</span>
+        {/* Hero card */}
+        <div className="bg-[#091424] border border-[#242424]/40 rounded-[12px] p-4 flex flex-col gap-3 -mx-3">
+          {/* Top row: Match · Stage + close */}
+          <div className="flex items-center justify-between">
+            <span className="font-FNR text-xl tracking-wider text-[#F0F0F0] leading-none">
+              MATCH {matchId} <span className="font-FNR text-xs font-extrabold text-gray-400 tracking-widest ">{matchStage}</span>
+            </span>
+            <button onClick={() => navigate(-1)} className="flex items-center justify-center w-7 h-7 bg-[#0d1a2a] border border-[#242424]/40 hover:border-white/50 hover:text-white rounded-[6px] text-gray-500 font-FNR text-xs font-bold transition-all duration-150">x</button>
+          </div>
+
+          {/* Teams row */}
+          <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-2">
+                <img src={getFlagUrl(homeCode)} alt={homeCode} className="w-[28px] h-auto object-contain border border-[#1e1e1e] shrink-0" onError={(e) => { e.target.style.display = 'none'; }} />
+                <span className="font-FSEB text-[1.6rem] tracking-wider text-[#F0F0F0] leading-none">{homeCode}</span>
+              </div>
+              <span className="font-FNR text-xs text-[#444] font-medium">{homeName}</span>
             </div>
-            <div className="flex justify-center px-2">{scoreBlock}</div>
-            <div className="flex items-center gap-2 justify-end">
-              <span className="font-FSEB text-[1.6rem] tracking-wider text-[#F0F0F0] leading-none">{awayCode}</span>
-              <img src={getFlagUrl(awayCode)} alt={awayCode} className="w-[28px] h-auto object-contain border border-[#1e1e1e] shrink-0" onError={(e) => { e.target.style.display = 'none'; }} />
+            <div className="flex justify-center">{scoreBlock}</div>
+            <div className="flex flex-col gap-1 items-end">
+              <div className="flex items-center gap-2">
+                <span className="font-FSEB text-[1.6rem] tracking-wider text-[#F0F0F0] leading-none">{awayCode}</span>
+                <img src={getFlagUrl(awayCode)} alt={awayCode} className="w-[28px] h-auto object-contain border border-[#1e1e1e] shrink-0" onError={(e) => { e.target.style.display = 'none'; }} />
+              </div>
+              <span className="font-FNR text-xs text-[#444] font-medium text-right">{awayName}</span>
             </div>
           </div>
-          <div className="grid grid-cols-[1fr_auto_1fr]">
-            <span className="font-FNR text-xs text-[#444] font-medium">{homeName}</span>
-            <span className="w-8" />
-            <span className="font-FNR text-xs text-[#444] font-medium text-right">{awayName}</span>
-          </div>
-        </div>
 
-        {/* Rank + Form */}
-        <div className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-3">
-          <div className="grid grid-cols-[1fr_auto_1fr] items-center">
+          {/* Rank + Form */}
+          <div className="grid grid-cols-[1fr_auto_1fr] items-center border-t border-[#242424] pt-3">
             <div className="flex items-center gap-2">
               <span className="font-FNR text-xs text-[#555] font-semibold">{homeRank}</span>
               {renderFormSpans(homeForm)}
@@ -247,27 +256,27 @@ export default function MatchDetail() {
               <span className="font-FNR text-xs text-[#555] font-semibold">{awayRank}</span>
             </div>
           </div>
-        </div>
 
-        {/* Win probability */}
-        {showProb && (
-          <div className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-3">
-            <div className="flex justify-between font-FNR text-[0.65rem] font-bold text-gray-400 mb-1.5">
-              <span>{homeCode} {hProb}%</span>
-              <span>Draw {dProb}%</span>
-              <span>{aProb}% {awayCode}</span>
+          {/* Win probability */}
+          {showProb && (
+            <div className="border-t border-[#242424] pt-3">
+              <div className="flex justify-between font-FNR text-[0.65rem] font-bold text-gray-400 mb-1.5">
+                <span>{homeCode} {hProb}%</span>
+                <span>Draw {dProb}%</span>
+                <span>{aProb}% {awayCode}</span>
+              </div>
+              <div className="flex h-[4px] rounded-[2px] overflow-hidden">
+                <div style={{ width: `${hProb}%`, backgroundColor: homeColor }} className="opacity-90" />
+                <div style={{ width: `${dProb}%` }} className="bg-[#333]" />
+                <div style={{ width: `${aProb}%`, backgroundColor: awayColor }} className="opacity-90" />
+              </div>
             </div>
-            <div className="flex h-[4px] rounded-[2px] overflow-hidden">
-              <div style={{ width: `${hProb}%`, backgroundColor: homeColor }} className="opacity-90" />
-              <div style={{ width: `${dProb}%` }} className="bg-[#333]" />
-              <div style={{ width: `${aProb}%`, backgroundColor: awayColor }} className="opacity-90" />
-            </div>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* Venue */}
         {(stadName || stadCity) && (
-          <a href={stadMapsUrl} target="_blank" rel="noopener noreferrer" className="relative border border-[#2a2a2a] rounded-[10px] overflow-hidden h-[140px] block">
+          <a href={stadMapsUrl} target="_blank" rel="noopener noreferrer" className="relative border border-[#2a2a2a] rounded-[10px] overflow-hidden h-[140px] block -mx-3">
             {stadPhotoKey ? <div style={{ backgroundImage: `url(${getStadiumPhotoUrl(stadPhotoKey)})` }} className="absolute inset-0 bg-cover bg-center" /> : <div className="absolute inset-0 bg-[#0B0B0B]" />}
             <div className="absolute inset-0 bg-black/70" />
             <div className="relative z-10 flex flex-col justify-center items-center h-full text-center px-4">
@@ -279,8 +288,8 @@ export default function MatchDetail() {
 
         {/* H2H */}
         {h2h && h2h.available && (
-          <div className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-3">
-            <div className="font-FNR text-[0.6rem] text-gray-500 font-bold tracking-[0.15em] uppercase mb-2 text-center">Head-To-Head</div>
+          <div className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-3 -mx-3">
+            <div className="font-FNR text-[0.6rem] text-gray-500 font-bold tracking-[0.15em]  mb-2 text-center">Head-To-Head</div>
             <div className="flex items-center justify-center gap-3">
               <span className="font-FSEB text-[2rem] text-green-400 leading-none">{h2h.home_w}</span>
               <span className="font-FSEB text-lg text-gray-500 leading-none">–</span>
@@ -291,18 +300,18 @@ export default function MatchDetail() {
           </div>
         )}
 
-        {/* Events — if result exists */}
+        {/* Events */}
         {res && events.length > 0 && (
-          <div className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-3">
-            <div className="font-FNR text-[0.6rem] text-gray-500 font-bold tracking-[0.15em] uppercase mb-3 text-center">Match Events</div>
+          <div className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-3 -mx-3">
+            <div className="font-FNR text-[0.6rem] text-gray-500 font-bold tracking-[0.15em]  mb-3 text-center">Match Events</div>
             {renderEventsTimeline()}
           </div>
         )}
 
-        {/* Key Players — only if no result */}
-        {fixture.status !== 'completed' && (homePlayers.length > 0 || awayPlayers.length > 0) && (
-          <div className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-3">
-            <div className="font-FNR text-[0.6rem] text-gray-500 font-bold tracking-[0.15em] uppercase mb-3 text-center">Key Players</div>
+        {/* Key Players */}
+        {!res && (homePlayers.length > 0 || awayPlayers.length > 0) && (
+          <div className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-3 -mx-3">
+            <div className="font-FNR text-[0.6rem] text-gray-500 font-bold tracking-[0.15em]  mb-3 text-center">Key Players</div>
             <div className="flex mb-3 border border-[#2a2a2a] rounded-[6px] overflow-hidden">
               <button onClick={() => setActiveTab(homeCode)} className={`flex-1 py-1.5 font-FSEB text-sm tracking-wider transition-colors ${activeTab === homeCode ? 'bg-white text-black' : 'bg-transparent text-[#555]'}`}>{homeCode}</button>
               <button onClick={() => setActiveTab(awayCode)} className={`flex-1 py-1.5 font-FSEB text-sm tracking-wider transition-colors ${activeTab === awayCode ? 'bg-white text-black' : 'bg-transparent text-[#555]'}`}>{awayCode}</button>
@@ -349,7 +358,7 @@ export default function MatchDetail() {
           {/* Win Probability */}
           {showProb && (
             <div className="mt-8 border-t border-[#242424] pt-8">
-              <div className="font-FNR text-xs text-gray-400 font-bold tracking-[0.15em] uppercase mb-4 text-center">Win Probability</div>
+              <div className="font-FNR text-xs text-gray-400 font-bold tracking-[0.15em]  mb-4 text-center">Win Probability</div>
               <div className="flex justify-between font-FNR text-[0.7rem] font-bold text-gray-400 mb-1.5">
                 <span>{homeCode} {hProb}%</span>
                 <span>Draw {dProb}%</span>
@@ -366,7 +375,7 @@ export default function MatchDetail() {
           {/* Venue */}
           {(stadName || stadCity) && (
             <div className="mt-8 border-t border-[#242424] pt-8">
-              <div className="font-FNR text-xs text-gray-400 font-bold tracking-[0.15em] uppercase mb-4 text-center">Venue</div>
+              <div className="font-FNR text-xs text-gray-400 font-bold tracking-[0.15em]  mb-4 text-center">Venue</div>
               <a href={stadMapsUrl} target="_blank" rel="noopener noreferrer" className="relative border border-[#2a2a2a] rounded-[8px] overflow-hidden h-[200px] block hover:border-white/30 transition-colors">
                 {stadPhotoKey ? <div style={{ backgroundImage: `url(${getStadiumPhotoUrl(stadPhotoKey)})` }} className="absolute inset-0 bg-cover bg-center" /> : <div className="absolute inset-0 bg-[#0B0B0B]" />}
                 <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/70 to-black/5" />
@@ -382,7 +391,7 @@ export default function MatchDetail() {
           {/* H2H */}
           {h2h && h2h.available && (
             <div className="mt-8 border-t border-[#242424] pt-8">
-              <div className="font-FNR text-xs text-gray-400 font-bold tracking-[0.15em] uppercase mb-4 text-center">Head-To-Head Record</div>
+              <div className="font-FNR text-xs text-gray-400 font-bold tracking-[0.15em]  mb-4 text-center">Head-To-Head Record</div>
               <div className="flex items-center justify-center gap-3 px-6 py-4 bg-white/2 border border-[#3a3a3a] rounded-[8px]">
                 <span className="font-FSEB text-[2.5rem] text-green-400 leading-none">{h2h.home_w}</span>
                 <span className="font-FSEB text-xl text-gray-500 leading-none">–</span>
@@ -399,15 +408,15 @@ export default function MatchDetail() {
           {/* Events — if result exists */}
           {res && events.length > 0 && (
             <div className="mt-8 border-t border-[#242424] pt-8">
-              <div className="font-FNR text-xs text-gray-400 font-bold tracking-[0.15em] uppercase mb-4 text-center">Match Events</div>
+              <div className="font-FNR text-xs text-gray-400 font-bold tracking-[0.15em]  mb-4 text-center">Match Events</div>
               {renderEventsTimeline()}
             </div>
           )}
 
           {/* Key Players — only if no result */}
-          {fixture.status !== 'completed' && (homePlayers.length > 0 || awayPlayers.length > 0) && (
+          {!res && (homePlayers.length > 0 || awayPlayers.length > 0) && (
             <div className="mt-8 border-t border-[#242424] pt-8">
-              <div className="font-FNR text-xs text-gray-400 font-bold tracking-[0.15em] uppercase mb-6 text-center">Key Players</div>
+              <div className="font-FNR text-xs text-gray-400 font-bold tracking-[0.15em]  mb-6 text-center">Key Players</div>
               <div className="grid grid-cols-2 gap-6">
                 <div>
                   <div className="text-[0.8rem] text-gray-500 font-bold tracking-wider mb-2 font-FNR">{homeCode} Players</div>
