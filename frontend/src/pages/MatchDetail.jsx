@@ -147,7 +147,7 @@ export default function MatchDetail() {
   const renderEventsTimeline = () => (
     <div className="flex flex-col gap-1.5">
       {events.map((ev, i) => {
-        const isHome = Number(ev.team_id) === Number(home.team_id);
+        const isHome = ev.team_code === homeCode;
         const suffix = eventSuffix(ev.event);
         return (
           <div key={i} className="grid grid-cols-[1fr_44px_1fr] items-center gap-1">
@@ -216,7 +216,7 @@ export default function MatchDetail() {
       <div className="flex md:hidden flex-col gap-3 pb-24">
 
         {/* Hero card */}
-        <div className="bg-[#091424] border border-[#242424]/40 rounded-[12px] p-2 flex flex-col gap-3 -mx-8">
+        <div className="bg-[#091424] border border-[#242424]/40 p-6 flex flex-col gap-3 -mx-15">
           {/* Top row: Match · Stage + close */}
           <div className="flex items-center justify-between">
             <span className="font-FNR text-xl tracking-wider text-[#F0F0F0] leading-none">
