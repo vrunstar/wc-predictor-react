@@ -108,7 +108,7 @@ export default function MatchDetail() {
 
   const scoreBlock = res ? (
     <div className="flex flex-col items-center">
-      <div className="font-FNB text-[2.5rem] md:text-[3rem] text-white tracking-widest leading-none select-none">
+      <div className="font-FNB text-[2rem] md:text-[3rem] text-white tracking-widest leading-none select-none">
         {res.home_goals} – {res.away_goals}
       </div>
       <div className="font-FNR text-[0.72rem] text-gray-500 mt-1  tracking-wider font-semibold">
@@ -117,7 +117,7 @@ export default function MatchDetail() {
     </div>
   ) : prediction ? (
     <div className="flex flex-col items-center">
-      <div className="font-FNB text-[2.5rem] md:text-[3rem] text-white tracking-widest leading-none select-none">
+      <div className="font-FNB text-[2rem] md:text-[3rem] text-white tracking-widest leading-none select-none">
         {prediction.pred_home_goals} – {prediction.pred_away_goals}
       </div>
       <div className="font-FNR text-[0.72rem] text-gray-400 mt-1  tracking-wider font-semibold">
@@ -126,7 +126,7 @@ export default function MatchDetail() {
     </div>
   ) : (
     <div className="flex flex-col items-center">
-      <div className="font-FNB text-[2.5rem] md:text-[3rem] text-white tracking-widest leading-none select-none">
+      <div className="font-FNB text-[2rem] md:text-[3rem] text-white tracking-widest leading-none select-none">
         {koTime}
       </div>
     </div>

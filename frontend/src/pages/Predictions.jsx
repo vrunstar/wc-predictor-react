@@ -111,7 +111,7 @@ export default function Predictions() {
                     <img src={getFlagUrl(homeCode)} alt={homeCode} className="w-[28px] h-auto object-contain border border-[#1e1e1e]" onError={(e) => { e.target.style.display = 'none'; }} />
                     <div className="font-FUCB md:font-FSEB text-2xl tracking-wider text-[#F0F0F0] leading-none">{homeCode}</div>
                     <div className="text-center min-w-[90px]">
-                      <span className="font-FSEB text-[2rem] text-white tracking-widest leading-none">{hGoals} – {aGoals}</span>
+                      <span className="font-FNB text-[1.5rem] text-white tracking-widest leading-none">{hGoals} – {aGoals}</span>
                     </div>
                     <div className="font-FUCB md:font-FSEB text-2xl tracking-wider text-[#F0F0F0] leading-none text-right">{awayCode}</div>
                     <img src={getFlagUrl(awayCode)} alt={awayCode} className="w-[28px] h-auto object-contain border border-[#1e1e1e]" onError={(e) => { e.target.style.display = 'none'; }} />
