@@ -88,7 +88,7 @@ export default function Results() {
 
       {Object.entries(groupedResults).map(([date, items]) => (
         <div key={date} className="mb-8">
-          <h2 className="font-FNR text-[8rem] font-extrabold tracking-widest text-[#aaa] mb-3 text-center">
+          <h2 className="font-FNR text-[0.8rem] font-extrabold tracking-widest text-[#aaa] mb-3 text-center">
             {date}
           </h2>
 
