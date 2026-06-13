@@ -135,6 +135,10 @@ def get_fixtures_group():
 def get_fixtures_by_stage(stage: str):
     return db.fixtures_by_stage(stage)
 
+@app.get("/api/fixtures/{match_id}/events", response_model=List[dict])
+def get_match_events(match_id: int):
+    return db.events_by_match(match_id)
+
 @app.get("/api/fixtures/{match_id}", response_model=dict)
 def get_fixture_by_id(match_id: int):
     fixture = db.fixtures_by_id(match_id)

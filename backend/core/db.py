@@ -459,7 +459,7 @@ def events_by_match(match_id: int) -> list[dict]:
 
 def event_upsert(event: dict) -> dict:
     res = (supabase.table("events")
-           .insert(event)
+           .upsert(event, on_conflict="id")
            .execute())
     events_by_match.cache_clear()
     return res.data
