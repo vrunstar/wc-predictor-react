@@ -132,9 +132,10 @@ export default function MatchDetail() {
     </div>
   );
 
-  const CardRect = ({ type }) => {
-    if (type === 'yellow_card') return <span className="inline-block w-[10px] h-[14px] bg-yellow-400 rounded-[2px] ml-1 shrink-0 align-middle" />;
-    if (type === 'red_card') return <span className="inline-block w-[10px] h-[14px] bg-red-600 rounded-[2px] ml-1 shrink-0 align-middle" />;
+  const EventIcon = ({ type }) => {
+    if (type === 'goal' || type === 'own_goal' || type === 'penalty') return <img src="/icons/ball.png" alt="" className="w-[14px] h-[14px] shrink-0 object-contain" />;
+    if (type === 'yellow_card') return <span className="inline-block w-[9px] h-[14px] bg-yellow-400 rounded-[1px] shrink-0" />;
+    if (type === 'red_card') return <span className="inline-block w-[9px] h-[14px] bg-red-600 rounded-[1px] shrink-0" />;
     return null;
   };
 
@@ -151,21 +152,27 @@ export default function MatchDetail() {
         const suffix = eventSuffix(ev.event);
         return (
           <div key={i} className="grid grid-cols-[1fr_44px_1fr] items-center gap-1">
-            <div className="flex items-center justify-end">
+            <div className="flex items-center justify-end gap-1.5">
               {isHome && (
-                <span className="font-FNR text-[0.9rem] text-[#e0e0e0] text-right flex items-center gap-1.5">
-                  {ev.player}{suffix}<CardRect type={ev.event} />
-                </span>
+                <>
+                  <span className="font-FNR text-[0.9rem] text-[#e0e0e0] text-right">
+                    {ev.player}{suffix}
+                  </span>
+                  <EventIcon type={ev.event} />
+                </>
               )}
             </div>
             <div className="font-FNB text-[0.9rem] text-[#555] font-bold text-center whitespace-nowrap">
               {ev.time ? `${ev.time}'` : '—'}
             </div>
-            <div className="flex items-center">
+            <div className="flex items-center gap-1.5">
               {!isHome && (
-                <span className="font-FNR text-[0.9rem] text-[#e0e0e0] flex items-center gap-1.5">
-                  <CardRect type={ev.event} />{ev.player}{suffix}
-                </span>
+                <>
+                  <EventIcon type={ev.event} />
+                  <span className="font-FNR text-[0.9rem] text-[#e0e0e0]">
+                    {ev.player}{suffix}
+                  </span>
+                </>
               )}
             </div>
           </div>
@@ -173,6 +180,7 @@ export default function MatchDetail() {
       })}
     </div>
   );
+
 
   const renderPlayersCol = (players) => {
     if (!players || players.length === 0) return <div className="text-[#333] text-[0.78rem] font-medium">—</div>;
@@ -216,7 +224,7 @@ export default function MatchDetail() {
       <div className="flex md:hidden flex-col gap-3 pb-24">
 
         {/* Hero card */}
-        <div className="bg-[#091424] border border-[#242424]/40 p-6 flex flex-col gap-3 -mx-[35px]">
+        <div className="bg-[#091424] border border-[#242424]/40 px-10 py-4 flex flex-col gap-3 -mx-[55px]">
           {/* Top row: Match · Stage + close */}
           <div className="flex items-center justify-between">
             <span className="font-FNR text-xl tracking-wider text-[#F0F0F0] leading-none">
