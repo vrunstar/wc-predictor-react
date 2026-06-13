@@ -216,7 +216,7 @@ export default function MatchDetail() {
       <div className="flex md:hidden flex-col gap-3 pb-24">
 
         {/* Hero card */}
-        <div className="bg-[#091424] border border-[#242424]/40 p-6 flex flex-col gap-3 -mx-[15px]">
+        <div className="bg-[#091424] border border-[#242424]/40 p-6 flex flex-col gap-3 -mx-[35px]">
           {/* Top row: Match · Stage + close */}
           <div className="flex items-center justify-between">
             <span className="font-FNR text-xl tracking-wider text-[#F0F0F0] leading-none">
