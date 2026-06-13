@@ -133,7 +133,8 @@ export default function MatchDetail() {
   );
 
   const EventIcon = ({ type }) => {
-    if (type === 'goal' || type === 'own_goal' || type === 'penalty') return <img src="/icons/ball.png" alt="" className="w-[14px] h-[14px] shrink-0 object-contain" />;
+    if (type === 'goal' || type === 'own_goal' || type === 'penalty')
+      return <img src="/icons/ball.png" alt="⚽" className="w-[14px] h-[14px] shrink-0 object-contain" onError={(e) => { e.target.style.display = 'none'; }} />;
     if (type === 'yellow_card') return <span className="inline-block w-[9px] h-[14px] bg-yellow-400 rounded-[1px] shrink-0" />;
     if (type === 'red_card') return <span className="inline-block w-[9px] h-[14px] bg-red-600 rounded-[1px] shrink-0" />;
     return null;
@@ -151,7 +152,7 @@ export default function MatchDetail() {
         const isHome = ev.team_code === homeCode;
         const suffix = eventSuffix(ev.event);
         return (
-          <div key={i} className="grid grid-cols-[1fr_44px_1fr] items-center gap-1">
+          <div key={i} className="grid grid-cols-[5fr_65px_5fr] items-center gap-1">
             <div className="flex items-center justify-end gap-1.5">
               {isHome && (
                 <>

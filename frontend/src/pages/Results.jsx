@@ -82,7 +82,7 @@ export default function Results() {
 
   return (
     <div>
-      <h1 className="font-FUCB text-[3rem] md:text-[5.5rem] tracking-wide text-[#F0F0F0] leading-none mb-6 text-center">
+      <h1 className="font-FUCB text-[4rem] md:text-[5.5rem] tracking-wide text-[#F0F0F0] leading-none mb-6 text-center">
         RESULTS
       </h1>
 

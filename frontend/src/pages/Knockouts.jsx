@@ -164,10 +164,10 @@ export default function Knockouts() {
         {isPlaceholder ? (
           <span className="font-FNR text-gray-500 text-[0.8rem] font-medium leading-none truncate max-w-[80px]">{display}</span>
         ) : (
-          <span className="font-FUCB text-[0.8rem] text-[#F0F0F0] leading-none tracking-wide select-none">{display}</span>
+          <span className="font-FNB text-[0.8rem] text-[#F0F0F0] leading-none tracking-wide select-none">{display}</span>
         )}
         {score !== undefined && score !== null && score !== '' && (
-          <span className="font-FSEB text-[1rem] text-[#00C853] ml-auto leading-none select-none">{score}</span>
+          <span className="font-FNB text-[1rem] text-[#00C853] ml-auto leading-none select-none">{score}</span>
         )}
       </div>
     );
@@ -306,7 +306,7 @@ export default function Knockouts() {
 
   return (
     <div className="w-full flex flex-col">
-      <h1 className="font-FUCB text-[3rem] md:text-[5.5rem] tracking-wide text-[#F0F0F0] leading-none mb-4 text-center">
+      <h1 className="font-FUCB text-[4rem] md:text-[5.5rem] tracking-wide text-[#F0F0F0] leading-none mb-4 text-center">
         KNOCKOUTS
       </h1>
 

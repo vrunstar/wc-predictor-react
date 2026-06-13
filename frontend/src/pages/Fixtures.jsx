@@ -105,7 +105,7 @@ export default function Fixtures() {
 
   if (fixtures.length === 0) return (
     <div className="text-center bg-[#091424] border border-[#242424]/40 rounded-[10px] p-8">
-      <div className="text-xl font-bold font-FUCB tracking-wider text-gray-400">NO UPCOMING FIXTURES</div>
+      <div className="text-xl font-bold font-FNR tracking-wider text-gray-400">NO UPCOMING FIXTURES</div>
     </div>
   );
 
@@ -122,7 +122,7 @@ export default function Fixtures() {
   return (
     <div>
       <div className="flex items-center justify-center mb-6 relative">
-        <h1 className="font-FUCB text-[3rem] md:text-[5.5rem] tracking-wide text-[#F0F0F0] leading-none text-center">
+        <h1 className="font-FUCB text-[4rem] md:text-[5.5rem] tracking-wide text-[#F0F0F0] leading-none text-center">
           FIXTURES
         </h1>
         <button

@@ -63,9 +63,9 @@ export default function Home() {
         className="cursor-pointer bg-[#091424] border border-[#242424]/40 hover:border-white/25 rounded-[10px] p-[0.85rem_1rem] grid grid-cols-[28px_1fr_auto_1fr_28px] items-center gap-2 transition-all duration-150"
       >
         <img src={getFlagUrl(homeCode)} alt={homeCode} className="w-[26px] h-auto object-contain border border-[#1e1e1e]" onError={(e) => { e.target.style.display = 'none'; }} />
-        <span className="font-FSEB text-[1.2rem] tracking-[0.08em] text-[#F0F0F0]">{homeCode}</span>
-        <span className="font-FNR font-black text-[1.4rem] text-white text-center tracking-[0.12em] leading-none min-w-[70px]">{centerText}</span>
-        <span className="font-FSEB text-[1.2rem] tracking-[0.08em] text-[#F0F0F0] text-right">{awayCode}</span>
+        <span className="font-FNB text-[1.2rem] tracking-[0.08em] text-[#F0F0F0]">{homeCode}</span>
+        <span className="font-FSEB font-black text-[1.4rem] text-white text-center tracking-[0.12em] leading-none min-w-[70px]">{centerText}</span>
+        <span className="font-FNB text-[1.2rem] tracking-[0.08em] text-[#F0F0F0] text-right">{awayCode}</span>
         <img src={getFlagUrl(awayCode)} alt={awayCode} className="w-[26px] h-auto object-contain border border-[#1e1e1e] justify-self-end" onError={(e) => { e.target.style.display = 'none'; }} />
       </div>
     );
@@ -114,14 +114,14 @@ export default function Home() {
 
       {/* ── DESKTOP: Screen 1 hero ── */}
       <div className="hidden md:flex h-screen items-center justify-center -mt-[60px]">
-        <h1 className="font-FUCB text-[12rem] text-[#F0F0F0] leading-[0.9] uppercase select-none text-center">
+        <h1 className="font-FSEB text-[13rem] text-[#F0F0F0] leading-[0.9] uppercase select-none text-center">
           2026<br />WORLD CUP<br />PREDICTOR
         </h1>
       </div>
 
       {/* ── MOBILE: Hero + metrics + tabs all on one screen ── */}
       <div className="flex md:hidden flex-col gap-5 pt-[62px] pb-[80px] px-4 min-h-screen">
-        <h1 className="font-FUCB text-[4rem] text-[#F0F0F0] leading-[0.9] uppercase select-none pb-20">
+        <h1 className="font-FUCB text-[7rem] text-[#F0F0F0] leading-[0.9] uppercase select-none pb-20 -mx-[25px]">
           2026<br />WORLD<br />CUP<br />PREDICTOR
         </h1>
 
@@ -133,7 +133,7 @@ export default function Home() {
             { value: `${metrics.accuracy}%`, label: 'Accuracy' },
           ].map(({ value, label }) => (
             <div key={label} className="bg-[#091424] border border-[#242424]/40 rounded-[8px] p-3 flex flex-col items-start gap-0.5">
-              <span className="font-FSEB text-[1.4rem] text-[#F0F0F0] leading-none">{value}</span>
+              <span className="font-FNB text-[1.4rem] text-[#F0F0F0] leading-none">{value}</span>
               <span className="font-FNR text-[9px] text-[#555] tracking-widest font-semibold">{label}</span>
             </div>
           ))}
@@ -163,7 +163,7 @@ export default function Home() {
             { value: `${metrics.accuracy}%`, label: 'Accuracy' },
           ].map(({ value, label }) => (
             <div key={label} className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-5 flex flex-col items-start gap-1">
-              <span className="font-FSEB text-[2.2rem] text-[#F0F0F0] leading-none">{value}</span>
+              <span className="font-FNB text-[2.2rem] text-[#F0F0F0] leading-none">{value}</span>
               <span className="font-FNR text-xs text-[#555] uppercase tracking-widest font-semibold">{label}</span>
             </div>
           ))}

@@ -176,7 +176,7 @@ export default function Admin() {
 
   return (
     <div className="max-w-[800px] mx-auto flex flex-col gap-6">
-      <h1 className="font-FUCB text-[5rem] tracking-wider text-[#F0F0F0] leading-none mb-2 text-center">ADMIN</h1>
+      <h1 className="font-FUCB text-4rem] tracking-wider text-[#F0F0F0] leading-none mb-2 text-center">ADMIN</h1>
 
       {/* Match selector */}
       <div className="flex flex-col gap-1">

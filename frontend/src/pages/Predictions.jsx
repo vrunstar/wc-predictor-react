@@ -54,7 +54,7 @@ export default function Predictions() {
 
   if (fixtures.length === 0) return (
     <div className="text-center bg-[#091424] border border-[#242424]/40 rounded-[10px] p-12">
-      <div className="text-xl font-bold font-FUCB tracking-wider text-gray-400">No predictions yet</div>
+      <div className="text-xl font-bold font-FNR tracking-wider text-gray-400">No predictions yet</div>
     </div>
   );
 
@@ -71,12 +71,10 @@ export default function Predictions() {
   return (
     <div>
       <div className="mb-6 text-center">
-        <h1 className="font-FUCB text-[3rem] md:text-[5.5rem] tracking-wide text-[#F0F0F0] leading-none mb-1">
+        <h1 className="font-FUCB text-[4rem] md:text-[5.5rem] tracking-wide text-[#F0F0F0] leading-none mb-1">
           PREDICTIONS
         </h1>
       </div>
-
-      <hr className="border-[#222] my-6" />
 
       {Object.entries(grouped).map(([date, matches]) => (
         <div key={date} className="mb-8">
