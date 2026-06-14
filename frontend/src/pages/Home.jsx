@@ -122,7 +122,7 @@ export default function Home() {
 
       {/* ── DESKTOP: Screen 1 hero ── */}
       <div className="hidden md:flex h-screen items-center justify-center -mt-[60px]">
-        <h1 className="font-FUCB text-[14rem] text-[#F0F0F0] leading-[0.9] uppercase select-none text-center">
+        <h1 className="font-FUCB text-[15rem] text-[#F0F0F0] leading-[0.75] uppercase select-none text-center">
           2026<br />WORLD CUP<br />PREDICTOR
         </h1>
       </div>
@@ -133,18 +133,30 @@ export default function Home() {
           2026<br />WORLD<br />CUP<br />PREDICTOR
         </h1>
 
-        <div className="grid grid-cols-2 gap-2">
-          {[
-            { value: metrics.total,                    label: 'Predicted'       },
-            { value: metrics.correctResult,            label: 'Correct Results' },
-            { value: metrics.correctScore,             label: 'Correct Scores'  },
-            { value: `${metrics.resultAccuracy}%`,     label: 'Result Accuracy' },
-          ].map(({ value, label }) => (
-            <div key={label} className="bg-[#091424] border border-[#242424]/40 rounded-[8px] p-3 flex flex-col items-start gap-0.5">
-              <span className="font-FNB text-[1.4rem] text-[#F0F0F0] leading-none">{value}</span>
-              <span className="font-FNR text-[9px] text-[#555] tracking-widest font-semibold">{label}</span>
-            </div>
-          ))}
+        <div className="flex flex-col gap-2 mb-10">
+          <div className="grid grid-cols-3 gap-2">
+            {[
+              { value: metrics.total,          label: 'Predicted'       },
+              { value: metrics.correctResult,  label: 'Correct Results' },
+              { value: metrics.correctScore,   label: 'Correct Scores'  },
+            ].map(({ value, label }) => (
+              <div key={label} className="bg-[#091424] border border-[#242424]/40 rounded-[8px] p-3 flex flex-col items-start gap-0.5">
+                <span className="font-FNB text-[1.4rem] text-[#F0F0F0] leading-none">{value}</span>
+                <span className="font-FNR text-[9px] text-[#555] tracking-widest font-semibold ">{label}</span>
+              </div>
+            ))}
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              { value: `${metrics.resultAccuracy}%`, label: 'Result Accuracy' },
+              { value: `${metrics.scoreAccuracy}%`,  label: 'Score Accuracy'  },
+            ].map(({ value, label }) => (
+              <div key={label} className="bg-[#091424] border border-[#242424]/40 rounded-[8px] p-3 flex flex-col items-start gap-0.5">
+                <span className="font-FNB text-[1.4rem] text-[#F0F0F0] leading-none">{value}</span>
+                <span className="font-FNR text-[9px] text-[#555] tracking-widest font-semibold ">{label}</span>
+              </div>
+            ))}
+          </div>
         </div>
 
         <div className="flex border border-[#ffffff]/40 rounded-[8px] overflow-hidden">
