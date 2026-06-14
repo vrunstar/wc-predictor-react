@@ -122,16 +122,9 @@ export default function Fixtures() {
   return (
     <div>
       <div className="flex items-center justify-center mb-6 relative">
-        <h1 className="font-FUCB text-[4rem] md:text-[5.5rem] tracking-wide text-[#F0F0F0] leading-none text-center">
+        <h1 className="font-FUCB text-[4.5rem] md:text-[5.5rem] tracking-wide text-[#F0F0F0] leading-none text-center">
           FIXTURES
         </h1>
-        <button
-          onClick={handleCalendarSync}
-          title="Add all fixtures to calendar"
-          className="absolute right-0 w-10 h-10 bg-[#091424] border border-[#242424]/40 hover:border-white/40 rounded-[8px] flex items-center justify-center transition-all duration-150 shrink-0"
-        >
-          <img src="/icons/calendar.svg" alt="calendar" className="w-5 h-5 object-contain opacity-60 hover:opacity-100" />
-        </button>
       </div>
 
       {Object.entries(groupedFixtures).map(([date, matches]) => (
