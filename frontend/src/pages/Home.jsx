@@ -32,12 +32,14 @@ export default function Home() {
           return results && (Array.isArray(results) ? results.length > 0 : Object.keys(results).length > 0);
         });
         setCompletedPredictions(completed.slice(0, 5));
+        console.log('sample pred:', completed[0]);
 
         const total = completed.length;
         let correctResult = 0;
         let correctScore = 0;
         completed.forEach((p) => {
-          const res = ((p.fixture?.results || [])[0] || {});
+          const results = p.fixture?.results;
+          const res = Array.isArray(results) ? results[0] || {} : results || {};
           const actualOutcome = res.outcome;
           const actualH = res.home_goals;
           const actualA = res.away_goals;
