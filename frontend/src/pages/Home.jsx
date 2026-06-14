@@ -133,10 +133,10 @@ export default function Home() {
 
         <div className="grid grid-cols-2 gap-2">
           {[
-            { value: metrics.correct, label: 'Correct' },
-            { value: metrics.wrong,   label: 'Wrong'   },
-            { value: metrics.total,   label: 'Total'   },
-            { value: `${metrics.accuracy}%`, label: 'Accuracy' },
+            { value: metrics.total,                    label: 'Predicted'       },
+            { value: metrics.correctResult,            label: 'Correct Results' },
+            { value: metrics.correctScore,             label: 'Correct Scores'  },
+            { value: `${metrics.resultAccuracy}%`,     label: 'Result Accuracy' },
           ].map(({ value, label }) => (
             <div key={label} className="bg-[#091424] border border-[#242424]/40 rounded-[8px] p-3 flex flex-col items-start gap-0.5">
               <span className="font-FNB text-[1.4rem] text-[#F0F0F0] leading-none">{value}</span>
@@ -161,14 +161,14 @@ export default function Home() {
 
       {/* ── DESKTOP: Screen 2 metrics + columns ── */}
       <div className="hidden md:flex flex-col gap-8 pb-16">
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-5 gap-4">
           {[
-              `${metrics.total} Predicted`,
-              `${metrics.correctResult} Correct Results`,
-              `${metrics.correctScore} Correct Scores`,
-              `${metrics.resultAccuracy}% Result Accuracy`,
-              `${metrics.scoreAccuracy}% Score Accuracy`,
-            ].map((label) => (
+            { value: metrics.total,           label: 'Predicted'       },
+            { value: metrics.correctResult,   label: 'Correct Results' },
+            { value: metrics.correctScore,    label: 'Correct Scores'  },
+            { value: `${metrics.resultAccuracy}%`, label: 'Result Accuracy' },
+            { value: `${metrics.scoreAccuracy}%`,  label: 'Score Accuracy'  },
+          ].map(({ value, label }) => (
             <div key={label} className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-5 flex flex-col items-start gap-1">
               <span className="font-FNB text-[2.2rem] text-[#F0F0F0] leading-none">{value}</span>
               <span className="font-FNR text-xs text-[#555] uppercase tracking-widest font-semibold">{label}</span>
