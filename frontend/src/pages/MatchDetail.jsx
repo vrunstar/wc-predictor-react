@@ -134,9 +134,11 @@ export default function MatchDetail() {
 
   const EventIcon = ({ type }) => {
     if (type === 'goal' || type === 'own_goal' || type === 'penalty')
-      return <img src="/icons/ball.png" alt="⚽" className="w-[14px] h-[14px] shrink-0 object-contain" onError={(e) => { e.target.style.display = 'none'; }} />;
-    if (type === 'yellow_card') return <span className="inline-block w-[9px] h-[14px] bg-yellow-400 rounded-[1px] shrink-0" />;
-    if (type === 'red_card') return <span className="inline-block w-[9px] h-[14px] bg-red-600 rounded-[1px] shrink-0" />;
+      return <img src="/icons/ball.svg" alt="" style={{ width: '13px', height: '13px', flexShrink: 0 }} />;
+    if (type === 'yellow_card')
+      return <span style={{ display: 'inline-block', width: '9px', height: '13px', backgroundColor: '#facc15', borderRadius: '1px', flexShrink: 0 }} />;
+    if (type === 'red_card')
+      return <span style={{ display: 'inline-block', width: '9px', height: '13px', backgroundColor: '#dc2626', borderRadius: '1px', flexShrink: 0 }} />;
     return null;
   };
 
