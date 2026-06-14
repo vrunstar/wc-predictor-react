@@ -81,8 +81,8 @@ export default function MatchDetail() {
 
   const home = fixture.home || {};
   const away = fixture.away || {};
-  const homeCode = home.team_code || '???';
-  const awayCode = away.team_code || '???';
+  const homeCode = home.team_code || 'TBD';
+  const awayCode = away.team_code || 'TBD';
   const homeName = home.name || homeCode;
   const awayName = away.name || awayCode;
   const homeRank = ranks[home.team_id] || '—';
@@ -163,7 +163,7 @@ export default function MatchDetail() {
         const isHome = ev.team_code === homeCode;
         const suffix = eventSuffix(ev.event);
         return (
-          <div key={i} className="grid grid-cols-[5fr_65px_5fr] items-center gap-1">
+          <div key={i} className="grid grid-cols-[25fr_90px_25fr] items-center gap-1">
             <div className="flex items-center justify-end gap-1.5">
               {isHome && (
                 <>
@@ -174,7 +174,7 @@ export default function MatchDetail() {
                 </>
               )}
             </div>
-            <div className="font-FNB text-[0.9rem] text-[#555] font-bold text-center whitespace-nowrap">
+            <div className="font-FNR text-[0.9rem] text-[#555] font-bold text-center whitespace-nowrap">
               {ev.time ? `${ev.time}'` : '—'}
             </div>
             <div className="flex items-center gap-1.5">
@@ -225,8 +225,8 @@ export default function MatchDetail() {
 
       {/* Header — desktop only */}
       <div className="hidden md:flex items-center justify-center my-2 relative">
-        <div className="font-FSEB text-3xl tracking-wider text-[#F0F0F0] leading-none flex items-baseline justify-center gap-4 text-center">
-          MATCH {matchId}
+        <div className="font-FNB text-3xl tracking-wider text-[#F0F0F0] leading-none flex items-baseline justify-center gap-4 text-center">
+          Match {matchId}
           <span className="font-FNR text-sm font-extrabold text-gray-400 tracking-widest ">{matchStage}</span>
         </div>
         <button onClick={() => navigate(-1)} className="absolute right-0 flex items-center justify-center w-8 h-8 bg-[#091424] border border-[#242424]/40 hover:border-white/50 hover:text-white rounded-[6px] text-gray-500 font-FNR text-xs font-bold transition-all duration-150">x</button>
