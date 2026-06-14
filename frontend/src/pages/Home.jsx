@@ -7,7 +7,7 @@ export default function Home() {
   const [matchdayPreds, setMatchdayPreds] = useState([]);
   const [predsMap, setPredsMap] = useState({});
   const [completedPredictions, setCompletedPredictions] = useState([]);
-  const [metrics, setMetrics] = useState({ total: 0, correct: 0, wrong: 0, accuracy: 0 });
+  const [metrics, setMetrics] = useState({total: 0, correctResult: 0, correctScore: 0, resultAccuracy: 0, scoreAccuracy: 0});
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('predictions');
 
@@ -34,14 +34,20 @@ export default function Home() {
         setCompletedPredictions(completed.slice(0, 5));
 
         const total = completed.length;
-        let correct = 0;
+        let correctResult = 0;
+        let correctScore = 0;
         completed.forEach((p) => {
-          const actualOutcome = ((p.fixture?.results || [])[0] || {}).outcome;
-          if (p.predicted_outcome === actualOutcome) correct++;
+          const res = ((p.fixture?.results || [])[0] || {});
+          const actualOutcome = res.outcome;
+          const actualH = res.home_goals;
+          const actualA = res.away_goals;
+          if (p.predicted_outcome === actualOutcome) correctResult++;
+          if (p.pred_home_goals === actualH && p.pred_away_goals === actualA) correctScore++;
         });
-        const wrong = total - correct;
-        const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
-        setMetrics({ total, correct, wrong, accuracy });
+        const resultAccuracy = total > 0 ? Math.round((correctResult / total) * 100) : 0;
+        const scoreAccuracy = total > 0 ? Math.round((correctScore / total) * 100) : 0;
+        setMetrics({ total, correctResult, correctScore, resultAccuracy, scoreAccuracy });
+
       } catch (err) {
         console.error(err);
       } finally {
@@ -157,11 +163,12 @@ export default function Home() {
       <div className="hidden md:flex flex-col gap-8 pb-16">
         <div className="grid grid-cols-4 gap-4">
           {[
-            { value: metrics.correct, label: 'Correct' },
-            { value: metrics.wrong,   label: 'Wrong'   },
-            { value: metrics.total,   label: 'Total'   },
-            { value: `${metrics.accuracy}%`, label: 'Accuracy' },
-          ].map(({ value, label }) => (
+              `${metrics.total} Predicted`,
+              `${metrics.correctResult} Correct Results`,
+              `${metrics.correctScore} Correct Scores`,
+              `${metrics.resultAccuracy}% Result Accuracy`,
+              `${metrics.scoreAccuracy}% Score Accuracy`,
+            ].map((label) => (
             <div key={label} className="bg-[#091424] border border-[#242424]/40 rounded-[10px] p-5 flex flex-col items-start gap-1">
               <span className="font-FNB text-[2.2rem] text-[#F0F0F0] leading-none">{value}</span>
               <span className="font-FNR text-xs text-[#555] uppercase tracking-widest font-semibold">{label}</span>

@@ -133,18 +133,27 @@ export default function MatchDetail() {
   );
 
   const EventIcon = ({ type }) => {
-    if (type === 'goal' || type === 'own_goal' || type === 'penalty')
+    if (['goal', 'own_goal', 'penalty'].includes(type?.toLowerCase()))
       return <img src="/icons/ball.svg" alt="" style={{ width: '13px', height: '13px', flexShrink: 0 }} />;
-    if (type === 'yellow_card')
-      return <span style={{ display: 'inline-block', width: '9px', height: '13px', backgroundColor: '#facc15', borderRadius: '1px', flexShrink: 0 }} />;
-    if (type === 'red_card')
-      return <span style={{ display: 'inline-block', width: '9px', height: '13px', backgroundColor: '#dc2626', borderRadius: '1px', flexShrink: 0 }} />;
+    if (type?.toLowerCase() === 'yellow_card')
+      return (
+        <svg width="9" height="13" viewBox="0 0 9 13" style={{ flexShrink: 0 }}>
+          <rect width="9" height="13" rx="1" fill="#facc15" />
+        </svg>
+      );
+    if (type?.toLowerCase() === 'red_card')
+      return (
+        <svg width="9" height="13" viewBox="0 0 9 13" style={{ flexShrink: 0 }}>
+          <rect width="9" height="13" rx="1" fill="#dc2626" />
+        </svg>
+      );
     return null;
   };
 
   const eventSuffix = (type) => {
-    if (type === 'own_goal') return ' (og)';
-    if (type === 'penalty') return ' (p)';
+    const t = type?.toLowerCase();
+    if (t === 'own_goal') return ' (og)';
+    if (t === 'penalty') return ' (p)';
     return '';
   };
 
